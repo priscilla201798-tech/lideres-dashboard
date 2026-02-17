@@ -1,151 +1,227 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+from datetime import datetime
 
-# --------------------------------------------------
-# CONFIGURACIÓN GENERAL
-# --------------------------------------------------
+# ---------------------------
+# CONFIGURACIÓN INICIAL
+# ---------------------------
+st.set_page_config(page_title="Dashboard IELA", layout="wide")
 
-st.set_page_config(
-    page_title="Dashboard IELA",
-    page_icon="📊",
-    layout="wide"
-)
+SPREADSHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 
-# --------------------------------------------------
-# ESTILOS PERSONALIZADOS
-# --------------------------------------------------
+def load_sheet(sheet_name):
+    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+    return pd.read_csv(url)
 
+df_analisis = load_sheet("BD_ANALISIS_SEMANAL")
+df_obj = load_sheet("BD_OBJETIVOS_ANALISIS")
+df_eventos_prog = load_sheet("EVENTOS_ESPIRITUALES")
+df_obj_prog = load_sheet("OBJETIVOS_DEL_LIDER")
+df_lideres = load_sheet("BD_LIDERES")
+
+# ---------------------------
+# LIMPIEZA DNI
+# ---------------------------
+df_lideres["DNI_Lider"] = df_lideres["DNI_Lider"].astype(str).str.zfill(8)
+df_analisis["DNI_Lider"] = df_analisis["DNI_Lider"].astype(str).str.zfill(8)
+df_obj["DNI_Lider"] = df_obj["DNI_Lider"].astype(str).str.zfill(8)
+
+# ---------------------------
+# ESTILO GENERAL
+# ---------------------------
 st.markdown("""
 <style>
-
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-    color: white;
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0b1e3d, #07142a);
 }
 
 .sidebar-title {
+    color: #f4c430;
+    font-weight: 700;
     font-size: 18px;
+}
+
+.sidebar-text {
+    color: white;
     font-weight: 600;
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.card {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
-    text-align: center;
-}
-
-.card-title {
-    font-size: 16px;
-    color: #cbd5e1;
-}
-
-.card-value {
-    font-size: 38px;
-    font-weight: bold;
-    color: white;
 }
 
 .main-title {
-    font-size: 34px;
-    font-weight: bold;
-    color: #0f172a;
+    font-size: 32px;
+    font-weight: 700;
+    color: #0b1e3d;
 }
 
+.tarjeta {
+    background: #142850;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.4);
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
+# ---------------------------
 # SIDEBAR
-# --------------------------------------------------
+# ---------------------------
+st.sidebar.image("logo.png")
 
-st.sidebar.image("logo.png", use_container_width=True)
+st.sidebar.markdown("""
+<div class='sidebar-title'>
+Iglesia Evangélica de Liberación y Avivamiento
+</div>
+""", unsafe_allow_html=True)
 
-st.sidebar.markdown(
-    "<div class='sidebar-title'>Iglesia Evangélica de Liberación y Avivamiento</div>",
-    unsafe_allow_html=True
-)
-
-st.sidebar.markdown("### 🔐 ACCESO")
+st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
 rol = st.sidebar.selectbox("Rol", ["Líder", "Supervisor"])
 dni = st.sidebar.text_input("DNI")
 
-st.sidebar.markdown("### 📅 Periodo")
-desde = st.sidebar.date_input("Desde")
-hasta = st.sidebar.date_input("Hasta")
+fecha_inicio = st.sidebar.date_input("Desde")
+fecha_fin = st.sidebar.date_input("Hasta")
 
-# --------------------------------------------------
-# DASHBOARD PRINCIPAL
-# --------------------------------------------------
+# ---------------------------
+# VALIDACIÓN DNI
+# ---------------------------
+if dni:
+    dni = dni.zfill(8)
+    lider = df_lideres[df_lideres["DNI_Lider"] == dni]
 
+    if lider.empty:
+        st.error("DNI no encontrado")
+        st.stop()
+else:
+    st.stop()
+
+# ---------------------------
+# DATOS DEL LÍDER
+# ---------------------------
+nombre = lider.iloc[0]["NombreCompleto"]
+ministerio = lider.iloc[0]["EntidadTipo"]
+proceso = lider.iloc[0]["Proceso"]
+equipo = lider.iloc[0]["EntidadNombre"]
+
+# ---------------------------
+# FILTROS
+# ---------------------------
+df_filtrado = df_analisis[df_analisis["DNI_Lider"] == dni]
+
+if not df_filtrado.empty:
+    df_filtrado["Fecha"] = pd.to_datetime(df_filtrado["Fecha"])
+    df_filtrado = df_filtrado[
+        (df_filtrado["Fecha"] >= pd.to_datetime(fecha_inicio)) &
+        (df_filtrado["Fecha"] <= pd.to_datetime(fecha_fin))
+    ]
+
+# ---------------------------
+# MÉTRICAS
+# ---------------------------
+asistencia_total = df_filtrado["Asistencia_Dominical_Equipo"].sum()
+reuniones = df_filtrado["Reunion_Realizada"].sum()
+eventos_realizados = df_filtrado["Evento_Realizado"].sum()
+
+# Cumplimiento objetivos
+obj_prog = df_obj_prog[df_obj_prog["DNI_Lider"] == dni]
+obj_ejec = df_obj[df_obj["DNI_Lider"] == dni]
+
+meta_total = obj_prog["Meta_Anual"].sum() if not obj_prog.empty else 0
+ejecutado_total = obj_ejec["Avance"].sum() if not obj_ejec.empty else 0
+
+cumplimiento = int((ejecutado_total / meta_total) * 100) if meta_total > 0 else 0
+
+# ---------------------------
+# TÍTULO
+# ---------------------------
 st.markdown("<div class='main-title'>Dashboard de Líderes</div>", unsafe_allow_html=True)
-st.markdown("---")
 
-# Datos simulados (solo visual)
-asistencia_total = 24
-eventos = 3
-reuniones = 5
-cumplimiento = "82%"
+st.markdown(f"""
+<div style="
+background:#0f2550;
+padding:20px;
+border-radius:12px;
+color:white;
+margin-top:20px;
+margin-bottom:30px;
+">
+<b>Líder:</b> {nombre} |
+<b>Ministerio:</b> {ministerio} |
+<b>Proceso:</b> {proceso} |
+<b>Equipo:</b> {equipo}
+</div>
+""", unsafe_allow_html=True)
 
+# ---------------------------
+# TARJETAS
+# ---------------------------
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown(f"""
-    <div class="card">
-        <div class="card-title">Asistencia Total</div>
-        <div class="card-value">{asistencia_total}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='tarjeta'>Asistencia Total<br><span style='font-size:32px'>{asistencia_total}</span></div>", unsafe_allow_html=True)
 
 with col2:
-    st.markdown(f"""
-    <div class="card">
-        <div class="card-title">Eventos Espirituales</div>
-        <div class="card-value">{eventos}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='tarjeta'>Eventos Espirituales<br><span style='font-size:32px'>{eventos_realizados}</span></div>", unsafe_allow_html=True)
 
 with col3:
-    st.markdown(f"""
-    <div class="card">
-        <div class="card-title">Reuniones Realizadas</div>
-        <div class="card-value">{reuniones}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='tarjeta'>Reuniones Realizadas<br><span style='font-size:32px'>{reuniones}</span></div>", unsafe_allow_html=True)
 
 with col4:
+    st.markdown(f"<div class='tarjeta'>% Cumplimiento<br><span style='font-size:32px'>{cumplimiento}%</span></div>", unsafe_allow_html=True)
+
+# ---------------------------
+# GRÁFICO ASISTENCIA
+# ---------------------------
+st.subheader("Asistencia Dominical")
+
+fig = px.bar(
+    df_filtrado,
+    x="EntidadNombre",
+    y="Asistencia_Dominical_Equipo",
+    color_discrete_sequence=["#142850"]
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+# ---------------------------
+# OBJETIVOS
+# ---------------------------
+st.subheader("Avance de Objetivos")
+
+for _, row in obj_prog.iterrows():
+    obj_id = row["ObjetivoID"]
+    meta = row["Meta_Anual"]
+
+    ejec = obj_ejec[obj_ejec["ObjetivoID"] == obj_id]["Avance"].sum()
+    porcentaje = int((ejec / meta) * 100) if meta > 0 else 0
+
     st.markdown(f"""
-    <div class="card">
-        <div class="card-title">% Cumplimiento</div>
-        <div class="card-value">{cumplimiento}</div>
+    <div style="margin-bottom:20px;">
+        <b>{obj_id}</b>
+        <div style="background:#ddd; border-radius:10px; height:20px;">
+            <div style="width:{porcentaje}%; background:#f4c430; height:20px; border-radius:10px;"></div>
+        </div>
+        <div>{porcentaje}%</div>
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("")
+# ---------------------------
+# EVENTOS PROGRAMADOS VS EJECUTADOS
+# ---------------------------
+st.subheader("Eventos Espirituales")
 
-# --------------------------------------------------
-# GRÁFICOS
-# --------------------------------------------------
+eventos_prog = df_eventos_prog[df_eventos_prog["DNI_Lider"] == dni]["Meta_Anual"].sum()
+eventos_ejec = eventos_realizados
 
-st.subheader("📈 Tendencia de Asistencia")
+fig2 = px.bar(
+    x=["Programados", "Ejecutados"],
+    y=[eventos_prog, eventos_ejec],
+    color_discrete_sequence=["#0b1e3d"]
+)
 
-df = pd.DataFrame({
-    "Mes": ["Ene", "Feb", "Mar", "Abr", "May"],
-    "Asistencia": [10, 15, 18, 12, 20]
-})
-
-st.line_chart(df.set_index("Mes"))
-
-st.subheader("🏆 Ranking de Líderes")
-
-df2 = pd.DataFrame({
-    "Lider": ["Priscilla", "Gladys", "Susy", "Gerson"],
-    "Cumplimiento": [90, 85, 80, 70]
-})
-
-st.bar_chart(df2.set_index("Lider"))
+st.plotly_chart(fig2, use_container_width=True)
