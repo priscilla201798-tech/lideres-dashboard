@@ -1,124 +1,151 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 
-st.set_page_config(page_title="Dashboard IELA", layout="wide")
+# --------------------------------------------------
+# CONFIGURACIÓN GENERAL
+# --------------------------------------------------
 
-SPREADSHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
+st.set_page_config(
+    page_title="Dashboard IELA",
+    page_icon="📊",
+    layout="wide"
+)
 
-# -----------------------------
-# ESTILO MODERNO OSCURO
-# -----------------------------
+# --------------------------------------------------
+# ESTILOS PERSONALIZADOS
+# --------------------------------------------------
+
 st.markdown("""
 <style>
-body { background-color: #0F172A; color: #F1F5F9; }
-.card {
-    background-color: #1E293B;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 10px;
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    color: white;
 }
-.metric-title { color: #94A3B8; font-size: 14px; }
-.metric-value { font-size: 26px; font-weight: bold; }
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+    text-align: center;
+}
+
+.card-title {
+    font-size: 16px;
+    color: #cbd5e1;
+}
+
+.card-value {
+    font-size: 38px;
+    font-weight: bold;
+    color: white;
+}
+
+.main-title {
+    font-size: 34px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# CARGAR GOOGLE SHEETS
-# -----------------------------
-def load_sheet(name):
-    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={name}"
-    return pd.read_csv(url)
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
 
-df = load_sheet("BD_ANALISIS_SEMANAL")
-df_lideres = load_sheet("BD_LIDERES")
+st.sidebar.image("logo.png", use_container_width=True)
 
-# Normalizar DNI
-df["DNI_Lider"] = df["DNI_Lider"].astype(str).str.replace("'", "").str.strip()
-df_lideres["DNI_Lider"] = df_lideres["DNI_Lider"].astype(str).str.replace("'", "").str.strip()
+st.sidebar.markdown(
+    "<div class='sidebar-title'>Iglesia Evangélica de Liberación y Avivamiento</div>",
+    unsafe_allow_html=True
+)
 
-# -----------------------------
-# LOGIN
-# -----------------------------
-st.sidebar.title("Acceso")
+st.sidebar.markdown("### 🔐 ACCESO")
+
 rol = st.sidebar.selectbox("Rol", ["Líder", "Supervisor"])
+dni = st.sidebar.text_input("DNI")
 
-dni = None
+st.sidebar.markdown("### 📅 Periodo")
+desde = st.sidebar.date_input("Desde")
+hasta = st.sidebar.date_input("Hasta")
 
-if rol == "Líder":
-    dni = st.sidebar.text_input("Ingresa tu DNI")
-else:
-    password = st.sidebar.text_input("Contraseña Supervisor", type="password")
-    if password == "INTIMOSIELA2026":
-        dni = st.sidebar.selectbox("Selecciona líder", df_lideres["DNI_Lider"].unique())
-    else:
-        st.stop()
+# --------------------------------------------------
+# DASHBOARD PRINCIPAL
+# --------------------------------------------------
 
-# -----------------------------
-# FILTRO FECHA
-# -----------------------------
-st.sidebar.title("Periodo")
-fecha_inicio = st.sidebar.date_input("Desde", datetime(2026,1,1))
-fecha_fin = st.sidebar.date_input("Hasta", datetime.now())
+st.markdown("<div class='main-title'>Dashboard de Líderes</div>", unsafe_allow_html=True)
+st.markdown("---")
 
-# -----------------------------
-# CONTENIDO PRINCIPAL
-# -----------------------------
-if dni:
+# Datos simulados (solo visual)
+asistencia_total = 24
+eventos = 3
+reuniones = 5
+cumplimiento = "82%"
 
-    dni = str(dni).strip()
+col1, col2, col3, col4 = st.columns(4)
 
-    # Buscar líder
-    fila = df_lideres[df_lideres["DNI_Lider"] == dni]
-
-    if fila.empty:
-        st.warning("DNI no encontrado en BD_LIDERES")
-        st.stop()
-
-    info = fila.iloc[0]
-
-    # Filtrar datos
-    df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
-    df_filtrado = df[
-        (df["DNI_Lider"] == dni) &
-        (df["Fecha"] >= pd.to_datetime(fecha_inicio)) &
-        (df["Fecha"] <= pd.to_datetime(fecha_fin))
-    ]
-
-    st.title("Dashboard de Liderazgo")
-
+with col1:
     st.markdown(f"""
-    <p style='color:#94A3B8'>
-    <strong>{info.get("NombreCompleto","")}</strong><br>
-    {info.get("EntidadTipo","")} | {info.get("Proceso","")} | {info.get("EntidadNombre","")}
-    </p>
+    <div class="card">
+        <div class="card-title">Asistencia Total</div>
+        <div class="card-value">{asistencia_total}</div>
+    </div>
     """, unsafe_allow_html=True)
 
-    if df_filtrado.empty:
-        st.info("No hay registros en el periodo seleccionado.")
-        st.stop()
+with col2:
+    st.markdown(f"""
+    <div class="card">
+        <div class="card-title">Eventos Espirituales</div>
+        <div class="card-value">{eventos}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # KPIs
-    col1, col2, col3 = st.columns(3)
-    col4, col5, col6 = st.columns(3)
+with col3:
+    st.markdown(f"""
+    <div class="card">
+        <div class="card-title">Reuniones Realizadas</div>
+        <div class="card-value">{reuniones}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    asistencia = df_filtrado.get("Asistencia_Total", pd.Series([0])).sum()
-    reuniones = df_filtrado.get("Reunion_Realizada", pd.Series([0])).sum()
-    eventos = df_filtrado.get("Evento_Realizado", pd.Series([0])).sum()
-    convertidos = df_filtrado.get("Conversiones", pd.Series([0])).sum()
-    visitas = df_filtrado.get("Visitas", pd.Series([0])).sum()
-    derivados = df_filtrado.get("Derivados_Escuela", pd.Series([0])).sum()
+with col4:
+    st.markdown(f"""
+    <div class="card">
+        <div class="card-title">% Cumplimiento</div>
+        <div class="card-value">{cumplimiento}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col1:
-        st.markdown(f"<div class='card'><div class='metric-title'>Asistencia Total</div><div class='metric-value'>{int(asistencia)}</div></div>", unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"<div class='card'><div class='metric-title'>Reuniones</div><div class='metric-value'>{int(reuniones)}</div></div>", unsafe_allow_html=True)
-    with col3:
-        st.markdown(f"<div class='card'><div class='metric-title'>Eventos</div><div class='metric-value'>{int(eventos)}</div></div>", unsafe_allow_html=True)
+st.markdown("")
 
-    with col4:
-        st.markdown(f"<div class='card'><div class='metric-title'>Convertidos</div><div class='metric-value'>{int(convertidos)}</div></div>", unsafe_allow_html=True)
-    with col5:
-        st.markdown(f"<div class='card'><div class='metric-title'>Visitas</div><div class='metric-value'>{int(visitas)}</div></div>", unsafe_allow_html=True)
-    with col6:
-        st.markdown(f"<div class='card'><div class='metric-title'>Derivados Escuela</div><div class='metric-value'>{int(derivados)}</div></div>", unsafe_allow_html=True)
+# --------------------------------------------------
+# GRÁFICOS
+# --------------------------------------------------
+
+st.subheader("📈 Tendencia de Asistencia")
+
+df = pd.DataFrame({
+    "Mes": ["Ene", "Feb", "Mar", "Abr", "May"],
+    "Asistencia": [10, 15, 18, 12, 20]
+})
+
+st.line_chart(df.set_index("Mes"))
+
+st.subheader("🏆 Ranking de Líderes")
+
+df2 = pd.DataFrame({
+    "Lider": ["Priscilla", "Gladys", "Susy", "Gerson"],
+    "Cumplimiento": [90, 85, 80, 70]
+})
+
+st.bar_chart(df2.set_index("Lider"))
