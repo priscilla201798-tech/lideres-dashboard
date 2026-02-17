@@ -67,9 +67,26 @@ df_event = load_sheet("EVENTOS_ESPIRITUALES")
 df_lideres = load_sheet("BD_LIDERES")
 
 # NORMALIZAR DNIs COMO TEXTO
-df["DNI_Lider"] = df["DNI_Lider"].astype(str).str.strip()
-df_lideres["DNI_Lider"] = df_lideres["DNI_Lider"].astype(str).str.strip()
-df_obj["DNI_Lider"] = df_obj["DNI_Lider"].astype(str).str.strip()
+# Detectar automáticamente columna DNI en cada hoja
+def detectar_columna_dni(df):
+    for col in df.columns:
+        if "dni" in col.lower():
+            return col
+    return None
+
+col_dni_analisis = detectar_columna_dni(df)
+col_dni_lideres = detectar_columna_dni(df_lideres)
+col_dni_obj = detectar_columna_dni(df_obj)
+
+if col_dni_lideres is None:
+    st.error("No se encontró columna DNI en BD_LIDERES")
+    st.write("Columnas disponibles:", df_lideres.columns)
+    st.stop()
+
+# Normalizar DNIs como texto
+df[col_dni_analisis] = df[col_dni_analisis].astype(str).str.strip()
+df_lideres[col_dni_lideres] = df_lideres[col_dni_lideres].astype(str).str.strip()
+df_obj[col_dni_obj] = df_obj[col_dni_obj].astype(str).str.strip()
 
 # --------------------------------------------------
 # LOGIN
@@ -106,7 +123,7 @@ if dni:
     dni = str(dni).strip()
 
     # Buscar información del líder
-    fila = df_lideres[df_lideres["DNI_Lider"] == dni]
+    fila = df_lideres[df_lideres[col_dni_lideres] == dni]
 
     if fila.empty:
         st.error("DNI no encontrado en BD_LIDERES")
@@ -117,7 +134,8 @@ if dni:
     # Filtrar registros
     df["Fecha"] = pd.to_datetime(df["Fecha"])
     df_filtrado = df[
-        (df["DNI_Lider"] == dni) &
+    (df[col_dni_analisis] == dni) &
+
         (df["Fecha"] >= pd.to_datetime(fecha_inicio)) &
         (df["Fecha"] <= pd.to_datetime(fecha_fin))
     ]
@@ -161,7 +179,8 @@ if dni:
 
     st.subheader("Avance de Objetivos")
 
-    objetivos = df_obj[df_obj["DNI_Lider"] == dni]
+   objetivos = df_obj[df_obj[col_dni_obj] == dni]
+
 
     for _, row in objetivos.iterrows():
 
