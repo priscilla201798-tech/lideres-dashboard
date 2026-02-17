@@ -74,14 +74,27 @@ fecha_inicio = st.sidebar.date_input("Desde")
 fecha_fin = st.sidebar.date_input("Hasta")
 
 if dni:
-    df_filtrado = df[df["DNI_Lider"] == int(dni)]
+    df["DNI_Lider"] = df["DNI_Lider"].astype(str).str.strip()
+df_filtrado = df[df["DNI_Lider"] == dni]
+
     df_filtrado["Fecha"] = pd.to_datetime(df_filtrado["Fecha"])
     df_filtrado = df_filtrado[
         (df_filtrado["Fecha"] >= pd.to_datetime(fecha_inicio)) &
         (df_filtrado["Fecha"] <= pd.to_datetime(fecha_fin))
     ]
 
-    info = df_lideres[df_lideres["DNI_Lider"] == int(dni)].iloc[0]
+   # Asegurar mismo tipo de dato
+df_lideres["DNI_Lider"] = df_lideres["DNI_Lider"].astype(str).str.strip()
+dni = str(dni).strip()
+
+fila = df_lideres[df_lideres["DNI_Lider"] == dni]
+
+if fila.empty:
+    st.error("DNI no encontrado en BD_LIDERES")
+    st.stop()
+
+info = fila.iloc[0]
+
 
     # HEADER
     st.markdown(f"""
