@@ -210,18 +210,81 @@ for _, row in obj_prog.iterrows():
     </div>
     """, unsafe_allow_html=True)
 
-# ---------------------------
-# EVENTOS PROGRAMADOS VS EJECUTADOS
-# ---------------------------
+# ====================================
+# EVENTOS ESPIRITUALES (FORMATO VERTICAL)
+# ====================================
+
 st.subheader("Eventos Espirituales")
 
-eventos_prog = df_eventos_prog[df_eventos_prog["DNI_Lider"] == dni]["Meta_Anual"].sum()
-eventos_ejec = eventos_realizados
+eventos_meta = df_eventos_prog[df_eventos_prog["DNI_Lider"] == dni]
 
-fig2 = px.bar(
-    x=["Programados", "Ejecutados"],
-    y=[eventos_prog, eventos_ejec],
-    color_discrete_sequence=["#0b1e3d"]
-)
+if not eventos_meta.empty:
 
-st.plotly_chart(fig2, use_container_width=True)
+    # Convertimos mes a número
+    meses_map = {
+        "enero":1,"febrero":2,"marzo":3,"abril":4,
+        "mayo":5,"junio":6,"julio":7,"agosto":8,
+        "septiembre":9,"octubre":10,"noviembre":11,"diciembre":12
+    }
+
+    df_filtrado["Mes"] = df_filtrado["Fecha"].dt.month
+
+    ejecutados_mes = df_filtrado[df_filtrado["Evento_Realizado"] == 1] \
+                        .groupby("Mes").size()
+
+    tabla = []
+    total_prog = 0
+    total_ejec = 0
+
+    for _, row in eventos_meta.iterrows():
+
+        mes_texto = str(row["Mes"]).lower()
+        mes_num = meses_map.get(mes_texto, None)
+
+        ayuno_prog = row["Ayunos_Programados"]
+        vigilia_prog = row["Vigilias_Programadas"]
+
+        ejec = ejecutados_mes.get(mes_num, 0) if mes_num else 0
+
+        total_prog += ayuno_prog + vigilia_prog
+        total_ejec += ejec
+
+        tabla.append([
+            row["Mes"],
+            f"{ejec}/{ayuno_prog}",
+            f"{ejec}/{vigilia_prog}"
+        ])
+
+    df_tabla = pd.DataFrame(tabla, columns=[
+        "Mes",
+        "Ayunos (Ejec/Prog)",
+        "Vigilias (Ejec/Prog)"
+    ])
+
+    # ------- TARJETA ACUMULADA -------
+    porcentaje = int((total_ejec / total_prog) * 100) if total_prog > 0 else 0
+
+    color = "#28a745" if porcentaje >= 100 else \
+            "#1e90ff" if porcentaje >= 80 else \
+            "#ff9800" if porcentaje >= 60 else \
+            "#dc3545"
+
+    st.markdown(f"""
+    <div style="
+        background:#142850;
+        padding:25px;
+        border-radius:15px;
+        color:white;
+        text-align:center;
+        margin-bottom:25px;
+    ">
+        <div style="font-size:18px;">Cumplimiento Eventos Espirituales (Acumulado)</div>
+        <div style="font-size:40px; font-weight:bold; color:{color};">{porcentaje}%</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.dataframe(df_tabla, use_container_width=True)
+
+else:
+    st.info("No existen metas configuradas para este líder.")
+
