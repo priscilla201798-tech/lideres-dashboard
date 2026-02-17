@@ -2,18 +2,13 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# -------------------------------
-# CONFIGURACIÓN GENERAL
-# -------------------------------
-
 st.set_page_config(page_title="Dashboard IELA", layout="wide")
 
 SPREADSHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 
-# -------------------------------
-# ESTILO DARK
-# -------------------------------
-
+# -----------------------------
+# ESTILO
+# -----------------------------
 st.markdown("""
 <style>
 body { background-color: #0F172A; color: #F1F5F9; }
@@ -27,85 +22,86 @@ body { background-color: #0F172A; color: #F1F5F9; }
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------------
+# -----------------------------
 # CARGAR GOOGLE SHEETS
-# -------------------------------
-
-def load_sheet(name):
-    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={name}"
+# -----------------------------
+def load_sheet(sheet_name):
+    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
     return pd.read_csv(url)
 
 df = load_sheet("BD_ANALISIS_SEMANAL")
 df_lideres = load_sheet("BD_LIDERES")
 df_obj = load_sheet("OBJETIVOS_DEL_LIDER")
 
-# -------------------------------
-# DETECTAR COLUMNA DNI
-# -------------------------------
-
-def detectar_dni(df):
+# -----------------------------
+# LIMPIEZA EXTREMA DNI
+# -----------------------------
+def limpiar_columna_dni(df):
+    col_dni = None
     for col in df.columns:
         if "dni" in col.lower():
-            return col
-    return None
+            col_dni = col
+            break
+    if col_dni is None:
+        return None, df
 
-col_dni_df = detectar_dni(df)
-col_dni_lideres = detectar_dni(df_lideres)
-col_dni_obj = detectar_dni(df_obj)
+    df[col_dni] = (
+        df[col_dni]
+        .astype(str)
+        .str.replace(".0", "", regex=False)
+        .str.strip()
+    )
+    return col_dni, df
+
+col_dni_df, df = limpiar_columna_dni(df)
+col_dni_lideres, df_lideres = limpiar_columna_dni(df_lideres)
+col_dni_obj, df_obj = limpiar_columna_dni(df_obj)
 
 if col_dni_lideres is None:
     st.error("No se encontró columna DNI en BD_LIDERES")
-    st.write(df_lideres.columns)
     st.stop()
 
-# Convertir a texto
-df[col_dni_df] = df[col_dni_df].astype(str).str.strip()
-df_lideres[col_dni_lideres] = df_lideres[col_dni_lideres].astype(str).str.strip()
-df_obj[col_dni_obj] = df_obj[col_dni_obj].astype(str).str.strip()
-
-# -------------------------------
+# -----------------------------
 # LOGIN
-# -------------------------------
-
+# -----------------------------
 st.sidebar.title("Acceso")
 rol = st.sidebar.selectbox("Rol", ["Líder", "Supervisor"])
 
 dni = None
 
 if rol == "Líder":
-    dni = st.sidebar.text_input("DNI")
+    dni = st.sidebar.text_input("Ingresa tu DNI")
 else:
-    password = st.sidebar.text_input("Contraseña", type="password")
+    password = st.sidebar.text_input("Contraseña Supervisor", type="password")
     if password == "INTIMOSIELA2026":
-        dni = st.sidebar.selectbox("Selecciona líder", df_lideres[col_dni_lideres])
+        dni = st.sidebar.selectbox("Selecciona líder", df_lideres[col_dni_lideres].unique())
     else:
         st.stop()
 
-# -------------------------------
+# -----------------------------
 # FILTRO FECHA
-# -------------------------------
-
+# -----------------------------
 st.sidebar.title("Periodo")
 fecha_inicio = st.sidebar.date_input("Desde", datetime(2026,1,1))
 fecha_fin = st.sidebar.date_input("Hasta", datetime.now())
 
-# -------------------------------
+# -----------------------------
 # CONTENIDO PRINCIPAL
-# -------------------------------
-
+# -----------------------------
 if dni:
 
-    dni = str(dni).strip()
+    dni = str(dni).replace(".0", "").strip()
 
     fila = df_lideres[df_lideres[col_dni_lideres] == dni]
 
     if fila.empty:
-        st.error("DNI no encontrado")
+        st.warning("El DNI existe pero no coincide exactamente. Verifica formato en BD_LIDERES.")
         st.stop()
 
     info = fila.iloc[0]
 
-    df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
+    if "Fecha" in df.columns:
+        df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
 
     df_filtrado = df[
         (df[col_dni_df] == dni) &
@@ -122,6 +118,10 @@ if dni:
     {info.get("Proceso","")}
     </p>
     """, unsafe_allow_html=True)
+
+    if df_filtrado.empty:
+        st.info("Este líder aún no tiene registros en el periodo seleccionado.")
+        st.stop()
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -141,18 +141,20 @@ if dni:
 
     st.markdown("---")
 
-    # Objetivos
     st.subheader("Objetivos")
 
     objetivos = df_obj[df_obj[col_dni_obj] == dni]
 
-    for _, row in objetivos.iterrows():
-        meta = row.get("MetaAnual", 0)
-        ejecutado = df_filtrado.get("Avance", pd.Series([0])).sum()
+    if objetivos.empty:
+        st.info("No hay objetivos registrados para este líder.")
+    else:
+        for _, row in objetivos.iterrows():
+            meta = row.get("MetaAnual", 0)
+            ejecutado = df_filtrado.get("Avance", pd.Series([0])).sum()
 
-        porcentaje = 0
-        if meta > 0:
-            porcentaje = min(int((ejecutado/meta)*100), 100)
+            porcentaje = 0
+            if meta > 0:
+                porcentaje = min(int((ejecutado/meta)*100), 100)
 
-        st.progress(porcentaje / 100)
-        st.write(f"{row.get('NombreObjetivo','Objetivo')} - {porcentaje}%")
+            st.progress(porcentaje / 100)
+            st.write(f"{row.get('NombreObjetivo','Objetivo')} - {porcentaje}%")
