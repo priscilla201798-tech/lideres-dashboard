@@ -211,7 +211,7 @@ for _, row in obj_prog.iterrows():
     """, unsafe_allow_html=True)
 
 # ====================================
-# EVENTOS ESPIRITUALES (FORMATO VERTICAL)
+# EVENTOS ESPIRITUALES POR TIPO
 # ====================================
 
 st.subheader("Eventos Espirituales")
@@ -220,7 +220,6 @@ eventos_meta = df_eventos_prog[df_eventos_prog["DNI_Lider"] == dni]
 
 if not eventos_meta.empty:
 
-    # Convertimos mes a número
     meses_map = {
         "enero":1,"febrero":2,"marzo":3,"abril":4,
         "mayo":5,"junio":6,"julio":7,"agosto":8,
@@ -229,10 +228,17 @@ if not eventos_meta.empty:
 
     df_filtrado["Mes"] = df_filtrado["Fecha"].dt.month
 
-    ejecutados_mes = df_filtrado[df_filtrado["Evento_Realizado"] == 1] \
-                        .groupby("Mes").size()
+    # Ejecutados por tipo
+    ejecutados = df_filtrado[df_filtrado["Evento_Realizado"] > 0]
+
+    ejecutados_ayuno = ejecutados[ejecutados["Tipo_Evento"] == "AYUNO"] \
+                        .groupby("Mes")["Evento_Realizado"].sum()
+
+    ejecutados_vigilia = ejecutados[ejecutados["Tipo_Evento"] == "VIGILIA"] \
+                        .groupby("Mes")["Evento_Realizado"].sum()
 
     tabla = []
+
     total_prog = 0
     total_ejec = 0
 
@@ -244,15 +250,16 @@ if not eventos_meta.empty:
         ayuno_prog = row["Ayunos_Programados"]
         vigilia_prog = row["Vigilias_Programadas"]
 
-        ejec = ejecutados_mes.get(mes_num, 0) if mes_num else 0
+        ayuno_ejec = ejecutados_ayuno.get(mes_num, 0) if mes_num else 0
+        vigilia_ejec = ejecutados_vigilia.get(mes_num, 0) if mes_num else 0
 
         total_prog += ayuno_prog + vigilia_prog
-        total_ejec += ejec
+        total_ejec += ayuno_ejec + vigilia_ejec
 
         tabla.append([
             row["Mes"],
-            f"{ejec}/{ayuno_prog}",
-            f"{ejec}/{vigilia_prog}"
+            f"{ayuno_ejec}/{ayuno_prog}",
+            f"{vigilia_ejec}/{vigilia_prog}"
         ])
 
     df_tabla = pd.DataFrame(tabla, columns=[
@@ -278,7 +285,7 @@ if not eventos_meta.empty:
         text-align:center;
         margin-bottom:25px;
     ">
-        <div style="font-size:18px;">Cumplimiento Eventos Espirituales (Acumulado)</div>
+        <div style="font-size:18px;">Cumplimiento Total Eventos Espirituales</div>
         <div style="font-size:40px; font-weight:bold; color:{color};">{porcentaje}%</div>
     </div>
     """, unsafe_allow_html=True)
@@ -287,4 +294,3 @@ if not eventos_meta.empty:
 
 else:
     st.info("No existen metas configuradas para este líder.")
-
