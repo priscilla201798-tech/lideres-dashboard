@@ -2,170 +2,138 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# --------------------------------------------------
+# -------------------------------
 # CONFIGURACIÓN GENERAL
-# --------------------------------------------------
+# -------------------------------
 
 st.set_page_config(page_title="Dashboard IELA", layout="wide")
 
 SPREADSHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 
-# --------------------------------------------------
-# ESTILO DARK PROFESIONAL
-# --------------------------------------------------
+# -------------------------------
+# ESTILO DARK
+# -------------------------------
 
 st.markdown("""
 <style>
-body {
-    background-color: #0F172A;
-    color: #F1F5F9;
-}
-.main {
-    background-color: #0F172A;
-}
+body { background-color: #0F172A; color: #F1F5F9; }
 .card {
     background-color: #1E293B;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+    border-radius: 12px;
 }
-.metric-title {
-    font-size: 14px;
-    color: #94A3B8;
-}
-.metric-value {
-    font-size: 28px;
-    font-weight: bold;
-}
-.progress-container {
-    background-color: #334155;
-    border-radius: 10px;
-    height: 12px;
-}
-.progress-bar {
-    height: 12px;
-    border-radius: 10px;
-}
+.metric-title { color: #94A3B8; font-size: 14px; }
+.metric-value { font-size: 26px; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# FUNCION PARA LEER GOOGLE SHEETS PUBLICO
-# --------------------------------------------------
+# -------------------------------
+# CARGAR GOOGLE SHEETS
+# -------------------------------
 
-def load_sheet(sheet_name):
-    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+def load_sheet(name):
+    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={name}"
     return pd.read_csv(url)
 
-# --------------------------------------------------
-# CARGAR DATA
-# --------------------------------------------------
-
 df = load_sheet("BD_ANALISIS_SEMANAL")
-df_obj = load_sheet("OBJETIVOS_DEL_LIDER")
-df_event = load_sheet("EVENTOS_ESPIRITUALES")
 df_lideres = load_sheet("BD_LIDERES")
+df_obj = load_sheet("OBJETIVOS_DEL_LIDER")
 
-# NORMALIZAR DNIs COMO TEXTO
-# Detectar automáticamente columna DNI en cada hoja
-def detectar_columna_dni(df):
+# -------------------------------
+# DETECTAR COLUMNA DNI
+# -------------------------------
+
+def detectar_dni(df):
     for col in df.columns:
         if "dni" in col.lower():
             return col
     return None
 
-col_dni_analisis = detectar_columna_dni(df)
-col_dni_lideres = detectar_columna_dni(df_lideres)
-col_dni_obj = detectar_columna_dni(df_obj)
+col_dni_df = detectar_dni(df)
+col_dni_lideres = detectar_dni(df_lideres)
+col_dni_obj = detectar_dni(df_obj)
 
 if col_dni_lideres is None:
     st.error("No se encontró columna DNI en BD_LIDERES")
-    st.write("Columnas disponibles:", df_lideres.columns)
+    st.write(df_lideres.columns)
     st.stop()
 
-# Normalizar DNIs como texto
-df[col_dni_analisis] = df[col_dni_analisis].astype(str).str.strip()
+# Convertir a texto
+df[col_dni_df] = df[col_dni_df].astype(str).str.strip()
 df_lideres[col_dni_lideres] = df_lideres[col_dni_lideres].astype(str).str.strip()
 df_obj[col_dni_obj] = df_obj[col_dni_obj].astype(str).str.strip()
 
-# --------------------------------------------------
+# -------------------------------
 # LOGIN
-# --------------------------------------------------
+# -------------------------------
 
 st.sidebar.title("Acceso")
-rol = st.sidebar.selectbox("Selecciona tu rol", ["Líder", "Supervisor"])
+rol = st.sidebar.selectbox("Rol", ["Líder", "Supervisor"])
 
 dni = None
 
 if rol == "Líder":
-    dni = st.sidebar.text_input("Ingresa tu DNI")
+    dni = st.sidebar.text_input("DNI")
 else:
-    password = st.sidebar.text_input("Contraseña Supervisor", type="password")
+    password = st.sidebar.text_input("Contraseña", type="password")
     if password == "INTIMOSIELA2026":
-        dni = st.sidebar.selectbox("Selecciona líder", df_lideres["DNI_Lider"])
+        dni = st.sidebar.selectbox("Selecciona líder", df_lideres[col_dni_lideres])
     else:
         st.stop()
 
-# --------------------------------------------------
+# -------------------------------
 # FILTRO FECHA
-# --------------------------------------------------
+# -------------------------------
 
-st.sidebar.title("Filtros")
+st.sidebar.title("Periodo")
 fecha_inicio = st.sidebar.date_input("Desde", datetime(2026,1,1))
 fecha_fin = st.sidebar.date_input("Hasta", datetime.now())
 
-# --------------------------------------------------
-# PROCESAMIENTO PRINCIPAL
-# --------------------------------------------------
+# -------------------------------
+# CONTENIDO PRINCIPAL
+# -------------------------------
 
 if dni:
 
     dni = str(dni).strip()
 
-    # Buscar información del líder
     fila = df_lideres[df_lideres[col_dni_lideres] == dni]
 
     if fila.empty:
-        st.error("DNI no encontrado en BD_LIDERES")
+        st.error("DNI no encontrado")
         st.stop()
 
     info = fila.iloc[0]
 
-    # Filtrar registros
-    df["Fecha"] = pd.to_datetime(df["Fecha"])
-    df_filtrado = df[
-    (df[col_dni_analisis] == dni) &
+    df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
 
+    df_filtrado = df[
+        (df[col_dni_df] == dni) &
         (df["Fecha"] >= pd.to_datetime(fecha_inicio)) &
         (df["Fecha"] <= pd.to_datetime(fecha_fin))
     ]
 
-    # --------------------------------------------------
-    # HEADER
-    # --------------------------------------------------
+    st.title("Dashboard de Liderazgo")
 
     st.markdown(f"""
-    <h1 style='color:#F1F5F9;'>Dashboard de Liderazgo</h1>
-    <p style='color:#94A3B8;'>
-    {info["NombreCompleto"]} | {info["EntidadTipo"]} | {info["Proceso"]}
+    <p style='color:#94A3B8'>
+    {info.get("NombreCompleto","")} | 
+    {info.get("EntidadTipo","")} | 
+    {info.get("Proceso","")}
     </p>
     """, unsafe_allow_html=True)
 
-    # --------------------------------------------------
-    # KPIS PRINCIPALES
-    # --------------------------------------------------
-
     col1, col2, col3, col4 = st.columns(4)
 
-    asistencia = df_filtrado["Asistencia_Total"].sum() if "Asistencia_Total" in df_filtrado else 0
-    eventos = df_filtrado["Evento_Realizado"].sum() if "Evento_Realizado" in df_filtrado else 0
-    reuniones = df_filtrado["Reunion_Realizada"].sum() if "Reunion_Realizada" in df_filtrado else 0
-    convertidos = df_filtrado["Conversiones"].sum() if "Conversiones" in df_filtrado else 0
+    asistencia = df_filtrado.get("Asistencia_Total", pd.Series([0])).sum()
+    eventos = df_filtrado.get("Evento_Realizado", pd.Series([0])).sum()
+    reuniones = df_filtrado.get("Reunion_Realizada", pd.Series([0])).sum()
+    convertidos = df_filtrado.get("Conversiones", pd.Series([0])).sum()
 
     with col1:
-        st.markdown(f"<div class='card'><div class='metric-title'>Asistencia Total</div><div class='metric-value'>{int(asistencia)}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card'><div class='metric-title'>Asistencia</div><div class='metric-value'>{int(asistencia)}</div></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown(f"<div class='card'><div class='metric-title'>Eventos Realizados</div><div class='metric-value'>{int(eventos)}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card'><div class='metric-title'>Eventos</div><div class='metric-value'>{int(eventos)}</div></div>", unsafe_allow_html=True)
     with col3:
         st.markdown(f"<div class='card'><div class='metric-title'>Reuniones</div><div class='metric-value'>{int(reuniones)}</div></div>", unsafe_allow_html=True)
     with col4:
@@ -173,49 +141,18 @@ if dni:
 
     st.markdown("---")
 
-    # --------------------------------------------------
-    # OBJETIVOS
-    # --------------------------------------------------
+    # Objetivos
+    st.subheader("Objetivos")
 
-    st.subheader("Avance de Objetivos")
-
-   objetivos = df_obj[df_obj[col_dni_obj] == dni]
-
+    objetivos = df_obj[df_obj[col_dni_obj] == dni]
 
     for _, row in objetivos.iterrows():
-
-        meta = row["MetaAnual"] if "MetaAnual" in row else 0
-        ejecutado = df_filtrado["Avance"].sum() if "Avance" in df_filtrado else 0
+        meta = row.get("MetaAnual", 0)
+        ejecutado = df_filtrado.get("Avance", pd.Series([0])).sum()
 
         porcentaje = 0
         if meta > 0:
             porcentaje = min(int((ejecutado/meta)*100), 100)
 
-        if porcentaje >= 80:
-            color = "#10B981"
-        elif porcentaje >= 50:
-            color = "#F59E0B"
-        else:
-            color = "#EF4444"
-
-        st.markdown(f"""
-        <div class='card'>
-            <div class='metric-title'>{row.get("NombreObjetivo","Objetivo")}</div>
-            <div class='progress-container'>
-                <div class='progress-bar' style='width:{porcentaje}%; background:{color};'></div>
-            </div>
-            <div style='margin-top:8px'>{porcentaje}%</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # --------------------------------------------------
-    # TENDENCIA ASISTENCIA
-    # --------------------------------------------------
-
-    st.subheader("Tendencia Asistencia")
-
-    if "Asistencia_Total" in df_filtrado:
-        grafico = df_filtrado.set_index("Fecha")["Asistencia_Total"]
-        st.line_chart(grafico)
+        st.progress(porcentaje / 100)
+        st.write(f"{row.get('NombreObjetivo','Objetivo')} - {porcentaje}%")
