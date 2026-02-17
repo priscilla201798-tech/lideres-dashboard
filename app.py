@@ -2,150 +2,181 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ----------------------------
+# -----------------------------
 # CONFIGURACIÓN GENERAL
-# ----------------------------
+# -----------------------------
 
 st.set_page_config(
-    page_title="Líderes Dashboard",
-    layout="wide",
+    page_title="Dashboard de Líderes",
+    page_icon="📊",
+    layout="wide"
 )
 
-SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
+# -----------------------------
+# ESTILO PROFESIONAL DARK
+# -----------------------------
 
-URL_ANALISIS = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=BD_ANALISIS_SEMANAL"
-URL_OBJETIVOS = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=BD_OBJETIVOS_ANALISIS"
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {
+    background-color: #0F172A;
+}
+[data-testid="stSidebar"] {
+    background-color: #111827;
+}
+h1, h2, h3, h4, h5 {
+    color: #F1F5F9;
+}
+.metric-card {
+    background-color: #1E293B;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    text-align: center;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# ----------------------------
+# -----------------------------
 # CARGA DE DATOS
-# ----------------------------
+# -----------------------------
 
-@st.cache_data
-def load_data():
-    df_analisis = pd.read_csv(URL_ANALISIS)
-    df_obj = pd.read_csv(URL_OBJETIVOS)
+SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
+SHEET_NAME = "BD_ANALISIS_SEMANAL"
 
-    df_analisis["Fecha"] = pd.to_datetime(df_analisis["Fecha"])
-    df_obj["Fecha"] = pd.to_datetime(df_obj["Fecha"])
+url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
 
-    return df_analisis, df_obj
+df = pd.read_csv(url)
 
-df, df_obj = load_data()
+df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
 
-# ----------------------------
-# LOGIN SIMPLE
-# ----------------------------
+# -----------------------------
+# SIDEBAR – LOGIN
+# -----------------------------
 
 st.sidebar.title("🔐 Acceso")
 
 rol = st.sidebar.selectbox("Selecciona tu rol", ["Líder", "Supervisor"])
 
-if rol == "Líder":
-    dni_input = st.sidebar.text_input("Ingresa tu DNI")
-    acceso = dni_input in df["DNI_Lider"].astype(str).unique()
-else:
-    clave = st.sidebar.text_input("Clave supervisor", type="password")
-    acceso = clave == "super123"
+dni_input = st.sidebar.text_input("Ingresa tu DNI")
 
-if not acceso:
-    st.warning("Ingresa credenciales válidas.")
-    st.stop()
+st.sidebar.markdown("---")
 
-# ----------------------------
+fecha_inicio = st.sidebar.date_input("Desde", df["Fecha"].min())
+fecha_fin = st.sidebar.date_input("Hasta", df["Fecha"].max())
+
+# -----------------------------
 # FILTROS
-# ----------------------------
+# -----------------------------
 
-st.sidebar.title("🎯 Filtros")
-
-fecha_min = df["Fecha"].min()
-fecha_max = df["Fecha"].max()
-
-rango_fechas = st.sidebar.date_input(
-    "Rango de fechas",
-    [fecha_min, fecha_max]
-)
-
-df = df[(df["Fecha"] >= pd.to_datetime(rango_fechas[0])) &
-        (df["Fecha"] <= pd.to_datetime(rango_fechas[1]))]
+df = df[(df["Fecha"] >= pd.to_datetime(fecha_inicio)) &
+        (df["Fecha"] <= pd.to_datetime(fecha_fin))]
 
 if rol == "Líder":
     df = df[df["DNI_Lider"].astype(str) == dni_input]
 
-# ----------------------------
-# KPIs
-# ----------------------------
+# -----------------------------
+# VALIDACIÓN LOGIN
+# -----------------------------
 
-st.title("📊 Dashboard de Líderes")
+if rol == "Líder" and dni_input == "":
+    st.warning("Ingresa tu DNI para continuar.")
+    st.stop()
+
+if rol == "Líder" and df.empty:
+    st.error("No se encontraron registros para este DNI.")
+    st.stop()
+
+# -----------------------------
+# TÍTULO
+# -----------------------------
+
+st.title("📊 Dashboard Ejecutivo de Líderes")
+
+# -----------------------------
+# KPIs
+# -----------------------------
+
+total_asistencia = df["Asistencia_Dominical_Equipo"].sum()
+
+total_eventos = df["Evento_Realizado"].sum()
+
+total_reuniones = df["Reunion_Realizada"].sum()
+
+total_programacion = df["Cumplio_Programacion"].sum()
+total_registros = len(df)
+
+if total_registros > 0:
+    cumplimiento = round((total_programacion / total_registros) * 100, 1)
+else:
+    cumplimiento = 0
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    asistencia_total = df["Asistencia_Dominical_Equipo"].sum()
-    st.metric("👥 Asistencia Total", int(asistencia_total))
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4>👥 Asistencia Total</h4>
+        <h2>{int(total_asistencia)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
-    eventos_total = df["Evento_Realizado"].sum()
-    st.metric("🔥 Eventos Espirituales", int(eventos_total))
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4>🔥 Eventos Espirituales</h4>
+        <h2>{int(total_eventos)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col3:
-    reuniones = df["Reunion_Realizada"].sum()
-    st.metric("📅 Reuniones Realizadas", int(reuniones))
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4>📅 Reuniones</h4>
+        <h2>{int(total_reuniones)}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col4:
-    cumplimiento = df["Cumplio_Programacion"].mean() * 100
-    st.metric("🎯 % Cumplimiento", f"{cumplimiento:.1f}%")
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4>🎯 Cumplimiento</h4>
+        <h2>{cumplimiento}%</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# ----------------------------
+# -----------------------------
 # GRÁFICOS
-# ----------------------------
+# -----------------------------
 
 colA, colB = st.columns(2)
 
 with colA:
-    st.subheader("📈 Tendencia Asistencia")
-    fig = px.line(
-        df.groupby("Fecha")["Asistencia_Dominical_Equipo"].sum().reset_index(),
-        x="Fecha",
-        y="Asistencia_Dominical_Equipo",
-        markers=True
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    st.subheader("📈 Tendencia de Asistencia")
+    asistencia_por_fecha = df.groupby("Fecha")["Asistencia_Dominical_Equipo"].sum().reset_index()
+    fig1 = px.line(asistencia_por_fecha,
+                   x="Fecha",
+                   y="Asistencia_Dominical_Equipo",
+                   markers=True)
+    fig1.update_layout(template="plotly_dark")
+    st.plotly_chart(fig1, use_container_width=True)
 
 with colB:
     st.subheader("🏆 Ranking Líderes")
-    ranking = df.groupby("NombreCompleto")["Cumplio_Programacion"].mean().reset_index()
-    ranking = ranking.sort_values("Cumplio_Programacion", ascending=False)
-
-    fig2 = px.bar(
-        ranking,
-        x="NombreCompleto",
-        y="Cumplio_Programacion",
-    )
+    ranking = df.groupby("NombreCompleto")["Cumplio_Programacion"].sum().reset_index()
+    fig2 = px.bar(ranking,
+                  x="NombreCompleto",
+                  y="Cumplio_Programacion")
+    fig2.update_layout(template="plotly_dark")
     st.plotly_chart(fig2, use_container_width=True)
 
 st.markdown("---")
 
-# ----------------------------
-# AVANCE OBJETIVOS
-# ----------------------------
+# -----------------------------
+# TABLA DETALLE
+# -----------------------------
 
-st.subheader("🚀 Avance de Objetivos")
-
-if rol == "Líder":
-    df_obj = df_obj[df_obj["DNI_Lider"].astype(str) == dni_input]
-
-avance_obj = df_obj.groupby("ObjetivoID")["Avance"].sum().reset_index()
-
-fig3 = px.bar(
-    avance_obj,
-    x="ObjetivoID",
-    y="Avance",
-)
-
-st.plotly_chart(fig3, use_container_width=True)
-
-st.markdown("---")
-
-st.dataframe(df)
+st.subheader("📋 Detalle de Registros")
+st.dataframe(df.sort_values("Fecha", ascending=False), use_container_width=True)
