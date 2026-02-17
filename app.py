@@ -1,195 +1,139 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
+import requests
+from datetime import datetime
 
-# --------------------------------------------------
 # CONFIGURACIÓN
-# --------------------------------------------------
+st.set_page_config(page_title="Dashboard IELA", layout="wide")
 
-st.set_page_config(
-    page_title="Panel Ejecutivo",
-    layout="wide"
-)
+SPREADSHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 
-# --------------------------------------------------
-# CSS PROFESIONAL IGLESIA
-# --------------------------------------------------
-
+# ESTILO DARK PROFESIONAL
 st.markdown("""
 <style>
-
-html, body, [data-testid="stAppViewContainer"] {
-    background-color: #0b1120;
-    color: #f8fafc;
-    font-family: 'Segoe UI', sans-serif;
+body {
+    background-color: #0F172A;
+    color: #F1F5F9;
 }
-
-[data-testid="stSidebar"] {
-    background-color: #111827;
+.main {
+    background-color: #0F172A;
 }
-
-h1 {
-    font-size: 42px !important;
-    font-weight: 600 !important;
-    letter-spacing: 1px;
-}
-
-h2, h3 {
-    font-weight: 500 !important;
-}
-
 .card {
-    background: linear-gradient(145deg, #111827, #1f2937);
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 0 25px rgba(99,102,241,0.25);
-    text-align: center;
+    background-color: #1E293B;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
 }
-
-.card h3 {
-    font-size: 16px;
-    opacity: 0.7;
+.metric-title {
+    font-size: 14px;
+    color: #94A3B8;
 }
-
-.card h1 {
-    font-size: 32px;
-    margin-top: 10px;
+.metric-value {
+    font-size: 28px;
+    font-weight: bold;
 }
-
-.stDataFrame {
-    background-color: #111827;
+.progress-container {
+    background-color: #334155;
+    border-radius: 10px;
+    height: 12px;
 }
-
+.progress-bar {
+    height: 12px;
+    border-radius: 10px;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# DATOS
-# --------------------------------------------------
+# FUNCION PARA LEER GOOGLE SHEETS PUBLICO
+def load_sheet(sheet_name):
+    url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+    return pd.read_csv(url)
 
-SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
-SHEET_NAME = "BD_ANALISIS_SEMANAL"
+# CARGAR DATA
+df = load_sheet("BD_ANALISIS_SEMANAL")
+df_obj = load_sheet("OBJETIVOS_DEL_LIDER")
+df_event = load_sheet("EVENTOS_ESPIRITUALES")
+df_lideres = load_sheet("BD_LIDERES")
 
-url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
-
-df = pd.read_csv(url)
-df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
-
-# --------------------------------------------------
-# SIDEBAR
-# --------------------------------------------------
-
-st.sidebar.title("ACCESO")
-
-rol = st.sidebar.selectbox("Rol", ["Líder", "Supervisor"])
-dni = st.sidebar.text_input("DNI")
-
-st.sidebar.markdown("---")
-
-fecha_inicio = st.sidebar.date_input("Desde", df["Fecha"].min())
-fecha_fin = st.sidebar.date_input("Hasta", df["Fecha"].max())
-
-df = df[(df["Fecha"] >= pd.to_datetime(fecha_inicio)) &
-        (df["Fecha"] <= pd.to_datetime(fecha_fin))]
+# LOGIN
+st.sidebar.title("Acceso")
+rol = st.sidebar.selectbox("Selecciona tu rol", ["Líder", "Supervisor"])
 
 if rol == "Líder":
-    df = df[df["DNI_Lider"].astype(str) == dni]
+    dni = st.sidebar.text_input("Ingresa tu DNI")
+else:
+    password = st.sidebar.text_input("Contraseña Supervisor", type="password")
+    if password == "INTIMOSIELA2026":
+        dni = st.sidebar.selectbox("Selecciona líder", df_lideres["DNI_Lider"])
+    else:
+        st.stop()
 
-if rol == "Líder" and dni == "":
-    st.warning("Ingresa tu DNI")
-    st.stop()
+# FILTRO FECHA
+st.sidebar.title("Filtros")
+fecha_inicio = st.sidebar.date_input("Desde")
+fecha_fin = st.sidebar.date_input("Hasta")
 
-# --------------------------------------------------
-# TITULO
-# --------------------------------------------------
+if dni:
+    df_filtrado = df[df["DNI_Lider"] == int(dni)]
+    df_filtrado["Fecha"] = pd.to_datetime(df_filtrado["Fecha"])
+    df_filtrado = df_filtrado[
+        (df_filtrado["Fecha"] >= pd.to_datetime(fecha_inicio)) &
+        (df_filtrado["Fecha"] <= pd.to_datetime(fecha_fin))
+    ]
 
-st.title("Panel Ejecutivo de Liderazgo")
+    info = df_lideres[df_lideres["DNI_Lider"] == int(dni)].iloc[0]
 
-# --------------------------------------------------
-# KPIs
-# --------------------------------------------------
-
-total_asistencia = df["Asistencia_Dominical_Equipo"].sum()
-total_eventos = df["Evento_Realizado"].sum()
-total_reuniones = df["Reunion_Realizada"].sum()
-
-total_registros = len(df)
-cumplimiento = 0
-
-if total_registros > 0:
-    cumplimiento = round((df["Cumplio_Programacion"].sum() / total_registros) * 100, 1)
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
+    # HEADER
     st.markdown(f"""
-    <div class="card">
-        <h3>Asistencia Total</h3>
-        <h1>{int(total_asistencia)}</h1>
-    </div>
+    <h1 style='color:#F1F5F9;'>Dashboard de Liderazgo</h1>
+    <p style='color:#94A3B8;'>
+    {info["NombreCompleto"]} | {info["EntidadTipo"]} | {info["Proceso"]}
+    </p>
     """, unsafe_allow_html=True)
 
-with col2:
-    st.markdown(f"""
-    <div class="card">
-        <h3>Eventos Espirituales</h3>
-        <h1>{int(total_eventos)}</h1>
-    </div>
-    """, unsafe_allow_html=True)
+    # KPIS
+    col1, col2, col3, col4 = st.columns(4)
 
-with col3:
-    st.markdown(f"""
-    <div class="card">
-        <h3>Reuniones Realizadas</h3>
-        <h1>{int(total_reuniones)}</h1>
-    </div>
-    """, unsafe_allow_html=True)
+    asistencia = df_filtrado["Asistencia_Total"].sum()
+    eventos = df_filtrado["Evento_Realizado"].sum()
+    reuniones = df_filtrado["Reunion_Realizada"].sum()
+    convertidos = df_filtrado["Conversiones"].sum()
 
-with col4:
-    st.markdown(f"""
-    <div class="card">
-        <h3>Cumplimiento</h3>
-        <h1>{cumplimiento}%</h1>
-    </div>
-    """, unsafe_allow_html=True)
+    with col1:
+        st.markdown(f"<div class='card'><div class='metric-title'>Asistencia Total</div><div class='metric-value'>{int(asistencia)}</div></div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"<div class='card'><div class='metric-title'>Eventos Realizados</div><div class='metric-value'>{int(eventos)}</div></div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"<div class='card'><div class='metric-title'>Reuniones</div><div class='metric-value'>{int(reuniones)}</div></div>", unsafe_allow_html=True)
+    with col4:
+        st.markdown(f"<div class='card'><div class='metric-title'>Convertidos</div><div class='metric-value'>{int(convertidos)}</div></div>", unsafe_allow_html=True)
 
-st.markdown("---")
+    st.markdown("---")
 
-# --------------------------------------------------
-# GRAFICO TENDENCIA
-# --------------------------------------------------
+    # OBJETIVOS
+    st.subheader("Avance de Objetivos")
 
-st.subheader("Tendencia de Asistencia")
+    objetivos = df_obj[df_obj["DNI_Lider"] == int(dni)]
 
-asistencia = df.groupby("Fecha")["Asistencia_Dominical_Equipo"].sum().reset_index()
+    for _, row in objetivos.iterrows():
+        meta = row["MetaAnual"]
+        ejecutado = df_filtrado["Avance"].sum()
+        porcentaje = min(int((ejecutado/meta)*100), 100) if meta > 0 else 0
 
-fig = go.Figure()
+        color = "#10B981" if porcentaje >= 80 else "#F59E0B" if porcentaje >= 50 else "#EF4444"
 
-fig.add_trace(go.Scatter(
-    x=asistencia["Fecha"],
-    y=asistencia["Asistencia_Dominical_Equipo"],
-    mode='lines+markers',
-    line=dict(color="#6366F1", width=4),
-    marker=dict(size=8)
-))
+        st.markdown(f"""
+        <div class='card'>
+            <div class='metric-title'>{row["NombreObjetivo"]}</div>
+            <div class='progress-container'>
+                <div class='progress-bar' style='width:{porcentaje}%; background:{color};'></div>
+            </div>
+            <div style='margin-top:8px'>{porcentaje}%</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-fig.update_layout(
-    plot_bgcolor="#0b1120",
-    paper_bgcolor="#0b1120",
-    font=dict(color="#f8fafc"),
-    xaxis=dict(showgrid=False),
-    yaxis=dict(showgrid=True, gridcolor="#1f2937")
-)
+    st.markdown("---")
 
-st.plotly_chart(fig, use_container_width=True)
-
-# --------------------------------------------------
-# TABLA
-# --------------------------------------------------
-
-st.subheader("Detalle de Registros")
-
-st.dataframe(
-    df.sort_values("Fecha", ascending=False),
-    use_container_width=True
-)
+    # GRAFICO ASISTENCIA
+    st.subheader("Tendencia Asistencia")
+    st.line_chart(df_filtrado.set_index("Fecha")["Asistencia_Total"])
