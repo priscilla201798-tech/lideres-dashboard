@@ -72,7 +72,7 @@ label, .stSelectbox label, .stDateInput label {
 # =========================
 with st.sidebar:
 
-    st.image("logo_blanco.png", width=140)
+    st.image("logo.png", width=140)
 
     st.markdown(
         "<div class='sidebar-title'>Iglesia Evangélica de Liberación y Avivamiento</div>",
