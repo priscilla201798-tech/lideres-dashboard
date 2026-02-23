@@ -148,21 +148,39 @@ c6.metric("👥 Participantes Eventos", df_eventos["Participantes"].sum())
 st.divider()
 
 # ==============================
-# PARTE 1 – ASISTENCIAS
+# PARTE 1 – ASISTENCIA DOMINICAL
 # ==============================
 
-st.subheader("📊 Asistencias Dominicales")
+st.subheader("📊 Asistencia Dominical (Domingos Asistidos)")
 
 if not df_asistencia.empty:
-    asistencia_equipo = df_asistencia.groupby("Equipo").size().reset_index(name="Domingos")
 
-    fig1 = px.bar(
-        asistencia_equipo,
-        x="Equipo",
-        y="Domingos",
-        color_discrete_sequence=[AZUL2]
+    # Contar domingos únicos por persona
+    asistencia_domingos = (
+        df_asistencia
+        .groupby(["Equipo"])
+        .size()
+        .reset_index(name="Domingos_Asistidos")
+        .sort_values("Domingos_Asistidos", ascending=False)
     )
-    st.plotly_chart(fig1, use_container_width=True)
+
+    fig_asistencia = px.bar(
+        asistencia_domingos,
+        x="Equipo",
+        y="Domingos_Asistidos",
+        text="Domingos_Asistidos",
+        color_discrete_sequence=["#1D4E89"]
+    )
+
+    fig_asistencia.update_layout(
+        xaxis_title="Equipos",
+        yaxis_title="Cantidad de Domingos Asistidos",
+        plot_bgcolor="white"
+    )
+
+    fig_asistencia.update_traces(textposition="outside")
+
+    st.plotly_chart(fig_asistencia, use_container_width=True)
 
 # ==============================
 # PARTE 2 – EVENTOS ESPIRITUALES
