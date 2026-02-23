@@ -2,8 +2,25 @@ import streamlit as st
 import pandas as pd
 import json
 import plotly.express as px
+from datetime import datetime
 
 st.set_page_config(layout="wide")
+
+# ==============================
+# 🎨 ESTILO INSTITUCIONAL
+# ==============================
+
+st.markdown("""
+<style>
+.metric-container {
+    background-color: #0F2D52;
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ==============================
 # CONFIG GOOGLE SHEETS
@@ -13,10 +30,6 @@ SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 GID_REGISTROS = "632350714"
 GID_EVENTOS = "1679434742"
 GID_OBJETIVOS = "236814605"
-
-# ==============================
-# CARGA DATOS
-# ==============================
 
 @st.cache_data
 def cargar_sheet(gid):
@@ -32,7 +45,7 @@ def aplanar_registros(df):
 
     for _, row in df.iterrows():
 
-        fecha = row["Fecha"]
+        fecha = pd.to_datetime(row["Fecha"])
         key = row["Key"]
         dni = extraer_dni_desde_key(key)
 
@@ -41,12 +54,11 @@ def aplanar_registros(df):
         except:
             continue
 
-        fecha_dt = pd.to_datetime(fecha)
-        año = fecha_dt.year
-        mes = fecha_dt.month
+        año = fecha.year
+        mes = fecha.month
 
         resumen.append({
-            "Fecha": fecha_dt,
+            "Fecha": fecha,
             "Año": año,
             "Mes": mes,
             "DNI_Lider": dni,
@@ -58,7 +70,7 @@ def aplanar_registros(df):
 
         if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
             eventos.append({
-                "Fecha": fecha_dt,
+                "Fecha": fecha,
                 "Año": año,
                 "Mes": mes,
                 "DNI_Lider": dni,
@@ -68,7 +80,7 @@ def aplanar_registros(df):
 
         if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
             objetivos.append({
-                "Fecha": fecha_dt,
+                "Fecha": fecha,
                 "Año": año,
                 "Mes": mes,
                 "DNI_Lider": dni,
@@ -84,8 +96,7 @@ def aplanar_registros(df):
 
         for persona in asistentes:
             asistencia.append({
-                "Fecha": fecha_dt,
-                "Año": año,
+                "Fecha": fecha,
                 "Mes": mes,
                 "DNI_Lider": dni,
                 "Persona": persona
@@ -117,7 +128,6 @@ if st.session_state.dni_login is None:
     dni_input = st.text_input("Ingrese su DNI")
 
     if st.button("Ingresar"):
-
         if dni_input in df_resumen["DNI_Lider"].unique():
             st.session_state.dni_login = dni_input
             st.rerun()
@@ -129,20 +139,34 @@ if st.session_state.dni_login is None:
 dni = st.session_state.dni_login
 
 # ==============================
-# FILTRAR POR LIDER
+# FILTROS DE / HASTA
 # ==============================
 
-df_resumen = df_resumen[df_resumen["DNI_Lider"] == dni]
-df_eventos = df_eventos[df_eventos["DNI_Lider"] == dni]
+st.sidebar.success(f"DNI: {dni}")
+
+fecha_min = df_resumen["Fecha"].min()
+fecha_max = df_resumen["Fecha"].max()
+
+desde = st.sidebar.date_input("Desde", fecha_min)
+hasta = st.sidebar.date_input("Hasta", fecha_max)
+
+df_resumen = df_resumen[(df_resumen["DNI_Lider"] == dni) &
+                        (df_resumen["Fecha"] >= pd.to_datetime(desde)) &
+                        (df_resumen["Fecha"] <= pd.to_datetime(hasta))]
+
+df_eventos = df_eventos[(df_eventos["DNI_Lider"] == dni) &
+                        (df_eventos["Fecha"] >= pd.to_datetime(desde)) &
+                        (df_eventos["Fecha"] <= pd.to_datetime(hasta))]
+
 df_objetivos = df_objetivos[df_objetivos["DNI_Lider"] == dni]
 df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == int(dni)]
 df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == int(dni)]
 
-st.title("📊 Mi Dashboard Ministerial")
-
 # ==============================
 # TARJETAS
 # ==============================
+
+st.title("📊 Dashboard Institucional")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -157,10 +181,10 @@ st.divider()
 # MATRIZ EVENTOS
 # ==============================
 
+meses = range(1,13)
 tabla = []
 
-for mes in range(1,13):
-
+for mes in meses:
     fila = {"Mes": mes}
 
     for tipo in ["AYUNO","VIGILIA"]:
@@ -170,7 +194,8 @@ for mes in range(1,13):
         else:
             prog = df_plan_eventos[df_plan_eventos["Mes"] == mes]["Vigilias_Programadas"].sum()
 
-        ejec = df_eventos[(df_eventos["Mes"] == mes) & (df_eventos["Tipo_Evento"] == tipo)].shape[0]
+        ejec = df_eventos[(df_eventos["Mes"] == mes) &
+                          (df_eventos["Tipo_Evento"] == tipo)].shape[0]
 
         fila[tipo] = f"{ejec}/{prog}"
 
@@ -182,10 +207,12 @@ def color(val):
     ejec, prog = val.split("/")
     if int(prog) == 0:
         return ""
-    return "background-color: #b6f2c2" if int(ejec) >= int(prog) else "background-color: #f5b6b6"
+    return "background-color: #1B8A5A; color: white;" if int(ejec) >= int(prog) \
+        else "background-color: #C0392B; color: white;"
 
 st.subheader("📅 Cumplimiento Eventos")
-st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]))
+st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]),
+             height=350)
 
 # ==============================
 # LINEA PARTICIPANTES
@@ -197,7 +224,8 @@ if not df_eventos.empty:
         x="Mes",
         y="Participantes",
         color="Tipo_Evento",
-        markers=True
+        markers=True,
+        color_discrete_sequence=["#0F2D52","#1B8A5A"]
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -206,28 +234,32 @@ if not df_eventos.empty:
 # ==============================
 
 if not df_asistencia.empty:
+    asistencia_persona = df_asistencia.groupby("Persona").size().reset_index(name="Asistencias")
+
     fig2 = px.bar(
-        df_asistencia.groupby("Persona").size().reset_index(name="Asistencias"),
+        asistencia_persona,
         x="Persona",
         y="Asistencias",
-        color="Persona"
+        color_discrete_sequence=["#0F2D52"]
     )
+
     st.plotly_chart(fig2, use_container_width=True)
 
 # ==============================
 # OBJETIVOS
 # ==============================
 
-st.subheader("🎯 Objetivos")
+st.subheader("🎯 Objetivos Estratégicos")
 
 for _, row in df_plan_obj.iterrows():
 
-    objetivo = row["ObjetivoID"]
+    objetivo_id = row["ObjetivoID"]
+    nombre = row["NombreObjetivo"]
     meta = row["MetaAnual"]
 
-    ejecutado = df_objetivos[df_objetivos["Objetivo"].str.contains(objetivo, na=False)]["Avance"].sum()
+    ejecutado = df_objetivos[df_objetivos["Objetivo"].str.contains(objetivo_id, na=False)]["Avance"].sum()
 
     progreso = min(ejecutado / meta if meta > 0 else 0, 1)
 
-    st.write(f"**{objetivo}** ({ejecutado}/{meta})")
+    st.write(f"**{objetivo_id} - {nombre}**  ({ejecutado}/{meta})")
     st.progress(progreso)
