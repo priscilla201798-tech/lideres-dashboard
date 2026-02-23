@@ -92,32 +92,41 @@ def aplanar(df):
     )
 
 # ==============================
-# LOGIN
+# SIDEBAR + LOGIN
 # ==============================
 
-df_raw = cargar_sheet(GID_REGISTROS)
-df_plan_eventos = cargar_sheet(GID_EVENTOS)
-df_plan_obj = cargar_sheet(GID_OBJETIVOS)
+st.sidebar.markdown("""
+<div style="font-size:18px; font-weight:600; line-height:1.4;">
+IGLESIA EVANGÉLICA<br>
+DE LIBERACIÓN Y AVIVAMIENTO
+</div>
+""", unsafe_allow_html=True)
 
-df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar(df_raw)
+st.sidebar.markdown("---")
 
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
 if st.session_state.dni is None:
-    st.title("🔐 Acceso Líder")
-    dni_input = st.text_input("Ingrese su DNI")
 
-    if st.button("Ingresar"):
+    dni_input = st.sidebar.text_input("Ingrese su DNI")
+
+    if st.sidebar.button("Ingresar"):
         if dni_input in df_resumen["DNI"].unique():
             st.session_state.dni = dni_input
             st.rerun()
         else:
-            st.error("DNI no encontrado")
+            st.sidebar.error("DNI no encontrado")
 
     st.stop()
 
 dni = st.session_state.dni
+
+st.sidebar.success(f"DNI: {dni}")
+
+if st.sidebar.button("Cerrar sesión"):
+    st.session_state.dni = None
+    st.rerun()
 
 # ==============================
 # FILTRAR
@@ -173,8 +182,10 @@ if not df_asistencia.empty:
 
     fig_asistencia.update_layout(
         xaxis_title="Equipos",
-        yaxis_title="Domingos Asistidos",
-        plot_bgcolor="white"
+        yaxis_title="Cantidad de Domingos Asistidos",
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="white")
     )
 
     fig_asistencia.update_traces(textposition="outside")
