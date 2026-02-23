@@ -6,30 +6,14 @@ import plotly.express as px
 st.set_page_config(layout="wide")
 
 # ==============================
-# 🎨 ESTILO PROFESIONAL
+# 🎨 COLORES PROFESIONALES
 # ==============================
 
-AZUL = "#102A43"
-AZUL2 = "#1F4E79"
-VERDE = "#16A34A"
-ROJO = "#DC2626"
-GRIS = "#475569"
-
-st.markdown(f"""
-<style>
-section[data-testid="stSidebar"] {{
-    background-color: {AZUL};
-}}
-section[data-testid="stSidebar"] * {{
-    color: white !important;
-}}
-.sidebar-title {{
-    font-size:18px;
-    font-weight:600;
-    line-height:1.4;
-}}
-</style>
-""", unsafe_allow_html=True)
+AZUL = "#0B3C5D"
+AZUL2 = "#1D4E89"
+VERDE = "#1E8449"
+ROJO = "#C0392B"
+GRIS = "#6B7280"
 
 # ==============================
 # CONFIG GOOGLE SHEETS
@@ -121,7 +105,6 @@ if "dni" not in st.session_state:
     st.session_state.dni = None
 
 if st.session_state.dni is None:
-
     st.title("🔐 Acceso Líder")
     dni_input = st.text_input("Ingrese su DNI")
 
@@ -137,25 +120,7 @@ if st.session_state.dni is None:
 dni = st.session_state.dni
 
 # ==============================
-# SIDEBAR
-# ==============================
-
-st.sidebar.markdown("""
-<div class='sidebar-title'>
-IGLESIA EVANGÉLICA<br>
-DE LIBERACIÓN Y AVIVAMIENTO
-</div>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("---")
-st.sidebar.success(f"DNI: {dni}")
-
-if st.sidebar.button("Cerrar sesión"):
-    st.session_state.dni = None
-    st.rerun()
-
-# ==============================
-# FILTRAR POR LIDER
+# FILTRAR
 # ==============================
 
 df_resumen = df_resumen[df_resumen["DNI"] == dni]
@@ -168,13 +133,27 @@ df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == int(dni)]
 st.title("📊 Dashboard Institucional")
 
 # ==============================
-# PARTE 1 – ASISTENCIAS DOMINICALES
+# 🔝 TARJETAS SUPERIORES
+# ==============================
+
+c1, c2, c3, c4, c5, c6 = st.columns(6)
+
+c1.metric("✨ Convertidos", df_resumen["Convertidos"].sum())
+c2.metric("🤝 Reconciliados", df_resumen["Reconciliados"].sum())
+c3.metric("💰 Ofrendas", round(df_resumen["Ofrenda"].sum(),2))
+c4.metric("📅 Reuniones", len(df_resumen))
+c5.metric("🔥 Eventos", len(df_eventos))
+c6.metric("👥 Participantes Eventos", df_eventos["Participantes"].sum())
+
+st.divider()
+
+# ==============================
+# PARTE 1 – ASISTENCIAS
 # ==============================
 
 st.subheader("📊 Asistencias Dominicales")
 
 if not df_asistencia.empty:
-
     asistencia_equipo = df_asistencia.groupby("Equipo").size().reset_index(name="Domingos")
 
     fig1 = px.bar(
@@ -183,39 +162,37 @@ if not df_asistencia.empty:
         y="Domingos",
         color_discrete_sequence=[AZUL2]
     )
-
-    fig1.update_layout(
-        xaxis_title="Equipos",
-        yaxis_title="Domingos Asistidos"
-    )
-
     st.plotly_chart(fig1, use_container_width=True)
 
 # ==============================
 # PARTE 2 – EVENTOS ESPIRITUALES
 # ==============================
 
-st.subheader("📅 Cumplimiento Eventos (Enero - Marzo)")
+st.subheader("📅 Cumplimiento Anual Eventos")
 
-meses_map = {1:"Enero",2:"Febrero",3:"Marzo"}
+meses = {
+1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
+5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",
+9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"
+}
 
 tabla = []
 
-for tipo in ["AYUNO", "VIGILIA"]:
+for mes in range(1,13):
 
-    fila = {"Tipo": tipo}
+    fila = {"Mes": meses[mes]}
 
-    for mes in [1,2,3]:
+    for tipo in ["AYUNO", "VIGILIA"]:
 
         if tipo == "AYUNO":
-            prog = df_plan_eventos[df_plan_eventos["Mes"] == meses_map[mes]]["Ayunos_Programados"].sum()
+            prog = df_plan_eventos[df_plan_eventos["Mes"] == meses[mes]]["Ayunos_Programados"].sum()
         else:
-            prog = df_plan_eventos[df_plan_eventos["Mes"] == meses_map[mes]]["Vigilias_Programadas"].sum()
+            prog = df_plan_eventos[df_plan_eventos["Mes"] == meses[mes]]["Vigilias_Programadas"].sum()
 
         ejec = df_eventos[(df_eventos["Mes"] == mes) &
                           (df_eventos["Tipo"] == tipo)].shape[0]
 
-        fila[meses_map[mes]] = f"{ejec}/{prog}"
+        fila[tipo] = f"{ejec}/{prog}"
 
     tabla.append(fila)
 
@@ -228,14 +205,16 @@ def color(val):
     return f"background-color:{VERDE}; color:white;" if int(ejec) >= int(prog) \
         else f"background-color:{ROJO}; color:white;"
 
-st.dataframe(df_tabla.style.applymap(color, subset=df_tabla.columns[1:]),
-             height=180)
+st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]))
 
-# Línea asistencia eventos
+# 🔹 DIAGRAMA LINEA DOBLE (CORREGIDO)
+
 if not df_eventos.empty:
 
+    eventos_linea = df_eventos.groupby(["Mes","Tipo"])["Participantes"].sum().reset_index()
+
     fig2 = px.line(
-        df_eventos.groupby(["Mes","Tipo"])["Participantes"].sum().reset_index(),
+        eventos_linea,
         x="Mes",
         y="Participantes",
         color="Tipo",
@@ -244,8 +223,11 @@ if not df_eventos.empty:
     )
 
     fig2.update_layout(
-        xaxis_title="Mes",
-        yaxis_title="Participantes"
+        xaxis=dict(
+            tickmode='array',
+            tickvals=list(meses.keys()),
+            ticktext=list(meses.values())
+        )
     )
 
     st.plotly_chart(fig2, use_container_width=True)
@@ -258,15 +240,15 @@ st.subheader("🎯 Objetivos Estratégicos")
 
 for _, row in df_plan_obj.iterrows():
 
-    objetivo_id = row["ObjetivoID"]
+    objetivo = row["ObjetivoID"]
     nombre = row["NombreObjetivo"]
     meta = int(row["MetaAnual"])
 
     ejecutado = df_objetivos[
-        df_objetivos["Objetivo"].str.contains(objetivo_id, na=False)
+        df_objetivos["Objetivo"].str.contains(objetivo, na=False)
     ]["Avance"].sum()
 
     progreso = min(ejecutado / meta if meta > 0 else 0, 1)
 
-    st.write(f"**{objetivo_id} - {nombre} ({ejecutado}/{meta})**")
+    st.write(f"**{objetivo} - {nombre} ({ejecutado}/{meta})**")
     st.progress(progreso)
