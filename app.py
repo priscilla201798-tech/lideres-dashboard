@@ -10,23 +10,25 @@ st.set_page_config(layout="wide")
 # ==============================
 
 SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
-GID = "632350714"
+GID_REGISTROS = "632350714"
+GID_EVENTOS = "1679434742"
+GID_OBJETIVOS = "236814605"
+
+# ==============================
+# CARGA DATOS
+# ==============================
 
 @st.cache_data
-def cargar_data():
-    url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={GID}"
-    df = pd.read_csv(url)
-    return df
+def cargar_sheet(gid):
+    url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={gid}"
+    return pd.read_csv(url)
 
 def extraer_dni_desde_key(key):
     return str(key).split("_")[0]
 
 def aplanar_registros(df):
 
-    resumen = []
-    eventos = []
-    objetivos = []
-    asistencia = []
+    resumen, eventos, objetivos, asistencia = [], [], [], []
 
     for _, row in df.iterrows():
 
@@ -100,7 +102,10 @@ def aplanar_registros(df):
 # LOGIN
 # ==============================
 
-df_raw = cargar_data()
+df_raw = cargar_sheet(GID_REGISTROS)
+df_plan_eventos = cargar_sheet(GID_EVENTOS)
+df_plan_obj = cargar_sheet(GID_OBJETIVOS)
+
 df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar_registros(df_raw)
 
 if "dni_login" not in st.session_state:
@@ -109,72 +114,120 @@ if "dni_login" not in st.session_state:
 if st.session_state.dni_login is None:
 
     st.title("🔐 Acceso Líder")
-
     dni_input = st.text_input("Ingrese su DNI")
 
     if st.button("Ingresar"):
-
-        dni_input = dni_input.strip()
 
         if dni_input in df_resumen["DNI_Lider"].unique():
             st.session_state.dni_login = dni_input
             st.rerun()
         else:
-            st.error("DNI no encontrado.")
+            st.error("DNI no encontrado")
 
     st.stop()
 
-# ==============================
-# DASHBOARD FILTRADO
-# ==============================
-
 dni = st.session_state.dni_login
 
-st.sidebar.success(f"DNI conectado: {dni}")
-
-if st.sidebar.button("Cerrar sesión"):
-    st.session_state.dni_login = None
-    st.rerun()
+# ==============================
+# FILTRAR POR LIDER
+# ==============================
 
 df_resumen = df_resumen[df_resumen["DNI_Lider"] == dni]
 df_eventos = df_eventos[df_eventos["DNI_Lider"] == dni]
 df_objetivos = df_objetivos[df_objetivos["DNI_Lider"] == dni]
-df_asistencia = df_asistencia[df_asistencia["DNI_Lider"] == dni]
+df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == int(dni)]
+df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == int(dni)]
 
 st.title("📊 Mi Dashboard Ministerial")
+
+# ==============================
+# TARJETAS
+# ==============================
 
 col1, col2, col3, col4 = st.columns(4)
 
 col1.metric("✨ Convertidos", df_resumen["Convertidos"].sum())
 col2.metric("🤝 Reconciliados", df_resumen["Reconciliados"].sum())
-col3.metric("👥 Asistentes", df_resumen["Asistentes"].sum())
-col4.metric("💰 Ofrenda", round(df_resumen["Ofrenda"].sum(),2))
+col3.metric("💰 Ofrendas", round(df_resumen["Ofrenda"].sum(),2))
+col4.metric("📅 Reuniones", len(df_resumen))
 
 st.divider()
 
+# ==============================
+# MATRIZ EVENTOS
+# ==============================
+
+tabla = []
+
+for mes in range(1,13):
+
+    fila = {"Mes": mes}
+
+    for tipo in ["AYUNO","VIGILIA"]:
+
+        if tipo == "AYUNO":
+            prog = df_plan_eventos[df_plan_eventos["Mes"] == mes]["Ayunos_Programados"].sum()
+        else:
+            prog = df_plan_eventos[df_plan_eventos["Mes"] == mes]["Vigilias_Programadas"].sum()
+
+        ejec = df_eventos[(df_eventos["Mes"] == mes) & (df_eventos["Tipo_Evento"] == tipo)].shape[0]
+
+        fila[tipo] = f"{ejec}/{prog}"
+
+    tabla.append(fila)
+
+df_tabla = pd.DataFrame(tabla)
+
+def color(val):
+    ejec, prog = val.split("/")
+    if int(prog) == 0:
+        return ""
+    return "background-color: #b6f2c2" if int(ejec) >= int(prog) else "background-color: #f5b6b6"
+
+st.subheader("📅 Cumplimiento Eventos")
+st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]))
+
+# ==============================
+# LINEA PARTICIPANTES
+# ==============================
+
 if not df_eventos.empty:
-    fig = px.bar(
-        df_eventos.groupby("Mes").size().reset_index(name="Eventos"),
+    fig = px.line(
+        df_eventos.groupby(["Mes","Tipo_Evento"])["Participantes"].sum().reset_index(),
         x="Mes",
-        y="Eventos",
-        title="Eventos por mes"
+        y="Participantes",
+        color="Tipo_Evento",
+        markers=True
     )
     st.plotly_chart(fig, use_container_width=True)
 
-if not df_objetivos.empty:
-    fig2 = px.bar(
-        df_objetivos.groupby("Objetivo")["Avance"].sum().reset_index(),
-        x="Objetivo",
-        y="Avance",
-        title="Avance Objetivos"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+# ==============================
+# ASISTENCIA DOMINICAL
+# ==============================
 
 if not df_asistencia.empty:
-    fig3 = px.bar(
+    fig2 = px.bar(
         df_asistencia.groupby("Persona").size().reset_index(name="Asistencias"),
         x="Persona",
         y="Asistencias",
-        title="Asistencia Equipo"
+        color="Persona"
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
+
+# ==============================
+# OBJETIVOS
+# ==============================
+
+st.subheader("🎯 Objetivos")
+
+for _, row in df_plan_obj.iterrows():
+
+    objetivo = row["ObjetivoID"]
+    meta = row["MetaAnual"]
+
+    ejecutado = df_objetivos[df_objetivos["Objetivo"].str.contains(objetivo, na=False)]["Avance"].sum()
+
+    progreso = min(ejecutado / meta if meta > 0 else 0, 1)
+
+    st.write(f"**{objetivo}** ({ejecutado}/{meta})")
+    st.progress(progreso)
