@@ -2,23 +2,23 @@ import streamlit as st
 import pandas as pd
 import json
 import plotly.express as px
-from datetime import datetime
 
 st.set_page_config(layout="wide")
 
 # ==============================
-# 🎨 ESTILO INSTITUCIONAL
+# 🎨 COLORES INSTITUCIONALES
 # ==============================
 
-st.markdown("""
+AZUL = "#0F2D52"
+VERDE = "#1B8A5A"
+ROJO = "#C0392B"
+
+st.markdown(f"""
 <style>
-.metric-container {
-    background-color: #0F2D52;
-    padding: 15px;
-    border-radius: 10px;
+section[data-testid="stSidebar"] {{
+    background-color: {AZUL};
     color: white;
-    text-align: center;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -36,32 +36,29 @@ def cargar_sheet(gid):
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={gid}"
     return pd.read_csv(url)
 
-def extraer_dni_desde_key(key):
+def extraer_dni(key):
     return str(key).split("_")[0]
 
-def aplanar_registros(df):
+def aplanar(df):
 
     resumen, eventos, objetivos, asistencia = [], [], [], []
 
     for _, row in df.iterrows():
 
         fecha = pd.to_datetime(row["Fecha"])
-        key = row["Key"]
-        dni = extraer_dni_desde_key(key)
+        dni = extraer_dni(row["Key"])
 
         try:
             data = json.loads(row["RespuestasJSON"])
         except:
             continue
 
-        año = fecha.year
         mes = fecha.month
 
         resumen.append({
             "Fecha": fecha,
-            "Año": año,
             "Mes": mes,
-            "DNI_Lider": dni,
+            "DNI": dni,
             "Convertidos": int(data.get("¿Cuántas personas aceptaron a Cristo?", 0) or 0),
             "Reconciliados": int(data.get("¿Cuántas personas se reconciliaron con Cristo?", 0) or 0),
             "Asistentes": int(data.get("¿Cuántas personas asistieron en total?", 0) or 0),
@@ -70,20 +67,15 @@ def aplanar_registros(df):
 
         if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
             eventos.append({
-                "Fecha": fecha,
-                "Año": año,
                 "Mes": mes,
-                "DNI_Lider": dni,
-                "Tipo_Evento": data.get("¿Qué tipo de evento espiritual se realizó?", "").upper(),
+                "DNI": dni,
+                "Tipo": data.get("¿Qué tipo de evento espiritual se realizó?", "").upper(),
                 "Participantes": int(data.get("¿Cuántas personas participaron?", 0) or 0)
             })
 
         if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
             objetivos.append({
-                "Fecha": fecha,
-                "Año": año,
-                "Mes": mes,
-                "DNI_Lider": dni,
+                "DNI": dni,
                 "Objetivo": data.get("¿En qué objetivo deseas registrar avance?", ""),
                 "Avance": int(data.get("¿Cuánto avanzaste en este objetivo?", 0) or 0)
             })
@@ -96,10 +88,9 @@ def aplanar_registros(df):
 
         for persona in asistentes:
             asistencia.append({
-                "Fecha": fecha,
                 "Mes": mes,
-                "DNI_Lider": dni,
-                "Persona": persona
+                "DNI": dni,
+                "Equipo": persona
             })
 
     return (
@@ -117,77 +108,96 @@ df_raw = cargar_sheet(GID_REGISTROS)
 df_plan_eventos = cargar_sheet(GID_EVENTOS)
 df_plan_obj = cargar_sheet(GID_OBJETIVOS)
 
-df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar_registros(df_raw)
+df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar(df_raw)
 
-if "dni_login" not in st.session_state:
-    st.session_state.dni_login = None
+if "dni" not in st.session_state:
+    st.session_state.dni = None
 
-if st.session_state.dni_login is None:
-
+if st.session_state.dni is None:
     st.title("🔐 Acceso Líder")
     dni_input = st.text_input("Ingrese su DNI")
 
     if st.button("Ingresar"):
-        if dni_input in df_resumen["DNI_Lider"].unique():
-            st.session_state.dni_login = dni_input
+        if dni_input in df_resumen["DNI"].unique():
+            st.session_state.dni = dni_input
             st.rerun()
         else:
             st.error("DNI no encontrado")
 
     st.stop()
 
-dni = st.session_state.dni_login
+dni = st.session_state.dni
 
 # ==============================
-# FILTROS DE / HASTA
+# SIDEBAR
 # ==============================
 
+st.sidebar.title("IGLESIA EVANGÉLICA")
+st.sidebar.write("DE LIBERACIÓN Y AVIVAMIENTO")
+st.sidebar.markdown("---")
 st.sidebar.success(f"DNI: {dni}")
 
-fecha_min = df_resumen["Fecha"].min()
-fecha_max = df_resumen["Fecha"].max()
+if st.sidebar.button("Cerrar sesión"):
+    st.session_state.dni = None
+    st.rerun()
 
-desde = st.sidebar.date_input("Desde", fecha_min)
-hasta = st.sidebar.date_input("Hasta", fecha_max)
+# ==============================
+# FILTRAR
+# ==============================
 
-df_resumen = df_resumen[(df_resumen["DNI_Lider"] == dni) &
-                        (df_resumen["Fecha"] >= pd.to_datetime(desde)) &
-                        (df_resumen["Fecha"] <= pd.to_datetime(hasta))]
-
-df_eventos = df_eventos[(df_eventos["DNI_Lider"] == dni) &
-                        (df_eventos["Fecha"] >= pd.to_datetime(desde)) &
-                        (df_eventos["Fecha"] <= pd.to_datetime(hasta))]
-
-df_objetivos = df_objetivos[df_objetivos["DNI_Lider"] == dni]
+df_resumen = df_resumen[df_resumen["DNI"] == dni]
+df_eventos = df_eventos[df_eventos["DNI"] == dni]
+df_objetivos = df_objetivos[df_objetivos["DNI"] == dni]
+df_asistencia = df_asistencia[df_asistencia["DNI"] == dni]
 df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == int(dni)]
 df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == int(dni)]
 
 # ==============================
-# TARJETAS
+# TARJETAS SUPERIORES
 # ==============================
 
 st.title("📊 Dashboard Institucional")
 
-col1, col2, col3, col4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 
-col1.metric("✨ Convertidos", df_resumen["Convertidos"].sum())
-col2.metric("🤝 Reconciliados", df_resumen["Reconciliados"].sum())
-col3.metric("💰 Ofrendas", round(df_resumen["Ofrenda"].sum(),2))
-col4.metric("📅 Reuniones", len(df_resumen))
+c1.metric("✨ Convertidos", df_resumen["Convertidos"].sum())
+c2.metric("🤝 Reconciliados", df_resumen["Reconciliados"].sum())
+c3.metric("💰 Ofrendas", round(df_resumen["Ofrenda"].sum(),2))
+c4.metric("📅 Reuniones", len(df_resumen))
+c5.metric("👥 Asistentes", df_resumen["Asistentes"].sum())
 
 st.divider()
 
 # ==============================
-# MATRIZ EVENTOS
+# PARTE 1 – ASISTENCIA DOMINICAL
 # ==============================
 
-meses = range(1,13)
+st.subheader("📊 Asistencias Dominicales")
+
+if not df_asistencia.empty:
+    asistencia_equipo = df_asistencia.groupby("Equipo").size().reset_index(name="Domingos")
+
+    fig1 = px.bar(
+        asistencia_equipo,
+        x="Equipo",
+        y="Domingos",
+        color_discrete_sequence=[AZUL]
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+
+# ==============================
+# PARTE 2 – EVENTOS ESPIRITUALES
+# ==============================
+
+st.subheader("📅 Cumplimiento Eventos (Ene-Mar)")
+
 tabla = []
 
-for mes in meses:
-    fila = {"Mes": mes}
+for tipo in ["AYUNO", "VIGILIA"]:
 
-    for tipo in ["AYUNO","VIGILIA"]:
+    fila = {"Tipo": tipo}
+
+    for mes in [1,2,3]:
 
         if tipo == "AYUNO":
             prog = df_plan_eventos[df_plan_eventos["Mes"] == mes]["Ayunos_Programados"].sum()
@@ -195,9 +205,9 @@ for mes in meses:
             prog = df_plan_eventos[df_plan_eventos["Mes"] == mes]["Vigilias_Programadas"].sum()
 
         ejec = df_eventos[(df_eventos["Mes"] == mes) &
-                          (df_eventos["Tipo_Evento"] == tipo)].shape[0]
+                          (df_eventos["Tipo"] == tipo)].shape[0]
 
-        fila[tipo] = f"{ejec}/{prog}"
+        fila[f"Mes {mes}"] = f"{ejec}/{prog}"
 
     tabla.append(fila)
 
@@ -207,59 +217,41 @@ def color(val):
     ejec, prog = val.split("/")
     if int(prog) == 0:
         return ""
-    return "background-color: #1B8A5A; color: white;" if int(ejec) >= int(prog) \
-        else "background-color: #C0392B; color: white;"
+    return f"background-color: {VERDE}; color: white;" if int(ejec) >= int(prog) \
+        else f"background-color: {ROJO}; color: white;"
 
-st.subheader("📅 Cumplimiento Eventos")
-st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]),
-             height=350)
+st.dataframe(df_tabla.style.applymap(color, subset=df_tabla.columns[1:]),
+             height=200)
 
-# ==============================
-# LINEA PARTICIPANTES
-# ==============================
-
+# Línea asistencia eventos
 if not df_eventos.empty:
-    fig = px.line(
-        df_eventos.groupby(["Mes","Tipo_Evento"])["Participantes"].sum().reset_index(),
+    fig2 = px.line(
+        df_eventos.groupby(["Mes","Tipo"])["Participantes"].sum().reset_index(),
         x="Mes",
         y="Participantes",
-        color="Tipo_Evento",
+        color="Tipo",
         markers=True,
-        color_discrete_sequence=["#0F2D52","#1B8A5A"]
+        color_discrete_sequence=[AZUL, VERDE]
     )
-    st.plotly_chart(fig, use_container_width=True)
-
-# ==============================
-# ASISTENCIA DOMINICAL
-# ==============================
-
-if not df_asistencia.empty:
-    asistencia_persona = df_asistencia.groupby("Persona").size().reset_index(name="Asistencias")
-
-    fig2 = px.bar(
-        asistencia_persona,
-        x="Persona",
-        y="Asistencias",
-        color_discrete_sequence=["#0F2D52"]
-    )
-
     st.plotly_chart(fig2, use_container_width=True)
 
 # ==============================
-# OBJETIVOS
+# PARTE 3 – OBJETIVOS
 # ==============================
 
 st.subheader("🎯 Objetivos Estratégicos")
 
 for _, row in df_plan_obj.iterrows():
 
-    objetivo_id = row["ObjetivoID"]
+    objetivo = row["ObjetivoID"]
     nombre = row["NombreObjetivo"]
-    meta = row["MetaAnual"]
+    meta = int(row["MetaAnual"])
 
-    ejecutado = df_objetivos[df_objetivos["Objetivo"].str.contains(objetivo_id, na=False)]["Avance"].sum()
+    ejecutado = df_objetivos[
+        df_objetivos["Objetivo"].str.contains(objetivo, na=False)
+    ]["Avance"].sum()
 
     progreso = min(ejecutado / meta if meta > 0 else 0, 1)
 
-    st.write(f"**{objetivo_id} - {nombre}**  ({ejecutado}/{meta})")
+    st.write(f"**{objetivo} - {nombre} ({ejecutado}/{meta})**")
     st.progress(progreso)
