@@ -136,14 +136,13 @@ st.title("📊 Dashboard Institucional")
 # 🔝 TARJETAS SUPERIORES
 # ==============================
 
-c1, c2, c3, c4, c5, c6 = st.columns(6)
+c1, c2, c3, c4, c5 = st.columns(5)
 
 c1.metric("✨ Convertidos", df_resumen["Convertidos"].sum())
 c2.metric("🤝 Reconciliados", df_resumen["Reconciliados"].sum())
 c3.metric("💰 Ofrendas", round(df_resumen["Ofrenda"].sum(),2))
 c4.metric("📅 Reuniones", len(df_resumen))
-c5.metric("🔥 Eventos", len(df_eventos))
-c6.metric("👥 Participantes Eventos", df_eventos["Participantes"].sum())
+c5.metric("🔥 Eventos Ejecutados", len(df_eventos))
 
 st.divider()
 
@@ -151,42 +150,42 @@ st.divider()
 # PARTE 1 – ASISTENCIA DOMINICAL
 # ==============================
 
-st.subheader("📊 Asistencia Dominical (Domingos Asistidos)")
+st.subheader("📊 Asistencia Dominical")
 
 if not df_asistencia.empty:
 
-    # Contar domingos únicos por persona
-    asistencia_domingos = (
+    asistencia_equipo = (
         df_asistencia
-        .groupby(["Equipo"])
+        .groupby("Equipo")
         .size()
         .reset_index(name="Domingos_Asistidos")
         .sort_values("Domingos_Asistidos", ascending=False)
     )
 
     fig_asistencia = px.bar(
-        asistencia_domingos,
+        asistencia_equipo,
         x="Equipo",
         y="Domingos_Asistidos",
         text="Domingos_Asistidos",
-        color_discrete_sequence=["#1D4E89"]
+        color="Domingos_Asistidos",
+        color_continuous_scale="Blues"
     )
 
     fig_asistencia.update_layout(
         xaxis_title="Equipos",
-        yaxis_title="Cantidad de Domingos Asistidos",
+        yaxis_title="Domingos Asistidos",
         plot_bgcolor="white"
     )
 
     fig_asistencia.update_traces(textposition="outside")
 
     st.plotly_chart(fig_asistencia, use_container_width=True)
-
+    
 # ==============================
 # PARTE 2 – EVENTOS ESPIRITUALES
 # ==============================
 
-st.subheader("📅 Cumplimiento Anual Eventos")
+st.subheader("📅 Cumplimiento Anual de Eventos")
 
 meses = {
 1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
@@ -207,8 +206,10 @@ for mes in range(1,13):
         else:
             prog = df_plan_eventos[df_plan_eventos["Mes"] == meses[mes]]["Vigilias_Programadas"].sum()
 
-        ejec = df_eventos[(df_eventos["Mes"] == mes) &
-                          (df_eventos["Tipo"] == tipo)].shape[0]
+        ejec = df_eventos[
+            (df_eventos["Mes"] == mes) &
+            (df_eventos["Tipo"] == tipo)
+        ].shape[0]
 
         fila[tipo] = f"{ejec}/{prog}"
 
@@ -220,36 +221,12 @@ def color(val):
     ejec, prog = val.split("/")
     if int(prog) == 0:
         return ""
-    return f"background-color:{VERDE}; color:white;" if int(ejec) >= int(prog) \
-        else f"background-color:{ROJO}; color:white;"
+    return "background-color:#1E8449; color:white;" if int(ejec) >= int(prog) \
+        else "background-color:#C0392B; color:white;"
 
-st.dataframe(df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"]))
+styled = df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"])
 
-# 🔹 DIAGRAMA LINEA DOBLE (CORREGIDO)
-
-if not df_eventos.empty:
-
-    eventos_linea = df_eventos.groupby(["Mes","Tipo"])["Participantes"].sum().reset_index()
-
-    fig2 = px.line(
-        eventos_linea,
-        x="Mes",
-        y="Participantes",
-        color="Tipo",
-        markers=True,
-        color_discrete_sequence=[AZUL2, VERDE]
-    )
-
-    fig2.update_layout(
-        xaxis=dict(
-            tickmode='array',
-            tickvals=list(meses.keys()),
-            ticktext=list(meses.values())
-        )
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
+st.dataframe(styled, height=420)
 # ==============================
 # PARTE 3 – OBJETIVOS
 # ==============================
