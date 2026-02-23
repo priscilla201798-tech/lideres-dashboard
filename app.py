@@ -90,6 +90,15 @@ def aplanar(df):
         pd.DataFrame(objetivos),
         pd.DataFrame(asistencia)
     )
+# ==============================
+# CARGAR DATOS (ANTES DEL LOGIN)
+# ==============================
+
+df_raw = cargar_sheet(GID_REGISTROS)
+df_plan_eventos = cargar_sheet(GID_EVENTOS)
+df_plan_obj = cargar_sheet(GID_OBJETIVOS)
+
+df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar(df_raw)
 
 # ==============================
 # SIDEBAR + LOGIN
