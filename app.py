@@ -24,7 +24,6 @@ GID_REGISTROS = "632350714"
 GID_EVENTOS = "1679434742"
 GID_OBJETIVOS = "236814605"
 
-@st.cache_data
 def cargar_sheet(gid):
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={gid}"
     return pd.read_csv(url)
