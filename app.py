@@ -33,15 +33,20 @@ def extraer_dni(key):
 
 def aplanar(df):
 
-    resumen, eventos, objetivos, asistencia = [], [], [], []
+    resumen = []
+    eventos = []
+    objetivos = []
+    asistencia = []
 
     for _, row in df.iterrows():
 
-        fecha = pd.to_datetime(row["Fecha"])
-        dni = str(row["DNI_Lider"]).strip().zfill(8)
-        mes = fecha.month
+        try:
+            fecha = pd.to_datetime(row["Fecha"])
+            mes = fecha.month
+            dni = str(row["DNI_Lider"]).strip().zfill(8)
+        except:
+            continue
 
-        # 🔥 PARSEO ROBUSTO DEL JSON
         raw_json = row.get("RespuestasJSON", "")
 
         if not isinstance(raw_json, str) or raw_json.strip() == "":
@@ -57,9 +62,7 @@ def aplanar(df):
             except:
                 continue
 
-        # ----------------------------
         # RESUMEN
-        # ----------------------------
         resumen.append({
             "Fecha": fecha,
             "Mes": mes,
@@ -68,22 +71,45 @@ def aplanar(df):
             "Reconciliados": int(data.get("¿Cuántas personas se reconciliaron con Cristo?", 0) or 0),
             "Ofrenda": float(data.get("Monto total de la ofrenda (S/.)", 0) or 0)
         })
-import streamlit as st
-import pandas as pd
-import json
-import plotly.express as pxf
 
-st.set_page_config(layout="wide")
+        # EVENTOS
+        if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
+            eventos.append({
+                "Mes": mes,
+                "DNI": dni,
+                "Tipo": data.get("¿Qué tipo de evento espiritual se realizó?", "").upper(),
+                "Participantes": int(data.get("¿Cuántas personas participaron?", 0) or 0)
+            })
 
-# ==============================
-# 🎨 COLORES PROFESIONALES
-# ==============================
+        # OBJETIVOS
+        if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
+            objetivos.append({
+                "DNI": dni,
+                "Objetivo": data.get("¿En qué objetivo deseas registrar avance?", ""),
+                "Avance": int(data.get("¿Cuánto avanzaste en este objetivo?", 0) or 0)
+            })
 
-AZUL = "#0B3C5D"
-AZUL2 = "#1D4E89"
-VERDE = "#1E8449"
-ROJO = "#C0392B"
-GRIS = "#6B7280"
+        # ASISTENCIA
+        asistentes = (
+            data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
+            or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
+            or []
+        )
+
+        for persona in asistentes:
+            asistencia.append({
+                "Mes": mes,
+                "DNI": dni,
+                "Equipo": persona
+            })
+
+    return (
+        pd.DataFrame(resumen),
+        pd.DataFrame(eventos),
+        pd.DataFrame(objetivos),
+        pd.DataFrame(asistencia)
+    )
+
 
 # ==============================
 # CARGAR DATA
@@ -141,49 +167,7 @@ st.sidebar.success(f"DNI: {dni}")
 if st.sidebar.button("Cerrar sesión"):
     st.session_state.dni = None
     st.rerun()
-# ==============================
-# SIDEBAR + LOGIN
-# ==============================
 
-st.sidebar.markdown("""
-<div style="font-size:18px; font-weight:600; line-height:1.4;">
-IGLESIA EVANGÉLICA<br>
-DE LIBERACIÓN Y AVIVAMIENTO
-</div>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("---")
-
-if "dni" not in st.session_state:
-    st.session_state.dni = None
-
-dni_disponibles = (
-    df_raw["DNI_Lider"]
-    .astype(str)
-    .str.zfill(8)
-    .unique()
-)
-
-if st.session_state.dni is None:
-
-    dni_input = st.sidebar.text_input("Ingrese su DNI")
-
-    if st.sidebar.button("Ingresar"):
-        if dni_input.strip().zfill(8) in dni_disponibles:
-            st.session_state.dni = dni_input.strip().zfill(8)
-            st.rerun()
-        else:
-            st.sidebar.error("DNI no encontrado")
-
-    st.stop()
-
-dni = st.session_state.dni
-
-st.sidebar.success(f"DNI: {dni}")
-
-if st.sidebar.button("Cerrar sesión"):
-    st.session_state.dni = None
-    st.rerun()
 # ==============================
 # FILTRAR
 # ==============================
