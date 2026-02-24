@@ -133,7 +133,7 @@ if st.session_state.dni is None:
 
     if st.sidebar.button("Ingresar"):
         if dni_input.strip().zfill(8) in dni_disponibles:
-            st.session_state.dni = dni_input
+            st.session_state.dni = dni_input.strip().zfill(8)
             st.rerun()
         else:
             st.sidebar.error("DNI no encontrado")
@@ -156,8 +156,8 @@ df_resumen = df_resumen[df_resumen["DNI"] == dni]
 df_eventos = df_eventos[df_eventos["DNI"] == dni]
 df_objetivos = df_objetivos[df_objetivos["DNI"] == dni]
 df_asistencia = df_asistencia[df_asistencia["DNI"] == dni]
-df_plan_eventos["DNI_Lider"] = df_plan_eventos["DNI_Lider"].astype(str)
-df_plan_obj["DNI_Lider"] = df_plan_obj["DNI_Lider"].astype(str)
+df_plan_eventos["DNI_Lider"] = df_plan_eventos["DNI_Lider"].astype(str).str.zfill(8)
+df_plan_obj["DNI_Lider"] = df_plan_obj["DNI_Lider"].astype(str).str.zfill(8)
 
 df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == dni]
 df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == dni]
@@ -260,7 +260,7 @@ def color(val):
 
 styled = df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"])
 
-st.dataframe(styled, height=420)
+st.write(styled)
 # ==============================
 # PARTE 3 – OBJETIVOS
 # ==============================
