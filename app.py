@@ -43,21 +43,21 @@ def aplanar(df):
         mes = fecha.month
 
         try:
-    raw_json = row["RespuestasJSON"]
-
-    if isinstance(raw_json, str):
-        raw_json = raw_json.strip()
-
-        try:
-            data = json.loads(raw_json)
-        except:
-            # Caso donde viene doble escapado desde Google Sheets
-            data = json.loads(json.loads(raw_json))
-    else:
+            raw_json = row["RespuestasJSON"]
+        
+            if isinstance(raw_json, str):
+                raw_json = raw_json.strip()
+        
+                try:
+                    data = json.loads(raw_json)
+                except:
+                    # Caso donde viene doble escapado desde Google Sheets
+                    data = json.loads(json.loads(raw_json))
+        else:
+            continue
+    
+    except Exception:
         continue
-
-except Exception:
-    continue
 
         resumen.append({
             "Fecha": fecha,
