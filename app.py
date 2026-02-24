@@ -124,10 +124,7 @@ df_plan_eventos_f = cargar_sheet(GID_EVENTOS)
 df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
-if mes_seleccionado != "Todos":
-    df_resumen_l = df_resumen_l[df_resumen_l["Mes"] == mes_seleccionado]
-    df_eventos_l = df_eventos_l[df_eventos_l["Mes"] == mes_seleccionado]
-    df_asistencia_l = df_asistencia_l[df_asistencia_l["Mes"] == mes_seleccionado]
+
     
 def pantalla_login():
 
@@ -160,6 +157,7 @@ def pantalla_login():
 def pantalla_dashboard():
 
     dni = st.session_state.dni
+    
     st.sidebar.title("Panel de Control")
     st.sidebar.success(f"Líder: {dni}")
 
@@ -180,6 +178,15 @@ def pantalla_dashboard():
     df_eventos_l = df_eventos_f[df_eventos_f["DNI"] == dni]
     df_objetivos_l = df_objetivos[df_objetivos["DNI"] == dni]
     df_asistencia_l = df_asistencia_f[df_asistencia_f["DNI"] == dni]
+
+    # ==============================
+    # FILTRO POR MES
+    # ==============================
+    
+    if mes_seleccionado != "Todos":
+        df_resumen_l = df_resumen_l[df_resumen_l["Mes"] == mes_seleccionado]
+        df_eventos_l = df_eventos_l[df_eventos_l["Mes"] == mes_seleccionado]
+        df_asistencia_l = df_asistencia_l[df_asistencia_l["Mes"] == mes_seleccionado]
 
     df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
     df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
@@ -297,14 +304,14 @@ def pantalla_dashboard():
         st.progress(progreso)
 
 
-    # ==============================
-    # CONTROLADOR DE PANTALLAS
-    # ==============================
-    
-    if "dni" not in st.session_state:
-        st.session_state.dni = None
-    
-    if st.session_state.dni is None:
-        pantalla_login()
-    else:
-        pantalla_dashboard()
+# ==============================
+# CONTROLADOR DE PANTALLAS
+# ==============================
+
+if "dni" not in st.session_state:
+    st.session_state.dni = None
+
+if st.session_state.dni is None:
+    pantalla_login()
+else:
+    pantalla_dashboard()
