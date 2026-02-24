@@ -117,15 +117,7 @@ st.sidebar.markdown("---")
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
-dni_disponibles = (
-    df_raw["Key"]
-    .astype(str)
-    .str.split("_")
-    .str[0]
-    .str.strip()
-    .str.zfill(8)
-    .unique()
-)
+dni_disponibles = df_resumen["DNI"].unique()
 
 if st.session_state.dni is None:
 
