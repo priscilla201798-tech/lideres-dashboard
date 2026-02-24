@@ -39,7 +39,7 @@ def aplanar(df):
     for _, row in df.iterrows():
 
         fecha = pd.to_datetime(row["Fecha"])
-        dni = extraer_dni(row["Key"])
+        dni = extraer_dni(row["Key"]).zfill(8)
         mes = fecha.month
 
         try:
@@ -90,8 +90,9 @@ def aplanar(df):
         pd.DataFrame(objetivos),
         pd.DataFrame(asistencia)
     )
+
 # ==============================
-# CARGAR DATOS (ANTES DEL LOGIN)
+# CARGAR DATA
 # ==============================
 
 df_raw = cargar_sheet(GID_REGISTROS)
@@ -118,7 +119,11 @@ if "dni" not in st.session_state:
 
 dni_disponibles = (
     df_raw["Key"]
-    .apply(lambda x: str(x).split("_")[0].zfill(8))
+    .astype(str)
+    .str.split("_")
+    .str[0]
+    .str.strip()
+    .str.zfill(8)
     .unique()
 )
 
@@ -127,7 +132,7 @@ if st.session_state.dni is None:
     dni_input = st.sidebar.text_input("Ingrese su DNI")
 
     if st.sidebar.button("Ingresar"):
-        if dni_input.zfill(8) in dni_disponibles:
+        if dni_input.strip().zfill(8) in dni_disponibles:
             st.session_state.dni = dni_input
             st.rerun()
         else:
@@ -151,8 +156,11 @@ df_resumen = df_resumen[df_resumen["DNI"] == dni]
 df_eventos = df_eventos[df_eventos["DNI"] == dni]
 df_objetivos = df_objetivos[df_objetivos["DNI"] == dni]
 df_asistencia = df_asistencia[df_asistencia["DNI"] == dni]
-df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == int(dni)]
-df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == int(dni)]
+df_plan_eventos["DNI_Lider"] = df_plan_eventos["DNI_Lider"].astype(str)
+df_plan_obj["DNI_Lider"] = df_plan_obj["DNI_Lider"].astype(str)
+
+df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == dni]
+df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == dni]
 
 st.title("📊 Dashboard Institucional")
 
