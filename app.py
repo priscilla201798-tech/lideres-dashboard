@@ -182,7 +182,7 @@ df_plan_obj["DNI_Lider"] = df_plan_obj["DNI_Lider"].astype(str).str.zfill(8)
 df_plan_eventos = df_plan_eventos[df_plan_eventos["DNI_Lider"] == dni]
 df_plan_obj = df_plan_obj[df_plan_obj["DNI_Lider"] == dni]
 
-st.title("📊 Dashboard Institucional")
+st.title(" Dashboard Institucional")
 
 # ==============================
 # 🔝 TARJETAS SUPERIORES
