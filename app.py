@@ -18,12 +18,13 @@ GRIS = "#6B7280"
 # ==============================
 # CONFIG GOOGLE SHEETS
 # ==============================
-
+    
 SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
 GID_REGISTROS = "632350714"
 GID_EVENTOS = "1679434742"
 GID_OBJETIVOS = "236814605"
 
+@st.cache_data(ttl=120)
 def cargar_sheet(gid):
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={gid}"
     return pd.read_csv(url)
@@ -121,8 +122,7 @@ df_plan_obj = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen, df_eventos, df_objetivos, df_asistencia = aplanar(df_raw)
 
-st.write("Cantidad registros resumen:", len(df_resumen))
-st.write("DNIs generados:", df_resumen["DNI"].unique())
+
 
 # ==============================
 # SIDEBAR + LOGIN
