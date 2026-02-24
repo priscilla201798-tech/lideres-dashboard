@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import json
-import plotly.express as px
+import plotly.express as pxf
 
 st.set_page_config(layout="wide")
 
@@ -39,7 +39,7 @@ def aplanar(df):
     for _, row in df.iterrows():
 
         fecha = pd.to_datetime(row["Fecha"])
-        dni = extraer_dni(row["Key"]).zfill(8)
+        dni = str(row["DNI_Lider"]).strip().zfill(8)
         mes = fecha.month
 
         # 🔥 PARSEO ROBUSTO DEL JSON
