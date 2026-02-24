@@ -42,23 +42,25 @@ def aplanar(df):
         dni = extraer_dni(row["Key"]).zfill(8)
         mes = fecha.month
 
-        try:
-            raw_json = row["RespuestasJSON"]
-        
-            if isinstance(raw_json, str):
-                raw_json = raw_json.strip()
-        
-                try:
-                    data = json.loads(raw_json)
-                except:
-                    # Caso donde viene doble escapado desde Google Sheets
-                    data = json.loads(json.loads(raw_json))
-        else:
-            continue
-    
-    except Exception:
-        continue
+        # 🔥 PARSEO ROBUSTO DEL JSON
+        raw_json = row.get("RespuestasJSON", "")
 
+        if not isinstance(raw_json, str) or raw_json.strip() == "":
+            continue
+
+        raw_json = raw_json.strip()
+
+        try:
+            data = json.loads(raw_json)
+        except:
+            try:
+                data = json.loads(json.loads(raw_json))
+            except:
+                continue
+
+        # ----------------------------
+        # RESUMEN
+        # ----------------------------
         resumen.append({
             "Fecha": fecha,
             "Mes": mes,
@@ -68,6 +70,9 @@ def aplanar(df):
             "Ofrenda": float(data.get("Monto total de la ofrenda (S/.)", 0) or 0)
         })
 
+        # ----------------------------
+        # EVENTOS
+        # ----------------------------
         if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
             eventos.append({
                 "Mes": mes,
@@ -76,6 +81,9 @@ def aplanar(df):
                 "Participantes": int(data.get("¿Cuántas personas participaron?", 0) or 0)
             })
 
+        # ----------------------------
+        # OBJETIVOS
+        # ----------------------------
         if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
             objetivos.append({
                 "DNI": dni,
@@ -83,6 +91,9 @@ def aplanar(df):
                 "Avance": int(data.get("¿Cuánto avanzaste en este objetivo?", 0) or 0)
             })
 
+        # ----------------------------
+        # ASISTENCIA
+        # ----------------------------
         asistentes = (
             data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
             or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
