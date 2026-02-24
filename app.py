@@ -116,14 +116,18 @@ st.sidebar.markdown("---")
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
-dni_disponibles = df_raw["Key"].apply(lambda x: str(x).split("_")[0]).unique()
+dni_disponibles = (
+    df_raw["Key"]
+    .apply(lambda x: str(x).split("_")[0].zfill(8))
+    .unique()
+)
 
 if st.session_state.dni is None:
 
     dni_input = st.sidebar.text_input("Ingrese su DNI")
 
     if st.sidebar.button("Ingresar"):
-        if dni_input in dni_disponibles:
+        if dni_input.zfill(8) in dni_disponibles:
             st.session_state.dni = dni_input
             st.rerun()
         else:
