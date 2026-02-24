@@ -124,7 +124,11 @@ df_plan_eventos_f = cargar_sheet(GID_EVENTOS)
 df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
-
+if mes_seleccionado != "Todos":
+    df_resumen_l = df_resumen_l[df_resumen_l["Mes"] == mes_seleccionado]
+    df_eventos_l = df_eventos_l[df_eventos_l["Mes"] == mes_seleccionado]
+    df_asistencia_l = df_asistencia_l[df_asistencia_l["Mes"] == mes_seleccionado]
+    
 def pantalla_login():
 
     st.title("Bienvenido a IELA")
@@ -156,6 +160,17 @@ def pantalla_login():
 def pantalla_dashboard():
 
     dni = st.session_state.dni
+    st.sidebar.title("Panel de Control")
+    st.sidebar.success(f"Líder: {dni}")
+
+    if st.sidebar.button("Cerrar sesión"):
+        st.session_state.dni = None
+        st.rerun()
+
+    st.sidebar.markdown("---")
+    
+    meses_opciones = ["Todos"] + list(range(1,13))
+    mes_seleccionado = st.sidebar.selectbox("Filtrar por mes", meses_opciones)
 
     # ==============================
     # FILTRO POR LIDER
@@ -280,3 +295,16 @@ def pantalla_dashboard():
 
         st.write(f"**{objetivo} - {nombre} ({ejecutado}/{meta})**")
         st.progress(progreso)
+
+
+    # ==============================
+    # CONTROLADOR DE PANTALLAS
+    # ==============================
+    
+    if "dni" not in st.session_state:
+        st.session_state.dni = None
+    
+    if st.session_state.dni is None:
+        pantalla_login()
+    else:
+        pantalla_dashboard()
