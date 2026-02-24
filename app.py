@@ -20,7 +20,7 @@ GRIS = "#6B7280"
 # ==============================
 
 SHEET_ID = "1Q4UuncnykLJZrODE_Vwv-_WvCo7LWBNmbhnnPyb1Dt4"
-GID_REGISTROS = "632350714"
+GID_REGISTROS = "632350714"ÿ
 GID_EVENTOS = "1679434742"
 GID_OBJETIVOS = "236814605"
 
@@ -68,50 +68,22 @@ def aplanar(df):
             "Reconciliados": int(data.get("¿Cuántas personas se reconciliaron con Cristo?", 0) or 0),
             "Ofrenda": float(data.get("Monto total de la ofrenda (S/.)", 0) or 0)
         })
+import streamlit as st
+import pandas as pd
+import json
+import plotly.express as pxf
 
-        # ----------------------------
-        # EVENTOS
-        # ----------------------------
-        if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
-            eventos.append({
-                "Mes": mes,
-                "DNI": dni,
-                "Tipo": data.get("¿Qué tipo de evento espiritual se realizó?", "").upper(),
-                "Participantes": int(data.get("¿Cuántas personas participaron?", 0) or 0)
-            })
+st.set_page_config(layout="wide")
 
-        # ----------------------------
-        # OBJETIVOS
-        # ----------------------------
-        if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
-            objetivos.append({
-                "DNI": dni,
-                "Objetivo": data.get("¿En qué objetivo deseas registrar avance?", ""),
-                "Avance": int(data.get("¿Cuánto avanzaste en este objetivo?", 0) or 0)
-            })
+# ==============================
+# 🎨 COLORES PROFESIONALES
+# ==============================
 
-        # ----------------------------
-        # ASISTENCIA
-        # ----------------------------
-        asistentes = (
-            data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
-            or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
-            or []
-        )
-
-        for persona in asistentes:
-            asistencia.append({
-                "Mes": mes,
-                "DNI": dni,
-                "Equipo": persona
-            })
-
-    return (
-        pd.DataFrame(resumen),
-        pd.DataFrame(eventos),
-        pd.DataFrame(objetivos),
-        pd.DataFrame(asistencia)
-    )
+AZUL = "#0B3C5D"
+AZUL2 = "#1D4E89"
+VERDE = "#1E8449"
+ROJO = "#C0392B"
+GRIS = "#6B7280"
 
 # ==============================
 # CARGAR DATA
