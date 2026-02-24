@@ -120,7 +120,12 @@ st.sidebar.markdown("---")
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
-dni_disponibles = df_resumen["DNI"].unique()
+dni_disponibles = (
+    df_raw["DNI_Lider"]
+    .astype(str)
+    .str.zfill(8)
+    .unique()
+)
 
 if st.session_state.dni is None:
 
@@ -142,7 +147,49 @@ st.sidebar.success(f"DNI: {dni}")
 if st.sidebar.button("Cerrar sesión"):
     st.session_state.dni = None
     st.rerun()
+# ==============================
+# SIDEBAR + LOGIN
+# ==============================
 
+st.sidebar.markdown("""
+<div style="font-size:18px; font-weight:600; line-height:1.4;">
+IGLESIA EVANGÉLICA<br>
+DE LIBERACIÓN Y AVIVAMIENTO
+</div>
+""", unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+
+if "dni" not in st.session_state:
+    st.session_state.dni = None
+
+dni_disponibles = (
+    df_raw["DNI_Lider"]
+    .astype(str)
+    .str.zfill(8)
+    .unique()
+)
+
+if st.session_state.dni is None:
+
+    dni_input = st.sidebar.text_input("Ingrese su DNI")
+
+    if st.sidebar.button("Ingresar"):
+        if dni_input.strip().zfill(8) in dni_disponibles:
+            st.session_state.dni = dni_input.strip().zfill(8)
+            st.rerun()
+        else:
+            st.sidebar.error("DNI no encontrado")
+
+    st.stop()
+
+dni = st.session_state.dni
+
+st.sidebar.success(f"DNI: {dni}")
+
+if st.sidebar.button("Cerrar sesión"):
+    st.session_state.dni = None
+    st.rerun()
 # ==============================
 # FILTRAR
 # ==============================
