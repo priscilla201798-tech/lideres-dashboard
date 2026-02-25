@@ -227,7 +227,7 @@ def aplicar_estilos_login():
 def aplicar_estilos_login():
     st.markdown("""
     <style>
-    /* 1. Limpiar la interfaz de Streamlit */
+    /* 1. Limpiar la interfaz de Streamlit y bloquear el scroll */
     [data-testid="stHeader"], [data-testid="stToolbar"] {
         display: none;
     }
@@ -235,6 +235,7 @@ def aplicar_estilos_login():
     .block-container {
         padding: 0 !important;
         max-width: 100% !important;
+        overflow: hidden !important;
     }
 
     /* 2. Fondo con Imagen de Paz */
@@ -244,83 +245,83 @@ def aplicar_estilos_login():
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
+        overflow: hidden !important;
     }
 
-    /* 3. Forzar el centrado real de la tarjeta */
+    /* 3. Forzar el centrado real de la tarjeta en el alto de pantalla */
     .main-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100vh;
         width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
     }
 
-    /* 4. La Tarjeta Sólida (Estructura que te gustó) */
+    /* 4. La Tarjeta Sólida (Más compacta para evitar scroll) */
     .login-box {
         background: white;
-        border-radius: 35px;
-        padding: 45px;
-        width: 100%;
-        max-width: 420px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border-radius: 25px;
+        padding: 30px 40px;
+        width: 90%;
+        max-width: 380px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         text-align: center;
         border: 1px solid rgba(255,255,255,0.8);
     }
 
     .login-box h1 {
-        color: #1e3a8a !important;
-        font-size: 30px !important;
+        color: #111827 !important; /* Negro azulado para máxima legibilidad */
+        font-size: 26px !important;
         font-weight: 800 !important;
-        margin: 10px 0 !important;
-        line-height: 1.2 !important;
+        margin: 5px 0 !important;
+        line-height: 1.1 !important;
     }
 
     .login-box p.subtitle {
-        color: #64748b !important;
-        font-size: 15px !important;
-        margin-bottom: 25px !important;
-        font-weight: 500;
+        color: #374151 !important; /* Gris oscuro fuerte */
+        font-size: 14px !important;
+        margin-bottom: 20px !important;
+        font-weight: 600;
     }
 
-    /* Inputs Estilizados dentro de la caja */
+    /* Inputs Estilizados */
     div[data-baseweb="input"] {
-        background-color: #f1f5f9 !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 14px !important;
+        background-color: #f3f4f6 !important;
+        border: 2px solid #d1d5db !important;
+        border-radius: 12px !important;
     }
 
     label p {
         color: #1e3a8a !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         text-transform: uppercase;
         font-size: 11px !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 4px !important;
         text-align: left;
     }
 
     /* Botón Profesional Azul */
     .stButton > button {
         width: 100%;
-        background: #2563eb !important;
+        background: #1d4ed8 !important; /* Azul más fuerte */
         color: white !important;
-        border-radius: 14px !important;
-        padding: 12px !important;
+        border-radius: 12px !important;
+        padding: 10px !important;
         font-weight: 700 !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
         border: none !important;
-        margin-top: 15px;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        margin-top: 10px;
+        box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
     }
 
-    .stButton > button:hover {
-        background: #1d4ed8 !important;
-        transform: translateY(-1px);
-    }
-    
-    /* Ajuste para que el error de Streamlit no mueva todo */
+    /* Ajuste de errores */
     .stAlert {
-        border-radius: 12px !important;
-        margin-top: 10px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+        padding: 8px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -331,26 +332,24 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Iniciamos el envoltorio para centrar
     st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     
-    # Logo Institucional
+    # Logo más pequeño
     try:
         if os.path.exists("logotipo.png"):
-            st.image("logotipo.png", width=90)
+            st.image("logotipo.png", width=70)
         else:
-            st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size: 40px; margin-bottom: 5px;">🕊️</div>', unsafe_allow_html=True)
     except:
-        st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 40px; margin-bottom: 5px;">🕊️</div>', unsafe_allow_html=True)
     
     st.markdown("""
         <h1>Bienvenido</h1>
         <p class="subtitle">Portal Ministerial IELA 2026</p>
     """, unsafe_allow_html=True)
 
-    # El input ahora vive DENTRO de la login-box de CSS
-    dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="00000000")
+    dni_input = st.text_input("DNI del Líder", placeholder="Ingresa tu documento")
 
     if st.button("Iniciar Sesión"):
         dni_limpio = dni_input.strip().zfill(8)
@@ -358,16 +357,16 @@ def pantalla_login():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("Acceso denegado: DNI no registrado")
+            st.error("DNI no registrado")
 
     st.markdown("""
-        <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+        <div style="margin-top: 20px; border-top: 2px solid #f3f4f6; padding-top: 15px;">
+            <p style="font-size: 11px; color: #1f2937; font-weight: 700; text-transform: uppercase; margin-bottom: 0;">
                 IELA - Avivamiento y Poder
             </p>
         </div>
-        </div> <!-- Cierre login-box -->
-    </div> <!-- Cierre main-wrapper -->
+        </div>
+    </div>
     """, unsafe_allow_html=True)
 
 # ==============================
