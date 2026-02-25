@@ -208,14 +208,10 @@ def pantalla_dashboard():
             df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
         ]
     
-    # ==============================
-    # FILTRO POR MES
-    # ==============================
+
+
+
     
-    if mes_seleccionado != "Todos":
-        df_resumen_l = df_resumen_l[df_resumen_l["Mes"] == mes_seleccionado]
-        df_eventos_l = df_eventos_l[df_eventos_l["Mes"] == mes_seleccionado]
-        df_asistencia_l = df_asistencia_l[df_asistencia_l["Mes"] == mes_seleccionado]
 
     df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
     df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
@@ -278,7 +274,7 @@ def pantalla_dashboard():
     # EVENTOS
     # ==============================
 
-   st.subheader("📅 Cumplimiento Anual de Eventos")
+    st.subheader("📅 Cumplimiento Anual de Eventos")
 
     meses = {
         1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
@@ -287,7 +283,6 @@ def pantalla_dashboard():
     }
     
     # Normalizamos texto de meses
-    df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
     
     tabla = []
     
