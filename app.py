@@ -222,7 +222,7 @@ def aplicar_estilos_login():
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 
 # ==============================
-# 🎨 ESTILOS CSS PROFESIONALES (CENTRADO Y TEXTOS BLANCOS)
+# 🎨 ESTILOS CSS PROFESIONALES (CORRECCIÓN DE INTERACCIÓN)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
@@ -247,6 +247,7 @@ def aplicar_estilos_login():
     }
 
     /* 3. Contenedor de Centrado Absoluto */
+    /* IMPORTANTE: pointer-events: none permite que los clics pasen a través de la capa invisible */
     .main-wrapper {
         position: fixed;
         top: 0;
@@ -258,52 +259,60 @@ def aplicar_estilos_login():
         align-items: center;
         justify-content: center;
         z-index: 1000;
-        overflow: hidden;
+        pointer-events: none; 
     }
 
-    /* 4. Títulos en BLANCO (Fuera de la caja para mayor impacto visual) */
+    /* 4. Títulos en BLANCO */
     .header-text {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        pointer-events: none;
     }
 
     .header-text h1 {
         color: #ffffff !important; 
-        font-size: 32px !important;
+        font-size: 36px !important;
         font-weight: 800 !important;
         margin: 0 !important;
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        text-shadow: 2px 4px 10px rgba(0,0,0,0.6);
     }
 
     .header-text p.subtitle {
-        color: rgba(255, 255, 255, 0.9) !important;
+        color: rgba(255, 255, 255, 0.95) !important;
         font-size: 16px !important;
-        font-weight: 400;
+        font-weight: 500;
         margin-top: 5px !important;
-        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        text-shadow: 1px 2px 5px rgba(0,0,0,0.5);
     }
 
     /* 5. Tarjeta de Login Blanca y Compacta */
+    /* pointer-events: all permite volver a interactuar con lo que esté dentro de la caja */
     .login-box {
         background-color: white !important;
-        border-radius: 24px;
-        padding: 30px 35px;
-        width: 340px; /* Un poco más pequeña */
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        border-radius: 28px;
+        padding: 35px;
+        width: 360px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         text-align: center;
+        pointer-events: all; 
     }
 
-    /* Estilo de los Inputs (Barra más pequeña) */
+    /* Estilo de los Inputs (Barra más pequeña y controlada) */
+    div[data-testid="stTextInput"] {
+        width: 100% !important;
+        margin-bottom: 0px !important;
+    }
+
     div[data-baseweb="input"] {
         background-color: #f8fafc !important;
         border: 2px solid #e2e8f0 !important;
-        border-radius: 10px !important;
-        height: 40px !important; /* Altura reducida */
+        border-radius: 12px !important;
+        height: 45px !important;
     }
 
     div[data-baseweb="input"] input {
-        padding: 5px 10px !important;
-        font-size: 14px !important;
+        color: #001f3f !important;
+        font-size: 15px !important;
     }
 
     label p {
@@ -312,7 +321,8 @@ def aplicar_estilos_login():
         text-transform: uppercase;
         font-size: 11px !important;
         text-align: left !important;
-        margin-bottom: 4px !important;
+        margin-bottom: 6px !important;
+        letter-spacing: 0.5px;
     }
 
     /* Botón Marino */
@@ -320,23 +330,24 @@ def aplicar_estilos_login():
         width: 100%;
         background-color: #001f3f !important;
         color: white !important;
-        border-radius: 10px !important;
-        padding: 10px !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
         font-weight: 700 !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         border: none !important;
-        margin-top: 10px;
-        box-shadow: 0 4px 12px rgba(0, 31, 63, 0.3) !important;
+        margin-top: 20px;
+        transition: all 0.3s ease;
     }
 
     .stButton > button:hover {
         background-color: #084d6e !important;
+        transform: translateY(-2px);
     }
 
     /* Ajuste de alertas */
     .stAlert {
-        border-radius: 10px !important;
-        font-size: 12px !important;
+        border-radius: 12px !important;
+        margin-top: 15px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -347,23 +358,25 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
+    # Contenedor de posicionamiento
     st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     
-    # Encabezado en Blanco
+    # Títulos fuera de la caja para estilo moderno
     st.markdown("""
         <div class="header-text">
-            <div style="font-size: 50px; margin-bottom: 10px;">🕊️</div>
+            <div style="font-size: 55px; margin-bottom: 10px;">🕊️</div>
             <h1>Portal de Liderazgo</h1>
             <p class="subtitle">Gestión Ministerial IELA 2026</p>
         </div>
     """, unsafe_allow_html=True)
     
-    # Caja de entrada
+    # Caja blanca de entrada
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     
-    dni_input = st.text_input("Ingresa tu DNI", placeholder="00000000")
+    # Input de Streamlit (está dentro del div con pointer-events: all)
+    dni_input = st.text_input("Ingresa tu DNI", placeholder="Ej: 45678912")
 
-    if st.button("Acceder"):
+    if st.button("Acceder al Portal"):
         dni_limpio = dni_input.strip().zfill(8)
         if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
             st.session_state.dni = dni_limpio
@@ -372,8 +385,8 @@ def pantalla_login():
             st.error("DNI no registrado")
 
     st.markdown("""
-        <div style="margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 15px; width: 100%;">
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+        <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; width: 100%;">
+            <p style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                 Avivamiento y Poder
             </p>
         </div>
