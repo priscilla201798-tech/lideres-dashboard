@@ -220,7 +220,7 @@ def aplicar_estilos_login():
     .main .block-container {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        margin-top: -50px !important; 
+        margin-top: -30px !important; 
     }
 
     /* 3. Estilo de los Inputs */
@@ -256,12 +256,12 @@ def aplicar_estilos_login():
         transition: all 0.2s ease;
     }
 
-    /* 5. Contenedor de Bienvenida (Alineado) */
+    /* 5. Contenedor de Bienvenida (Alineado hacia arriba) */
     .welcome-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 100vh;
+        height: 85vh;
         padding-left: 50px;
     }
     
@@ -283,12 +283,12 @@ def aplicar_estilos_login():
         margin-top: 15px !important;
     }
 
-    /* 6. Caja de Login */
+    /* 6. Caja de Login - Ajuste de altura para que no baje tanto */
     .login-sidebar-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        height: 85vh;
     }
 
     .login-sidebar {
@@ -300,6 +300,7 @@ def aplicar_estilos_login():
         width: 100%;
         max-width: 380px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        margin-top: -20px; /* Ajuste manual para subir el bloque */
     }
     </style>
     """, unsafe_allow_html=True)
