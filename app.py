@@ -249,18 +249,17 @@ def aplicar_estilos_login():
     /* 3. Contenedor de Centrado Absoluto */
     /* IMPORTANTE: pointer-events: none permite que los clics pasen a través de la capa invisible */
     .main-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        pointer-events: none; 
-    }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
 
     /* 4. Títulos en BLANCO */
     .header-text {
