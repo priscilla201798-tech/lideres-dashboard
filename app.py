@@ -128,7 +128,7 @@ df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
     
 def pantalla_login():
 
-    st.title(Analisis de datos )
+    st.title("Analisis de datos")
 
     col1, col2 = st.columns([1.2, 1])
 
