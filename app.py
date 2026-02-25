@@ -365,22 +365,31 @@ def pantalla_dashboard():
         nombre_lider = "Líder IELA"
         entidad_lider = "-"
 
-    # --- SIDEBAR ---
+    # ==============================
+    # SIDEBAR
+    # ==============================
+
+    st.sidebar.markdown("### 👤 Identificación")
+    st.sidebar.write(f"**Nombre:** {nombre_lider}")
+    st.sidebar.write(f"**Entidad:** {entidad_lider}")
+
+    # Cuadro azul debajo de identificación
     st.sidebar.markdown(f"""
-    <div style="background:#f8fafc; padding:18px; border-radius:14px; margin-bottom:15px;">
-        <div style="font-size:11px; opacity:0.6; text-transform:uppercase;">Usuario Activo</div>
-        <div style="font-size:18px; font-weight:800; margin-top:5px;">{nombre_lider}</div>
-        <div style="font-size:13px; color:{AZUL_ACCENTO};">{entidad_lider}</div>
+    <div style="
+        background:{AZUL_PRIMARIO};
+        padding:15px;
+        border-radius:10px;
+        color:white;
+        margin-top:10px;
+        margin-bottom:10px;
+    ">
+    <b>DNI:</b> {dni}
     </div>
     """, unsafe_allow_html=True)
 
-    if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
-        st.session_state.dni = None
-        st.rerun()
-
     st.sidebar.markdown("---")
 
-    # --- FILTRO FECHAS ---
+    # Filtro por fecha
     fecha_min = df_resumen_f["Fecha"].min()
     fecha_max = df_resumen_f["Fecha"].max()
 
@@ -391,7 +400,17 @@ def pantalla_dashboard():
         max_value=fecha_max
     )
 
-    # --- FILTRADO ---
+    st.sidebar.markdown("---")
+
+    # Botón cerrar sesión AL FINAL
+    if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
+        st.session_state.dni = None
+        st.rerun()
+
+    # ==============================
+    # FILTRADO
+    # ==============================
+
     df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
 
     if isinstance(rango, tuple) and len(rango) == 2:
@@ -416,7 +435,10 @@ def pantalla_dashboard():
         df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni
     ]
 
-    # --- CONTENIDO PRINCIPAL ---
+    # ==============================
+    # CONTENIDO PRINCIPAL
+    # ==============================
+
     st.title("📊 Dashboard Institucional")
     st.markdown(f"Bienvenido de nuevo, **{nombre_lider}**.")
 
@@ -429,63 +451,62 @@ def pantalla_dashboard():
     m4.metric("📅 Reuniones", len(df_res_l))
     m5.metric("🔥 Eventos", len(df_ev_l))
 
-    # --- COLUMNAS PRINCIPALES ---
-    col_left, col_right = st.columns(2)
+    st.divider()
 
-    # 🎯 OBJETIVOS
-    with col_left:
-        st.subheader("🎯 Objetivos Estratégicos")
+    # ==============================
+    # 1️⃣ ASISTENCIA DOMINICAL
+    # ==============================
 
-        for _, row in df_plan_obj_l.iterrows():
-            obj_id = row["ObjetivoID"]
-            obj_nom = row["NombreObjetivo"]
-            meta = int(row["MetaAnual"])
+    st.subheader("📊 Asistencia Dominical")
 
-            ejec = df_obj_l[
-                df_obj_l["Objetivo"].str.contains(obj_id, na=False)
-            ]["Avance"].sum()
+    if not df_as_l.empty:
+        as_data = (
+            df_as_l.groupby("Equipo")
+            .size()
+            .reset_index(name="Cant")
+            .sort_values("Cant", ascending=False)
+        )
 
-            progreso = min(ejec / meta if meta > 0 else 0, 1)
+        fig = px.bar(
+            as_data,
+            x="Equipo",
+            y="Cant",
+            color="Cant",
+            color_continuous_scale="Blues",
+            text_auto=True
+        )
 
-            st.markdown(
-                f"<div style='margin-bottom:-15px; font-weight:600;'>{obj_nom} "
-                f"<span style='color:{AZUL_PRIMARIO}; float:right;'>{ejec}/{meta}</span></div>",
-                unsafe_allow_html=True
-            )
-            st.progress(progreso)
-
-    # 📊 ASISTENCIA
-    with col_right:
-        st.subheader("📊 Asistencia Dominical")
-
-        if not df_as_l.empty:
-            as_data = (
-                df_as_l.groupby("Equipo")
-                .size()
-                .reset_index(name="Cant")
-                .sort_values("Cant", ascending=False)
-            )
-
-            fig = px.bar(
-                as_data,
-                x="Equipo",
-                y="Cant",
-                color="Cant",
-                color_continuous_scale="Blues",
-                text_auto=True
-            )
-
-            fig.update_layout(
-                height=300,
-                margin=dict(l=0, r=0, t=0, b=0),
-                showlegend=False
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
+        fig.update_layout(height=350, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
 
-    # --- EVENTOS ---
+    # ==============================
+    # 2️⃣ OBJETIVOS
+    # ==============================
+
+    st.subheader("🎯 Cumplimiento de Objetivos")
+
+    for _, row in df_plan_obj_l.iterrows():
+        obj_id = row["ObjetivoID"]
+        obj_nom = row["NombreObjetivo"]
+        meta = int(row["MetaAnual"])
+
+        ejec = df_obj_l[
+            df_obj_l["Objetivo"].str.contains(obj_id, na=False)
+        ]["Avance"].sum()
+
+        progreso = min(ejec / meta if meta > 0 else 0, 1)
+
+        st.markdown(f"**{obj_nom}** ({ejec}/{meta})")
+        st.progress(progreso)
+
+    st.divider()
+
+    # ==============================
+    # 3️⃣ EVENTOS
+    # ==============================
+
     st.subheader("📅 Cumplimiento de Eventos (Ayunos y Vigilias)")
 
     meses_nom = {
@@ -497,9 +518,7 @@ def pantalla_dashboard():
     tabla = []
 
     for m_idx in range(1, 13):
-
         m_name = meses_nom[m_idx]
-
         fila = {"Mes": m_name}
 
         for tipo in ["AYUNO", "VIGILIA"]:
@@ -531,10 +550,8 @@ def pantalla_dashboard():
             ejec, prog = map(int, val.split("/"))
             if prog == 0:
                 return ""
-            if ejec >= prog:
-                return f"background-color:{VERDE_EXITO}; color:white; font-weight:bold;"
-            else:
-                return f"background-color:{ROJO_ERROR}; color:white;"
+            return "background-color:#1E8449; color:white; font-weight:bold;" if ejec >= prog \
+                else "background-color:#C0392B; color:white;"
         except:
             return ""
 
