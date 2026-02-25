@@ -209,16 +209,16 @@ def aplicar_estilos_login():
         background-attachment: fixed;
     }
 
-    /* 2. ELIMINACIÓN TOTAL DE BARRAS Y AJUSTE DE POSICIÓN */
+    /* 2. ELIMINACIÓN RADICAL DE BARRAS SUPERIORES */
     header, [data-testid="stHeader"], [data-testid="stDecoration"] {
         display: none !important;
-        height: 0 !important;
     }
     
-    /* Forzamos que el contenedor ignore el margen superior de Streamlit */
+    /* Reset de márgenes de Streamlit para subir el contenido */
     .main .block-container {
-        padding-top: 0rem !important;
-        margin-top: -50px !important; /* Desplazamiento negativo para ocultar franjas residuales */
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: -80px !important; /* Ajuste para subir el contenido y tapar franjas */
     }
 
     /* 3. Estilo de los Inputs */
@@ -255,39 +255,39 @@ def aplicar_estilos_login():
         transition: all 0.2s ease;
     }
 
-    /* 5. Contenedor de Bienvenida (Alineación Centrada) */
+    /* 5. Contenedor de Bienvenida */
     .welcome-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 80vh; /* Ocupa el alto para centrar contenido verticalmente */
+        height: 100vh; /* Ajuste a viewport height completa */
         padding-left: 50px;
     }
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 85px !important; /* Tamaño ajustado para elegancia */
+        font-size: 80px !important;
         font-weight: 900 !important;
         text-shadow: 4px 6px 20px rgba(0,0,0,0.9);
         margin: 0 !important;
-        line-height: 0.9 !important;
+        line-height: 0.95 !important;
         letter-spacing: -3px !important;
     }
 
     .welcome-container p {
         color: #f8fafc !important;
-        font-size: 26px !important;
+        font-size: 24px !important;
         font-weight: 500;
         text-shadow: 2px 3px 10px rgba(0,0,0,0.8);
         margin-top: 15px !important;
     }
 
-    /* 6. Caja de Login (Derecha - Centrada verticalmente) */
+    /* 6. Caja de Login (Alineación vertical corregida) */
     .login-sidebar-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 80vh;
+        height: 100vh; /* Centrado vertical real */
     }
 
     .login-sidebar {
@@ -297,7 +297,7 @@ def aplicar_estilos_login():
         border-radius: 32px;
         border: 1px solid rgba(255,255,255,0.25);
         width: 100%;
-        max-width: 400px;
+        max-width: 380px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
     }
     </style>
@@ -309,13 +309,12 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Usamos columnas nativas con alineación simulada por CSS
     col_espacio, col_login = st.columns([1.6, 1])
     
     with col_espacio:
         st.markdown("""
             <div class="welcome-container">
-                <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));">🕊️</div>
+                <div style="font-size: 70px; margin-bottom: 20px; filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));">🕊️</div>
                 <h1>Portal de<br>Liderazgo</h1>
                 <p>Gestión Ministerial IELA 2026</p>
             </div>
@@ -324,7 +323,7 @@ def pantalla_login():
     with col_login:
         st.markdown('<div class="login-sidebar-wrapper">', unsafe_allow_html=True)
         st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
-        st.markdown("<h2 style='color:white; margin-bottom:25px; font-size:28px; font-weight:800; letter-spacing:-0.5px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color:white; margin-bottom:25px; font-size:26px; font-weight:800; letter-spacing:-0.5px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
         
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
@@ -338,12 +337,12 @@ def pantalla_login():
         
         st.markdown("""
             <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
-                <p style="font-size: 12px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; opacity: 0.8;">
+                <p style="font-size: 11px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; opacity: 0.8;">
                     IELA 2026 • Avivamiento y Poder
                 </p>
             </div>
-            </div> <!-- login-sidebar -->
-            </div> <!-- login-sidebar-wrapper -->
+            </div> 
+            </div> 
         """, unsafe_allow_html=True)
 
 # ==============================
