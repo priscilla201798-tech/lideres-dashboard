@@ -405,9 +405,7 @@ def pantalla_dashboard():
     </div>
     """, unsafe_allow_html=True)
     
-    if st.sidebar.button("Cerrar sesión"):
-        st.session_state.dni = None
-        st.rerun()
+  
     
     st.sidebar.markdown("---")
     
@@ -422,7 +420,10 @@ def pantalla_dashboard():
         min_value=fecha_min,
         max_value=fecha_max
     )
-        
+
+      if st.sidebar.button("Cerrar sesión"):
+        st.session_state.dni = None
+        st.rerun()
     # ==============================
     # FILTRADO
     # ==============================
