@@ -574,25 +574,25 @@ def pantalla_dashboard():
     # ==============================
     
     if isinstance(rango, tuple) and len(rango) == 2:
-    df_res_l = df_res_l[
-        (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
-        (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
-    ]
-        df_eventos_l = df_eventos_l[
-            df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
+        df_res_l = df_res_l[
+            (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
+            (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
         ]
+            df_eventos_l = df_eventos_l[
+                df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
+            ]
+        
+            df_asistencia_l = df_asistencia_l[
+                df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
+            ]
+        
     
-        df_asistencia_l = df_asistencia_l[
-            df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
-        ]
+        df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+        df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
     
-
-    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-    df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
-
-    df_plan_eventos_l = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
-    df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
-    df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
+        df_plan_eventos_l = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+        df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
+        df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
 
     st.title("Dashboard Institucional")
 
