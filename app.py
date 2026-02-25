@@ -370,9 +370,7 @@ def pantalla_dashboard():
     # ==============================
 
     st.sidebar.markdown("### 👤 Identificación")
-    st.sidebar.write(f"**Nombre:** {nombre_lider}")
-    st.sidebar.write(f"**Entidad:** {entidad_lider}")
-
+    
     # Cuadro azul debajo de identificación
     st.sidebar.markdown(f"""
     <div style="
