@@ -209,28 +209,19 @@ def aplicar_estilos_login():
         background-attachment: fixed;
     }
 
-    /* 2. ELIMINACIÓN TOTAL Y ABSOLUTA DE BARRAS SUPERIORES */
-    /* Usamos selectores universales para asegurar que nada de la interfaz de Streamlit se muestre */
-    header, [data-testid="stHeader"], [data-testid="stDecoration"], .st-emotion-cache-zq5wmm, .st-emotion-cache-h5rgaw {
+    /* 2. ELIMINACIÓN TOTAL DE BARRAS Y AJUSTE DE POSICIÓN */
+    header, [data-testid="stHeader"], [data-testid="stDecoration"] {
         display: none !important;
-        visibility: hidden !important;
         height: 0 !important;
-        width: 0 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
     }
     
-    /* Eliminar el padding superior que deja Streamlit por defecto */
-    .st-emotion-cache-18ni7ap {
-        padding-top: 0rem !important;
-    }
-    
-    /* Forzar que el contenedor principal suba hasta arriba */
+    /* Forzamos que el contenedor ignore el margen superior de Streamlit */
     .main .block-container {
-        padding-top: 2rem !important;
+        padding-top: 0rem !important;
+        margin-top: -50px !important; /* Desplazamiento negativo para ocultar franjas residuales */
     }
 
-    /* 3. Estilo de los Inputs (Barra pequeña y profesional) */
+    /* 3. Estilo de los Inputs */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
         border: 1px solid #d1d5db !important;
@@ -264,44 +255,49 @@ def aplicar_estilos_login():
         transition: all 0.2s ease;
     }
 
-    .stButton > button:hover {
-        background-color: #0066cc !important;
-        transform: scale(1.02);
-    }
-
-    /* 5. Estilo de los textos de bienvenida (TÍTULO ULTRA GIGANTE) */
+    /* 5. Contenedor de Bienvenida (Alineación Centrada) */
     .welcome-container {
-        margin-top: 80px;
-        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 80vh; /* Ocupa el alto para centrar contenido verticalmente */
+        padding-left: 50px;
     }
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 110px !important; /* Aumentado drásticamente */
+        font-size: 85px !important; /* Tamaño ajustado para elegancia */
         font-weight: 900 !important;
         text-shadow: 4px 6px 20px rgba(0,0,0,0.9);
-        margin-bottom: 0px !important;
+        margin: 0 !important;
         line-height: 0.9 !important;
-        letter-spacing: -4px !important;
+        letter-spacing: -3px !important;
     }
 
     .welcome-container p {
         color: #f8fafc !important;
-        font-size: 32px !important; /* Subtítulo más grande */
+        font-size: 26px !important;
         font-weight: 500;
         text-shadow: 2px 3px 10px rgba(0,0,0,0.8);
-        margin-top: 20px !important;
-        letter-spacing: -0.5px;
+        margin-top: 15px !important;
     }
 
-    /* 6. Caja de Login (Derecha) */
+    /* 6. Caja de Login (Derecha - Centrada verticalmente) */
+    .login-sidebar-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+    }
+
     .login-sidebar {
         background-color: rgba(0, 31, 63, 0.45);
         backdrop-filter: blur(25px);
-        padding: 45px;
+        padding: 40px;
         border-radius: 32px;
         border: 1px solid rgba(255,255,255,0.25);
-        margin-top: 60px;
+        width: 100%;
+        max-width: 400px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
     }
     </style>
@@ -313,41 +309,41 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Usamos columnas: 1.6 para el título, 1 para el login para dar más aire al título
+    # Usamos columnas nativas con alineación simulada por CSS
     col_espacio, col_login = st.columns([1.6, 1])
     
     with col_espacio:
         st.markdown("""
             <div class="welcome-container">
-                <div style="font-size: 100px; margin-bottom: 30px; filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));">🕊️</div>
+                <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));">🕊️</div>
                 <h1>Portal de<br>Liderazgo</h1>
                 <p>Gestión Ministerial IELA 2026</p>
             </div>
         """, unsafe_allow_html=True)
         
     with col_login:
+        st.markdown('<div class="login-sidebar-wrapper">', unsafe_allow_html=True)
         st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
-        st.markdown("<h2 style='color:white; margin-bottom:30px; font-size:30px; font-weight:800; letter-spacing:-0.5px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color:white; margin-bottom:25px; font-size:28px; font-weight:800; letter-spacing:-0.5px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
         
-        # El input nativo de Streamlit
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
         if st.button("Ingresar al Portal"):
             dni_limpio = dni_input.strip().zfill(8)
-            # Validación simple
             if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
                 st.session_state.dni = dni_limpio
                 st.rerun()
             else:
-                st.error("Documento no encontrado en los registros.")
+                st.error("Documento no encontrado.")
         
         st.markdown("""
-            <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 30px;">
-                <p style="font-size: 13px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; text-align: center; opacity: 0.8;">
+            <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
+                <p style="font-size: 12px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; opacity: 0.8;">
                     IELA 2026 • Avivamiento y Poder
                 </p>
             </div>
-            </div>
+            </div> <!-- login-sidebar -->
+            </div> <!-- login-sidebar-wrapper -->
         """, unsafe_allow_html=True)
 
 # ==============================
