@@ -125,84 +125,143 @@ df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
 
-    
-def pantalla_login():
-
+  # 1. PEGA AQUÍ LA FUNCIÓN DE ESTILOS
+def aplicar_estilos_login():
     st.markdown("""
     <style>
+    /* Ocultar elementos de Streamlit en el login */
+    [data-testid="stHeader"], [data-testid="stToolbar"] {
+        display: none;
+    }
 
-    /* Fondo completo */
-    .login-bg {
-        background-image: url("PORTADA.JPG");
+    /* Fondo Principal con Imagen Cristiana y Contraste Alto */
+    .stApp {
+        background: #020617;
+        background-image: linear-gradient(to top, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.5)), 
+                          url("https://images.unsplash.com/photo-1544427920-c49ccfb85579?q=80&w=2044&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
-        padding: 120px 0;
-        display: flex;
-        justify-content: center;
+        background-attachment: fixed;
     }
 
-    /* Overlay oscuro */
-    .overlay {
-        background: linear-gradient(to top, rgba(15,23,42,0.95), rgba(15,23,42,0.75));
-        padding: 60px;
-        width: 100%;
+    .main-login-container {
         display: flex;
+        align-items: center;
         justify-content: center;
+        flex-direction: column;
+        min-height: 80vh;
+        padding-top: 5vh;
     }
 
-    /* Tarjeta */
     .login-card {
-        background: rgba(15,23,42,0.85);
-        backdrop-filter: blur(15px);
-        border-radius: 35px;
-        padding: 50px;
-        width: 420px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 40px;
+        padding: 45px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         color: white;
-        text-align: left;
     }
 
     .login-card h1 {
-        font-size: 34px;
-        font-weight: 700;
-        margin-bottom: 8px;
+        font-size: 36px !important;
+        font-weight: 800 !important;
+        margin-bottom: 8px !important;
+        color: white !important;
+        line-height: 1.1 !important;
     }
 
-    .login-card p {
-        color: #cbd5e1;
-        margin-bottom: 30px;
-        font-size: 16px;
+    .login-card .subtitle {
+        color: #f1f5f9 !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        margin-bottom: 35px !important;
+        opacity: 0.95;
     }
 
+    div[data-baseweb="input"] {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 16px !important;
+        padding: 4px !important;
+    }
+    
+    label p {
+        color: #60a5fa !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        font-size: 13px !important;
+        letter-spacing: 0.5px;
+    }
+
+    .stButton > button {
+        width: 100%;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8) !important;
+        color: white !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
+        font-weight: 700 !important;
+        font-size: 18px !important;
+        border: none !important;
+        margin-top: 25px;
+    }
+
+    .logo-footer {
+        margin-top: 40px;
+        background: white;
+        padding: 12px 28px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    # Fondo + overlay + tarjeta
+# 2. REEMPLAZA TU FUNCIÓN pantalla_login() VIEJA POR ESTA
+def pantalla_login():
+    aplicar_estilos_login()
+    
+    st.markdown('<div class="main-login-container">', unsafe_allow_html=True)
+    
     st.markdown("""
-    <div class="login-bg">
-        <div class="overlay">
-            <div class="login-card">
-                <h1>Portal de Liderazgo 2026</h1>
-                <p>Accede a las métricas y reportes ministeriales</p>
+        <div class="login-card">
+            <div style="background: rgba(59, 130, 246, 0.25); padding: 6px 16px; border-radius: 20px; width: fit-content; font-size: 11px; font-weight: 800; color: #93c5fd; margin-bottom: 25px; border: 1px solid rgba(147, 197, 253, 0.3); letter-spacing: 1px;">
+                PORTAL DE LIDERAZGO 2026
+            </div>
+            <h1>Bienvenido,<br>líder</h1>
+            <p class="subtitle">Ingresa tus credenciales para continuar</p>
     """, unsafe_allow_html=True)
 
-    dni_input = st.text_input("Documento de Identidad (DNI)")
+    dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="Ingresa tu DNI")
 
     if st.button("Iniciar Sesión"):
-
         dni_limpio = dni_input.strip().zfill(8)
-
         if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no encontrado")
+            st.error("DNI no registrado en el sistema")
 
     st.markdown("""
+            <div style="margin-top: 35px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; text-align: center;">
+                <p style="font-size: 14px; color: #94a3b8; font-weight: 500;">¿Problemas con tu acceso? Contacta a soporte</p>
+            </div>
+        </div>
+        <div class="logo-footer">
+            <div style="background: #1e3a8a; color: white; padding: 6px 12px; border-radius: 10px; font-weight: 900; font-size: 13px; letter-spacing: -0.5px;">IELA</div>
+            <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 10px; font-weight: 900; color: #0f172a; line-height: 1.1; letter-spacing: -0.2px;">IGLESIA EVANGÉLICA DE</span>
+                <span style="font-size: 10px; font-weight: 900; color: #2563eb; line-height: 1.1; letter-spacing: -0.2px;">LIBERACIÓN Y AVIVAMIENTO</span>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+# ... (El resto de tu código de dashboard y controlador de pantallas sigue igual) ...  
 
 
 
