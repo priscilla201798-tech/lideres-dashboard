@@ -128,26 +128,81 @@ df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
     
 def pantalla_login():
 
-    st.title("Análisis de Datos 2026")
+    st.markdown("""
+    <style>
 
-    col1, col2 = st.columns([1.2, 1])
+    /* Fondo completo */
+    .login-bg {
+        background-image: url("PORTADA.JPG");
+        background-size: cover;
+        background-position: center;
+        padding: 120px 0;
+        display: flex;
+        justify-content: center;
+    }
 
-    with col1:
-        st.image("PORTADA.JPG", use_container_width=True)
+    /* Overlay oscuro */
+    .overlay {
+        background: linear-gradient(to top, rgba(15,23,42,0.95), rgba(15,23,42,0.75));
+        padding: 60px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
 
-    with col2:
-        st.subheader("Bienvenido líder")
+    /* Tarjeta */
+    .login-card {
+        background: rgba(15,23,42,0.85);
+        backdrop-filter: blur(15px);
+        border-radius: 35px;
+        padding: 50px;
+        width: 420px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        color: white;
+        text-align: left;
+    }
 
-        dni_input = st.text_input("Ingrese su DNI")
+    .login-card h1 {
+        font-size: 34px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
 
-        if st.button("Iniciar Sesión"):
-            dni_limpio = dni_input.strip().zfill(8)
+    .login-card p {
+        color: #cbd5e1;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
 
-            if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
-                st.session_state.dni = dni_limpio
-                st.rerun()
-            else:
-                st.error("DNI no encontrado")
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Fondo + overlay + tarjeta
+    st.markdown("""
+    <div class="login-bg">
+        <div class="overlay">
+            <div class="login-card">
+                <h1>Portal de Liderazgo 2026</h1>
+                <p>Accede a las métricas y reportes ministeriales</p>
+    """, unsafe_allow_html=True)
+
+    dni_input = st.text_input("Documento de Identidad (DNI)")
+
+    if st.button("Iniciar Sesión"):
+
+        dni_limpio = dni_input.strip().zfill(8)
+
+        if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
+            st.session_state.dni = dni_limpio
+            st.rerun()
+        else:
+            st.error("DNI no encontrado")
+
+    st.markdown("""
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 
