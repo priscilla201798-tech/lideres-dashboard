@@ -129,95 +129,69 @@ df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
 # 1. FUNCIÓN DE ESTILOS ACTUALIZADA (Imagen de paz, centrado y logo de GitHub)
 def aplicar_estilos_login():
     st.markdown("""
-    <style>
-    /* Ocultar elementos de Streamlit en el login */
-    [data-testid="stHeader"], [data-testid="stToolbar"] {
-        display: none;
-    }
+<style>
 
-    /* Fondo Principal con Imagen de Paz y Tranquilidad */
-    .stApp {
-        background: #0f172a;
-        background-image: linear-gradient(to top, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.3)), 
-                          url("https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=2070&auto=format&fit=crop");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
+/* 1. Eliminar absolutamente TODO el layout nativo */
+[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+header,
+footer {
+    display: none !important;
+}
 
-    /* Contenedor Centrado Perfectamente en Pantalla */
-    .main-login-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        height: 100vh; /* Ocupa el alto total de la ventana */
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-    }
+/* 2. Eliminar padding y márgenes reales */
+html, body, .stApp {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+}
 
-    .login-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 35px;
-        padding: 40px;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
-        color: white;
-        text-align: center;
-    }
+section.main > div {
+    padding: 0 !important;
+}
 
-    .login-card h1 {
-        font-size: 30px !important;
-        font-weight: 800 !important;
-        margin-bottom: 5px !important;
-        color: white !important;
-    }
+.block-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+}
 
-    .login-card .subtitle {
-        color: #e2e8f0 !important;
-        font-size: 16px !important;
-        font-weight: 500 !important;
-        margin-bottom: 30px !important;
-    }
+/* 3. Fondo full screen */
+.stApp {
+    background-image: linear-gradient(
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.75)
+    ), url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
 
-    /* Estilo de los Inputs */
-    div[data-baseweb="input"] {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 12px !important;
-    }
-    
-    label p {
-        color: #93c5fd !important;
-        font-weight: 600 !important;
-        font-size: 12px !important;
-    }
+/* 4. Wrapper REAL fullscreen */
+.main-wrapper {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
 
-    /* Botón de Iniciar Sesión */
-    .stButton > button {
-        width: 100%;
-        background: #2563eb !important;
-        color: white !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
-        font-weight: 700 !important;
-        border: none !important;
-        margin-top: 20px;
-    }
+/* 5. Activar interacción solo dentro del card */
+.login-box {
+    background: white;
+    border-radius: 28px;
+    padding: 35px;
+    width: 360px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    pointer-events: all;
+}
 
-    /* Logo de GitHub ajustado */
-    .logo-iglesia {
-        width: 80px;
-        margin-bottom: 15px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+</style>
+""", unsafe_allow_html=True)
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 
