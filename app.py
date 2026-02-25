@@ -196,7 +196,7 @@ section.main > div {
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 # ==============================
-# 🎨 ESTILOS CSS (DISEÑO ALINEADO Y SIN BARRAS)
+# 🎨 ESTILOS CSS (POSICIONAMIENTO FORZADO HACIA ARRIBA)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
@@ -210,38 +210,36 @@ def aplicar_estilos_login():
         background-attachment: fixed;
     }
 
-    /* 2. ELIMINACIÓN RADICAL DE BARRAS SUPERIORES */
+    /* 2. ELIMINACIÓN TOTAL DE BARRAS */
     header, [data-testid="stHeader"], [data-testid="stDecoration"] {
         display: none !important;
-        height: 0 !important;
     }
     
-    /* Reset de márgenes de Streamlit para subir el contenido */
     .main .block-container {
         padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        margin-top: -60px !important; 
+        margin-top: -100px !important; 
     }
 
     /* 3. Estilo de los Inputs */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
         border: 1px solid #d1d5db !important;
-        border-radius: 8px !important;
-        height: 40px !important;
+        border-radius: 12px !important;
+        height: 45px !important;
     }
 
     div[data-baseweb="input"] input {
         color: #1e293b !important;
-        font-size: 14px !important;
+        font-size: 16px !important;
     }
 
     label p {
         color: #ffffff !important;
-        font-weight: 600 !important;
-        font-size: 12px !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
         margin-bottom: 8px !important;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        text-transform: uppercase;
     }
 
     /* 4. Botón de Acceso */
@@ -249,58 +247,53 @@ def aplicar_estilos_login():
         width: 100%;
         background-color: #004a99 !important;
         color: white !important;
-        border-radius: 8px !important;
-        padding: 10px !important;
-        font-weight: 700 !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+        font-weight: 800 !important;
         border: none !important;
-        transition: all 0.2s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
 
-    /* 5. Contenedor de Bienvenida */
+    /* 5. Contenedor de Bienvenida (Forzado hacia arriba) */
     .welcome-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: 75vh;
-        padding-left: 50px;
+        margin-top: 15vh; /* Empieza al 15% de la altura de la pantalla */
+        padding-left: 60px;
     }
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 85px !important;
+        font-size: 90px !important;
         font-weight: 900 !important;
-        text-shadow: 4px 6px 20px rgba(0,0,0,0.9);
+        text-shadow: 4px 6px 25px rgba(0,0,0,0.9);
         margin: 0 !important;
-        line-height: 0.95 !important;
-        letter-spacing: -3px !important;
+        line-height: 0.85 !important;
+        letter-spacing: -4px !important;
     }
 
     .welcome-container p {
         color: #f8fafc !important;
-        font-size: 24px !important;
+        font-size: 26px !important;
         font-weight: 500;
         text-shadow: 2px 3px 10px rgba(0,0,0,0.8);
-        margin-top: 15px !important;
+        margin-top: 25px !important;
     }
 
-    /* 6. Caja de Login - AJUSTE PARA SUBIR EL BLOQUE */
+    /* 6. Caja de Login (Forzada hacia arriba para coincidir con el título) */
     .login-sidebar-wrapper {
+        margin-top: 15vh; /* Misma altura de inicio que el título */
         display: flex;
-        align-items: center;
         justify-content: center;
-        height: 75vh; /* Reducido para que no empuje hacia abajo */
     }
 
     .login-sidebar {
-        background-color: rgba(0, 31, 63, 0.45);
-        backdrop-filter: blur(25px);
-        padding: 40px;
-        border-radius: 32px;
-        border: 1px solid rgba(255,255,255,0.25);
+        background-color: rgba(0, 31, 63, 0.4);
+        backdrop-filter: blur(30px);
+        padding: 50px;
+        border-radius: 35px;
+        border: 1px solid rgba(255,255,255,0.2);
         width: 100%;
-        max-width: 380px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        margin-top: -150px !important; /* Margen negativo agresivo para subirlo */
+        max-width: 420px;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -311,7 +304,7 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    col_espacio, col_login = st.columns([1.6, 1])
+    col_espacio, col_login = st.columns([1.7, 1])
     
     with col_espacio:
         st.markdown("""
@@ -324,7 +317,7 @@ def pantalla_login():
     with col_login:
         st.markdown('<div class="login-sidebar-wrapper">', unsafe_allow_html=True)
         st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
-        st.markdown("<h2 style='color:white; margin-bottom:25px; font-size:26px; font-weight:800; letter-spacing:-0.5px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color:white; margin-bottom:30px; font-size:30px; font-weight:900; letter-spacing:-1px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
         
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
@@ -337,8 +330,8 @@ def pantalla_login():
                 st.error("Documento no encontrado.")
         
         st.markdown("""
-            <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
-                <p style="font-size: 11px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; opacity: 0.8;">
+            <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 30px;">
+                <p style="font-size: 12px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; text-align: center; opacity: 0.7;">
                     IELA 2026 • Gestión Ministerial
                 </p>
             </div>
