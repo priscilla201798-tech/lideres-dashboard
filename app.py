@@ -370,21 +370,36 @@ def pantalla_dashboard():
 
     st.sidebar.title("Panel de Control")
 
-    st.sidebar.markdown("### 👤 Identificación")
-    st.sidebar.write(f"**Nombre:** {nombre_lider}")
-    st.sidebar.write(f"**Entidad:** {entidad_lider}")
-
     st.sidebar.markdown(f"""
     <div style="
         background:#1D4E89;
-        padding:18px;
-        border-radius:12px;
+        padding:20px;
+        border-radius:14px;
         color:white;
         margin-top:10px;
         margin-bottom:15px;
         font-size:14px;
     ">
-    <b>DNI:</b><br>{dni}
+    
+    <div style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">
+    Usuario Activo
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>Nombre:</b><br>
+    {nombre_lider}
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>Entidad:</b><br>
+    {entidad_lider}
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>DNI:</b><br>
+    {dni}
+    </div>
+    
     </div>
     """, unsafe_allow_html=True)
 
