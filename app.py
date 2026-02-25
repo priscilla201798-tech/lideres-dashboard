@@ -39,7 +39,50 @@ def cargar_sheet(gid):
 
 def extraer_dni(key):
     return str(key).split("_")[0]
+import re
 
+def norm_txt(s):
+    return re.sub(r"\s+", " ", str(s or "").strip().lower())
+
+def es_si(valor):
+    v = norm_txt(valor)
+    return v in {"si", "sí", "s", "yes", "true", "1", "ok", "x"}
+
+def get_num(data, *keys, default=0):
+    """Busca una clave exacta; si no existe, busca por coincidencia 'normalizada'."""
+    if not isinstance(data, dict):
+        return default
+
+    # 1) exact match
+    for k in keys:
+        if k in data:
+            try:
+                return float(data.get(k) or 0)
+            except:
+                return default
+
+    # 2) fuzzy by normalized text
+    wanted = {norm_txt(k) for k in keys}
+    for k_data, v in data.items():
+        if norm_txt(k_data) in wanted:
+            try:
+                return float(v or 0)
+            except:
+                return default
+    return default
+
+def get_val(data, *keys, default=""):
+    if not isinstance(data, dict):
+        return default
+    for k in keys:
+        if k in data:
+            return data.get(k)
+    wanted = {norm_txt(k) for k in keys}
+    for k_data, v in data.items():
+        if norm_txt(k_data) in wanted:
+            return v
+    return default
+    
 def aplanar(df):
 
     resumen = []
@@ -119,6 +162,112 @@ def aplanar(df):
         pd.DataFrame(asistencia)
     )
 
+
+def calcular_avance_objetivos(df_plan_obj_l, df_res_l, df_ev_l, df_obj_manual_l):
+    """
+    df_plan_obj_l: hoja OBJETIVOS_DEL_LIDER filtrada por DNI
+    df_res_l: resumen filtrado por DNI + rango
+    df_ev_l: eventos ejecutados filtrados por DNI + rango
+    df_obj_manual_l: avances manuales filtrados por DNI (tu df_objetivos_l)
+    """
+
+    # acumulados base (AUTO)
+    tot_convertidos = int(df_res_l["Convertidos"].sum()) if "Convertidos" in df_res_l else 0
+    tot_nuevos = int(df_res_l["Nuevos"].sum()) if "Nuevos" in df_res_l else 0
+    tot_visitas = int(df_res_l["Visitas"].sum()) if "Visitas" in df_res_l else 0
+    tot_esc_bib = int(df_res_l["EscuelaBiblica"].sum()) if "EscuelaBiblica" in df_res_l else 0
+    tot_prog = int(df_res_l["ProgSemanal"].sum()) if "ProgSemanal" in df_res_l else 0
+
+    # Eventos: conteo y participantes
+    ev_count = int(len(df_ev_l)) if df_ev_l is not None else 0
+    ev_part = int(df_ev_l["Participantes"].sum()) if (df_ev_l is not None and "Participantes" in df_ev_l) else 0
+
+    filas = []
+
+    for _, row in df_plan_obj_l.iterrows():
+        objetivo_id = str(row.get("ObjetivoID", "")).strip()
+        nombre = str(row.get("NombreObjetivo", "")).strip()
+        meta = int(float(row.get("MetaAnual", 0) or 0))
+        fuente = str(row.get("FuenteDato", "")).strip()
+        unidad = str(row.get("Unidad", "")).strip()
+
+        fuente_norm = norm_txt(fuente)
+
+        # ---- AUTO según FuenteDato ----
+        ejecutado_auto = 0
+
+        if fuente_norm == "registrosemanal":
+            ejecutado_auto = tot_convertidos
+
+        elif fuente_norm == "nuevos":
+            ejecutado_auto = tot_nuevos
+
+        elif fuente_norm == "visitas":
+            ejecutado_auto = tot_visitas
+
+        elif fuente_norm in {"escuelabiblica", "derivaciones"}:
+            ejecutado_auto = tot_esc_bib
+
+        elif fuente_norm in {"programacionsemanal", "programacionseman"}:
+            ejecutado_auto = tot_prog
+
+        elif fuente_norm == "eventosespirituales":
+            # Si la unidad dice Participantes, usamos participantes; si no, conteo de eventos
+            if "particip" in norm_txt(unidad):
+                ejecutado_auto = ev_part
+            else:
+                ejecutado_auto = ev_count
+
+        # ---- MANUAL (solo si FuenteDato es Manual) ----
+        ejecutado_manual = 0
+        if fuente_norm == "manual":
+            # Aquí tu df_obj_manual_l debe tener columnas: Objetivo / Avance
+            # y Objetivo contiene el ObjetivoID (ej: "OBJ-01")
+            if df_obj_manual_l is not None and not df_obj_manual_l.empty:
+                ejecutado_manual = int(
+                    df_obj_manual_l[df_obj_manual_l["Objetivo"].str.contains(objetivo_id, na=False)]["Avance"].sum()
+                )
+
+        ejecutado_total = int(ejecutado_auto + ejecutado_manual)
+        progreso = min(ejecutado_total / meta if meta > 0 else 0, 1)
+
+        filas.append({
+            "ObjetivoID": objetivo_id,
+            "NombreObjetivo": nombre,
+            "FuenteDato": fuente,
+            "Unidad": unidad,
+            "Ejecutado": ejecutado_total,
+            "MetaAnual": meta,
+            "Progreso": progreso
+        })
+
+    return pd.DataFrame(filas)
+    ####################################################################################################################
+        # --- PROGRAMACIÓN SEMANAL (sí/no) ---
+        cumplio_prog = (
+            es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
+            es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
+        )
+        
+        # --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
+        nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
+        visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
+        esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
+        
+        resumen.append({
+            "Fecha": fecha,
+            "Mes": mes,
+            "DNI": dni,
+            "Convertidos": int(get_num(data, "¿Cuántas personas aceptaron a Cristo?", "4. ¿Cuántas personas aceptaron a Cristo?", default=0)),
+            "Reconciliados": int(get_num(data, "¿Cuántas personas se reconciliaron con Cristo?", default=0)),
+            "Ofrenda": float(get_num(data, "Monto total de la ofrenda (S/.)", default=0)),
+        
+            # 👇 NUEVO para objetivos automáticos
+            "ProgSemanal": 1 if cumplio_prog else 0,
+            "Nuevos": int(nuevos),
+            "Visitas": int(visitas),
+            "EscuelaBiblica": int(esc_bib),
+        })
 
 # ==============================
 # CARGAR DATA
@@ -497,26 +646,30 @@ def pantalla_dashboard():
     st.divider()
 
     # ==============================
-    # 2️⃣ OBJETIVOS
+    # 🎯 OBJETIVOS ESTRATÉGICOS
     # ==============================
-
-    st.subheader("🎯 Cumplimiento de Objetivos")
-
-    for _, row in df_plan_obj_l.iterrows():
-        obj_id = row["ObjetivoID"]
-        obj_nom = row["NombreObjetivo"]
-        meta = int(row["MetaAnual"])
-
-        ejec = df_obj_l[
-            df_obj_l["Objetivo"].str.contains(obj_id, na=False)
-        ]["Avance"].sum()
-
-        progreso = min(ejec / meta if meta > 0 else 0, 1)
-
-        st.markdown(f"**{obj_nom}** ({ejec}/{meta})")
+    
+    st.subheader("🎯 Objetivos Estratégicos")
+    
+    df_avance_obj = calcular_avance_objetivos(
+        df_plan_obj_l=df_plan_obj_l,
+        df_res_l=df_res_l,
+        df_ev_l=df_ev_l,
+        df_obj_manual_l=df_obj_l
+    )
+    
+    for _, row in df_avance_obj.iterrows():
+    
+        objetivo = row["ObjetivoID"]
+        nombre = row["NombreObjetivo"]
+        meta = row["MetaAnual"]
+        ejecutado = row["Ejecutado"]
+        progreso = row["Progreso"]
+    
+        st.markdown(
+            f"**{objetivo} – {nombre} ({ejecutado}/{meta})**"
+        )
         st.progress(progreso)
-
-    st.divider()
 
     # ==============================
     # 3️⃣ EVENTOS
