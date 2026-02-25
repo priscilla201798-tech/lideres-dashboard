@@ -561,16 +561,16 @@ def pantalla_dashboard():
     df_t = pd.DataFrame(tabla)
 
     def style_ev(val):
-    try:
-        ejec, prog = map(int, val.split("/"))
-        if prog == 0:
+        try:
+            ejec, prog = map(int, val.split("/"))
+            if prog == 0:
+                return ""
+            if ejec >= prog:
+                return "background-color:#1E8449; color:white; font-weight:bold;"
+            else:
+                return ""   # 👈 sin rojo
+        except:
             return ""
-        if ejec >= prog:
-            return "background-color:#1E8449; color:white; font-weight:bold;"
-        else:
-            return ""   # 👈 sin rojo
-    except:
-        return ""
     st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
     st.subheader("📈 Tendencia de Participación en Eventos")
 
