@@ -159,46 +159,56 @@ def pantalla_dashboard():
     dni = st.session_state.dni
 
     # ==============================
-    # DATOS DEL LÍDER
+    # DATOS DEL LÍDER + SIDEBAR
     # ==============================
-    
+
     df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-    
+
     datos_lider = df_plan_eventos_f[
         df_plan_eventos_f["DNI_Lider"] == dni
-    ].iloc[0]
     
+    if not df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni].empty:
+        datos_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni].iloc[0]
+        nombre_lider = datos_lider["NombreCompleto"]
+        entidad_lider = datos_lider["EntidadNombre"]
+    else:
+        nombre_lider = "No registrado"
+        entidad_lider = "-"
+    
+
     nombre_lider = datos_lider["NombreCompleto"]
     entidad_lider = datos_lider["EntidadNombre"]
 
     st.sidebar.title("📊 Panel de Control")
-    
-    st.sidebar.markdown("### 👤 Datos del Líder")
-    
+
+    st.sidebar.markdown("""
+    <style>
+    .sidebar-card {
+        background-color: #1D4E89;
+        padding: 18px;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.sidebar.markdown(f"""
-    **DNI:** {dni}  
-    **Nombre:** {nombre_lider}  
-    **Entidad:** {entidad_lider}
-    """)
+    <div class="sidebar-card">
+    <b>DNI:</b><br>{dni}<br><br>
+    <b>Nombre:</b><br>{nombre_lider}<br><br>
+    <b>Entidad:</b><br>{entidad_lider}
+    </div>
+    """, unsafe_allow_html=True)
 
     if st.sidebar.button("Cerrar sesión"):
         st.session_state.dni = None
         st.rerun()
 
     st.sidebar.markdown("---")
-    
-    st.sidebar.markdown("### 📅 Filtrar por fecha")
-    
-    fecha_min = df_resumen_f["Fecha"].min()
-    fecha_max = df_resumen_f["Fecha"].max()
-    
-    rango_fechas = st.sidebar.date_input(
-        "Seleccionar rango",
-        value=(fecha_min, fecha_max),
-        min_value=fecha_min,
-        max_value=fecha_max
-    )
 
+    
     # ==============================
     # FILTRO POR LIDER
     # ==============================
