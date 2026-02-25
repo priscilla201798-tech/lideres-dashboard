@@ -222,88 +222,105 @@ def aplicar_estilos_login():
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 
 # ==============================
-# 🎨 ESTILOS CSS (ESTRUCTURA ORIGINAL MEJORADA)
+# 🎨 ESTILOS CSS (ESTRUCTURA ORIGINAL RECUPERADA)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
     <style>
-    /* Ocultar basura de Streamlit */
+    /* 1. Limpiar la interfaz de Streamlit */
     [data-testid="stHeader"], [data-testid="stToolbar"] {
         display: none;
     }
+    
+    .block-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
 
-    /* Fondo de Paz y Tranquilidad */
+    /* 2. Fondo con Imagen de Paz */
     .stApp {
-        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(30, 58, 138, 0.3)), 
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(30, 58, 138, 0.4)), 
                           url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
+        background-attachment: fixed;
     }
 
-    /* Contenedor Principal */
-    .main-login-container {
+    /* 3. Forzar el centrado real de la tarjeta */
+    .main-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 85vh;
-        width: 100%;
+        height: 100vh;
+        width: 100vw;
     }
 
-    /* Tarjeta Sólida (Estructura del 1er diseño) */
+    /* 4. La Tarjeta Sólida (Estructura que te gustó) */
     .login-box {
         background: white;
-        border-radius: 30px;
-        padding: 50px;
+        border-radius: 35px;
+        padding: 45px;
         width: 100%;
-        max-width: 450px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 420px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         text-align: center;
+        border: 1px solid rgba(255,255,255,0.8);
     }
 
     .login-box h1 {
         color: #1e3a8a !important;
-        font-size: 32px !important;
+        font-size: 30px !important;
         font-weight: 800 !important;
-        margin-bottom: 10px !important;
+        margin: 10px 0 !important;
+        line-height: 1.2 !important;
     }
 
     .login-box p.subtitle {
         color: #64748b !important;
-        font-size: 16px !important;
-        margin-bottom: 30px !important;
+        font-size: 15px !important;
+        margin-bottom: 25px !important;
+        font-weight: 500;
     }
 
-    /* Estilo de Inputs */
+    /* Inputs Estilizados dentro de la caja */
     div[data-baseweb="input"] {
-        background-color: #f8fafc !important;
-        border: 2px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        padding: 5px !important;
+        background-color: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 14px !important;
     }
 
     label p {
         color: #1e3a8a !important;
         font-weight: 700 !important;
         text-transform: uppercase;
-        font-size: 12px !important;
+        font-size: 11px !important;
+        margin-bottom: 5px !important;
+        text-align: left;
     }
 
-    /* Botón Original */
+    /* Botón Profesional Azul */
     .stButton > button {
         width: 100%;
         background: #2563eb !important;
         color: white !important;
-        border-radius: 12px !important;
-        padding: 15px !important;
+        border-radius: 14px !important;
+        padding: 12px !important;
         font-weight: 700 !important;
         font-size: 16px !important;
         border: none !important;
-        margin-top: 20px;
+        margin-top: 15px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
     }
 
-    /* Logo */
-    .img-logo {
-        margin-bottom: 20px;
+    .stButton > button:hover {
+        background: #1d4ed8 !important;
+        transform: translateY(-1px);
+    }
+    
+    /* Ajuste para que el error de Streamlit no mueva todo */
+    .stAlert {
+        border-radius: 12px !important;
+        margin-top: 10px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -314,21 +331,26 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    st.markdown('<div class="main-login-container">', unsafe_allow_html=True)
+    # Iniciamos el envoltorio para centrar
+    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     
     # Logo Institucional
-    if os.path.exists("logotipo.png"):
-        st.image("logotipo.png", width=100)
-    else:
-        st.markdown('<div style="font-size: 50px; margin-bottom: 20px;">🕊️</div>', unsafe_allow_html=True)
+    try:
+        if os.path.exists("logotipo.png"):
+            st.image("logotipo.png", width=90)
+        else:
+            st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+    except:
+        st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     
     st.markdown("""
         <h1>Bienvenido</h1>
         <p class="subtitle">Portal Ministerial IELA 2026</p>
     """, unsafe_allow_html=True)
 
-    dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="Ingresa tu DNI")
+    # El input ahora vive DENTRO de la login-box de CSS
+    dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="00000000")
 
     if st.button("Iniciar Sesión"):
         dni_limpio = dni_input.strip().zfill(8)
@@ -336,17 +358,18 @@ def pantalla_login():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no registrado")
+            st.error("Acceso denegado: DNI no registrado")
 
     st.markdown("""
         <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
-            <p style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">
-                Iglesia Evangélica de Liberación y Avivamiento
+            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                IELA - Avivamiento y Poder
             </p>
         </div>
         </div> <!-- Cierre login-box -->
-    </div> <!-- Cierre main-login-container -->
+    </div> <!-- Cierre main-wrapper -->
     """, unsafe_allow_html=True)
+
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
