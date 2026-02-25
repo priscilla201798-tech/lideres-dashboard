@@ -579,11 +579,11 @@ def pantalla_dashboard():
             (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
         ]
         df_eventos_l = df_eventos_l[
-            df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
+        df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
         ]
         
-         df_asistencia_l = df_asistencia_l[
-            df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
+        df_asistencia_l = df_asistencia_l[
+        df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
         ]
         
         df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
