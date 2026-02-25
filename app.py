@@ -195,7 +195,7 @@ section.main > div {
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 # ==============================
-# 🎨 ESTILOS CSS (DISEÑO LATERAL DERECHO)
+# 🎨 ESTILOS CSS (DISEÑO LATERAL DERECHO OPTIMIZADO)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
@@ -209,9 +209,11 @@ def aplicar_estilos_login():
         background-attachment: fixed;
     }
 
-    /* 2. Limpiar UI de Streamlit */
+    /* 2. Limpiar UI de Streamlit (Elimina barra gris superior y otros elementos) */
     [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
         display: none !important;
+        height: 0 !important;
+        opacity: 0 !important;
     }
 
     /* 3. Estilo de los Inputs (Barra pequeña y profesional) */
@@ -253,7 +255,7 @@ def aplicar_estilos_login():
         transform: scale(1.02);
     }
 
-    /* 5. Estilo de los textos de bienvenida */
+    /* 5. Estilo de los textos de bienvenida (Título más grande) */
     .welcome-container {
         margin-top: 100px;
         padding: 20px;
@@ -261,26 +263,29 @@ def aplicar_estilos_login():
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 42px !important;
-        font-weight: 800 !important;
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        font-size: 64px !important; /* Letras mucho más grandes */
+        font-weight: 900 !important;
+        text-shadow: 2px 4px 12px rgba(0,0,0,0.8);
         margin-bottom: 0px !important;
+        line-height: 1.1 !important;
     }
 
     .welcome-container p {
         color: #e2e8f0 !important;
-        font-size: 18px !important;
-        text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+        font-size: 22px !important;
+        font-weight: 400;
+        text-shadow: 1px 2px 6px rgba(0,0,0,0.8);
     }
 
     /* 6. Caja de Login (Derecha) */
     .login-sidebar {
         background-color: rgba(0, 31, 63, 0.4);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(15px);
         padding: 40px;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.15);
         margin-top: 50px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -297,17 +302,17 @@ def pantalla_login():
     with col_espacio:
         st.markdown("""
             <div class="welcome-container">
-                <div style="font-size: 60px;">🕊️</div>
-                <h1>Portal de Liderazgo</h1>
+                <div style="font-size: 70px; margin-bottom: 10px;">🕊️</div>
+                <h1>Portal de<br>Liderazgo</h1>
                 <p>Gestión Ministerial IELA 2026</p>
             </div>
         """, unsafe_allow_html=True)
         
     with col_login:
         st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
-        st.markdown("<h3 style='color:white; margin-bottom:20px; font-size:20px;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; margin-bottom:20px; font-size:24px; font-weight:700;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
         
-        # El input ahora es nativo de Streamlit en su columna, sin capas encima
+        # El input ahora es nativo de Streamlit en su columna
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
         if st.button("Ingresar al Portal"):
@@ -321,7 +326,7 @@ def pantalla_login():
         
         st.markdown("""
             <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
-                <p style="font-size: 11px; color: #cbd5e1; font-weight: 600; text-transform: uppercase;">
+                <p style="font-size: 11px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
                     IELA 2026 • Avivamiento y Poder
                 </p>
             </div>
