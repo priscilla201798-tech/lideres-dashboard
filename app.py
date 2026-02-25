@@ -561,17 +561,58 @@ def pantalla_dashboard():
     df_t = pd.DataFrame(tabla)
 
     def style_ev(val):
-        try:
-            ejec, prog = map(int, val.split("/"))
-            if prog == 0:
-                return ""
-            return "background-color:#1E8449; color:white; font-weight:bold;" if ejec >= prog \
-                else "background-color:#C0392B; color:white;"
-        except:
+    try:
+        ejec, prog = map(int, val.split("/"))
+        if prog == 0:
             return ""
-
+        if ejec >= prog:
+            return "background-color:#1E8449; color:white; font-weight:bold;"
+        else:
+            return ""   # 👈 sin rojo
+    except:
+        return ""
     st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
+    st.subheader("📈 Tendencia de Participación en Eventos")
 
+# Creamos dataset mensual
+data_linea = []
+
+for m_idx in range(1, 13):
+    mes_nombre = meses_nom[m_idx]
+
+    ayuno_total = df_ev_l[
+        (df_ev_l["Mes"] == m_idx) &
+        (df_ev_l["Tipo"] == "AYUNO")
+    ]["Participantes"].sum()
+
+    vigilia_total = df_ev_l[
+        (df_ev_l["Mes"] == m_idx) &
+        (df_ev_l["Tipo"] == "VIGILIA")
+    ]["Participantes"].sum()
+
+    data_linea.append({
+        "Mes": mes_nombre,
+        "Ayuno": ayuno_total,
+        "Vigilia": vigilia_total
+    })
+
+df_linea = pd.DataFrame(data_linea)
+
+fig_line = px.line(
+    df_linea,
+    x="Mes",
+    y=["Ayuno", "Vigilia"],
+    markers=True
+)
+
+fig_line.update_layout(
+    height=400,
+    xaxis_title="Mes",
+    yaxis_title="Cantidad de asistentes",
+    legend_title="Tipo de Evento"
+)
+
+st.plotly_chart(fig_line, use_container_width=True)
   
     # ==============================
     # FILTRO POR LIDER
