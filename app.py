@@ -125,7 +125,7 @@ df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
 
-  # 1. PEGA AQUÍ LA FUNCIÓN DE ESTILOS
+# 1. FUNCIÓN DE ESTILOS ACTUALIZADA (Imagen de paz, centrado y logo de GitHub)
 def aplicar_estilos_login():
     st.markdown("""
     <style>
@@ -134,135 +134,129 @@ def aplicar_estilos_login():
         display: none;
     }
 
-    /* Fondo Principal con Imagen Cristiana y Contraste Alto */
+    /* Fondo Principal con Imagen de Paz y Tranquilidad */
     .stApp {
-        background: #020617;
-        background-image: linear-gradient(to top, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.5)), 
-                          url("https://images.unsplash.com/photo-1544427920-c49ccfb85579?q=80&w=2044&auto=format&fit=crop");
+        background: #0f172a;
+        background-image: linear-gradient(to top, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.3)), 
+                          url("https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=2070&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }
 
+    /* Contenedor Centrado Perfectamente en Pantalla */
     .main-login-container {
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        min-height: 80vh;
-        padding-top: 5vh;
+        height: 100vh; /* Ocupa el alto total de la ventana */
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
     }
 
     .login-card {
-        background: rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 40px;
-        padding: 45px;
-        width: 100%;
-        max-width: 450px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 35px;
+        padding: 40px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         color: white;
+        text-align: center;
     }
 
     .login-card h1 {
-        font-size: 36px !important;
+        font-size: 30px !important;
         font-weight: 800 !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 5px !important;
         color: white !important;
-        line-height: 1.1 !important;
     }
 
     .login-card .subtitle {
-        color: #f1f5f9 !important;
-        font-size: 18px !important;
-        font-weight: 600 !important;
-        margin-bottom: 35px !important;
-        opacity: 0.95;
+        color: #e2e8f0 !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        margin-bottom: 30px !important;
     }
 
+    /* Estilo de los Inputs */
     div[data-baseweb="input"] {
-        background-color: rgba(255, 255, 255, 0.08) !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 16px !important;
-        padding: 4px !important;
+        border-radius: 12px !important;
     }
     
     label p {
-        color: #60a5fa !important;
-        font-weight: 700 !important;
-        text-transform: uppercase;
-        font-size: 13px !important;
-        letter-spacing: 0.5px;
+        color: #93c5fd !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
     }
 
+    /* Botón de Iniciar Sesión */
     .stButton > button {
         width: 100%;
-        background: linear-gradient(90deg, #2563eb, #1d4ed8) !important;
+        background: #2563eb !important;
         color: white !important;
-        border-radius: 16px !important;
-        padding: 18px !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
         font-weight: 700 !important;
-        font-size: 18px !important;
         border: none !important;
-        margin-top: 25px;
+        margin-top: 20px;
     }
 
-    .logo-footer {
-        margin-top: 40px;
-        background: white;
-        padding: 12px 28px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    /* Logo de GitHub ajustado */
+    .logo-iglesia {
+        width: 80px;
+        margin-bottom: 15px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. REEMPLAZA TU FUNCIÓN pantalla_login() VIEJA POR ESTA
+# 2. FUNCIÓN pantalla_login() ACTUALIZADA
 def pantalla_login():
     aplicar_estilos_login()
     
+    # Contenedor principal
     st.markdown('<div class="main-login-container">', unsafe_allow_html=True)
     
+    # Inicio de la tarjeta
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    
+    # Imagen del Logotipo desde GitHub
+    st.image("logotipo.png", width=80)
+    
     st.markdown("""
-        <div class="login-card">
-            <div style="background: rgba(59, 130, 246, 0.25); padding: 6px 16px; border-radius: 20px; width: fit-content; font-size: 11px; font-weight: 800; color: #93c5fd; margin-bottom: 25px; border: 1px solid rgba(147, 197, 253, 0.3); letter-spacing: 1px;">
-                PORTAL DE LIDERAZGO 2026
-            </div>
             <h1>Bienvenido,<br>líder</h1>
-            <p class="subtitle">Ingresa tus credenciales para continuar</p>
+            <p class="subtitle">Acceso al Sistema Ministerial</p>
     """, unsafe_allow_html=True)
 
+    # Input de Streamlit
     dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="Ingresa tu DNI")
 
-    if st.button("Iniciar Sesión"):
+    # Botón de Inicio
+    if st.button("Ingresar al Portal"):
         dni_limpio = dni_input.strip().zfill(8)
         if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no registrado en el sistema")
+            st.error("DNI no registrado")
 
     st.markdown("""
-            <div style="margin-top: 35px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; text-align: center;">
-                <p style="font-size: 14px; color: #94a3b8; font-weight: 500;">¿Problemas con tu acceso? Contacta a soporte</p>
+            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <p style="font-size: 12px; color: #94a3b8;">IELA 2026 - Gestión de Avivamiento</p>
             </div>
-        </div>
-        <div class="logo-footer">
-            <div style="background: #1e3a8a; color: white; padding: 6px 12px; border-radius: 10px; font-weight: 900; font-size: 13px; letter-spacing: -0.5px;">IELA</div>
-            <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 10px; font-weight: 900; color: #0f172a; line-height: 1.1; letter-spacing: -0.2px;">IGLESIA EVANGÉLICA DE</span>
-                <span style="font-size: 10px; font-weight: 900; color: #2563eb; line-height: 1.1; letter-spacing: -0.2px;">LIBERACIÓN Y AVIVAMIENTO</span>
-            </div>
-        </div>
-    </div>
+        </div> <!-- Cierre login-card -->
+    </div> <!-- Cierre main-login-container -->
     """, unsafe_allow_html=True)
 
-# ... (El resto de tu código de dashboard y controlador de pantallas sigue igual) ...  
-
+# ... (El resto de tu código de dashboard y controlador de pantallas sigue igual) ...
 
 
 def pantalla_dashboard():
