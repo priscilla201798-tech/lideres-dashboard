@@ -157,9 +157,29 @@ def pantalla_login():
 def pantalla_dashboard():
 
     dni = st.session_state.dni
+
+    # ==============================
+    # DATOS DEL LÍDER
+    # ==============================
     
-    st.sidebar.title("Panel de Control")
-    st.sidebar.success(f"Líder: {dni}")
+    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+    
+    datos_lider = df_plan_eventos_f[
+        df_plan_eventos_f["DNI_Lider"] == dni
+    ].iloc[0]
+    
+    nombre_lider = datos_lider["NombreCompleto"]
+    entidad_lider = datos_lider["EntidadNombre"]
+
+    st.sidebar.title("📊 Panel de Control")
+    
+    st.sidebar.markdown("### 👤 Datos del Líder")
+    
+    st.sidebar.markdown(f"""
+    **DNI:** {dni}  
+    **Nombre:** {nombre_lider}  
+    **Entidad:** {entidad_lider}
+    """)
 
     if st.sidebar.button("Cerrar sesión"):
         st.session_state.dni = None
