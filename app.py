@@ -343,8 +343,10 @@ def pantalla_login():
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
 def pantalla_dashboard():
-    # Recuperamos el DNI del estado de sesión para evitar errores de referencia
-    dni_usuario = st.session_state.get("dni")
+
+    dni = st.session_state.dni
+
+    df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
     
     st.title("Panel de Control")
     st.write(f"Has ingresado como líder DNI: {dni_usuario}")
