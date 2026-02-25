@@ -355,7 +355,6 @@ def pantalla_dashboard():
 
     # --- PREPARACIÓN DATOS LÍDER ---
     df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-
     df_lider_info = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
 
     if not df_lider_info.empty:
@@ -365,68 +364,51 @@ def pantalla_dashboard():
         nombre_lider = "Líder IELA"
         entidad_lider = "-"
 
-    
     # ==============================
-# DATOS DEL LÍDER + SIDEBAR
-# ==============================
+    # SIDEBAR
+    # ==============================
 
-# Normalizamos DNI
-df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+    st.sidebar.title("📊 Panel de Control")
 
-df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+    st.sidebar.markdown("### 👤 Identificación")
+    st.sidebar.write(f"**Nombre:** {nombre_lider}")
+    st.sidebar.write(f"**Entidad:** {entidad_lider}")
 
-if not df_lider.empty:
-    datos_lider = df_lider.iloc[0]
-    nombre_lider = datos_lider["NombreCompleto"]
-    entidad_lider = datos_lider["EntidadNombre"]
-else:
-    nombre_lider = "No registrado"
-    entidad_lider = "-"
+    st.sidebar.markdown(f"""
+    <div style="
+        background:#1D4E89;
+        padding:18px;
+        border-radius:12px;
+        color:white;
+        margin-top:10px;
+        margin-bottom:15px;
+        font-size:14px;
+    ">
+    <b>DNI:</b><br>{dni}
+    </div>
+    """, unsafe_allow_html=True)
 
-# ---------- SIDEBAR ----------
-st.sidebar.title("📊 Panel de Control")
+    st.sidebar.markdown("---")
 
-# Identificación
-st.sidebar.markdown("### 👤 Identificación")
-st.sidebar.write(f"**Nombre:** {nombre_lider}")
-st.sidebar.write(f"**Entidad:** {entidad_lider}")
+    st.sidebar.markdown("### 📅 Filtrar por fecha")
 
-# Cuadro azul debajo
-st.sidebar.markdown(f"""
-<div style="
-    background:#1D4E89;
-    padding:18px;
-    border-radius:12px;
-    color:white;
-    margin-top:10px;
-    margin-bottom:15px;
-    font-size:14px;
-">
-<b>DNI:</b><br>{dni}
-</div>
-""", unsafe_allow_html=True)
+    fecha_min = df_resumen_f["Fecha"].min()
+    fecha_max = df_resumen_f["Fecha"].max()
 
-st.sidebar.markdown("---")
+    rango_fechas = st.sidebar.date_input(
+        "Seleccionar rango",
+        value=(fecha_min, fecha_max),
+        min_value=fecha_min,
+        max_value=fecha_max
+    )
 
-# Filtro por fecha
-st.sidebar.markdown("### 📅 Filtrar por fecha")
+    st.sidebar.markdown("---")
 
-fecha_min = df_resumen_f["Fecha"].min()
-fecha_max = df_resumen_f["Fecha"].max()
+    if st.sidebar.button("🚪 Cerrar sesión", use_container_width=True):
+        st.session_state.dni = None
+        st.rerun()
 
-rango_fechas = st.sidebar.date_input(
-    "Seleccionar rango",
-    value=(fecha_min, fecha_max),
-    min_value=fecha_min,
-    max_value=fecha_max
-)
-
-st.sidebar.markdown("---")
-
-# Botón cerrar sesión AL FINAL
-if st.sidebar.button("🚪 Cerrar sesión", use_container_width=True):
-    st.session_state.dni = None
-    st.rerun()
+    # AQUÍ CONTINÚA EL RESTO DEL DASHBOARD
     # ==============================
     # FILTRADO
     # ==============================
