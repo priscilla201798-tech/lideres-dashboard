@@ -196,7 +196,7 @@ section.main > div {
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 # ==============================
-# 🎨 ESTILOS CSS (DISEÑO LATERAL DERECHO OPTIMIZADO)
+# 🎨 ESTILOS CSS (DISEÑO ALINEADO Y SIN BARRAS)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
@@ -213,13 +213,14 @@ def aplicar_estilos_login():
     /* 2. ELIMINACIÓN RADICAL DE BARRAS SUPERIORES */
     header, [data-testid="stHeader"], [data-testid="stDecoration"] {
         display: none !important;
+        height: 0 !important;
     }
     
     /* Reset de márgenes de Streamlit para subir el contenido */
     .main .block-container {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        margin-top: -80px !important; /* Ajuste para subir el contenido y tapar franjas */
+        margin-top: -50px !important; 
     }
 
     /* 3. Estilo de los Inputs */
@@ -235,7 +236,6 @@ def aplicar_estilos_login():
         font-size: 14px !important;
     }
 
-    /* Títulos de los campos */
     label p {
         color: #ffffff !important;
         font-weight: 600 !important;
@@ -256,18 +256,18 @@ def aplicar_estilos_login():
         transition: all 0.2s ease;
     }
 
-    /* 5. Contenedor de Bienvenida */
+    /* 5. Contenedor de Bienvenida (Alineado) */
     .welcome-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 100vh; /* Ajuste a viewport height completa */
+        height: 100vh;
         padding-left: 50px;
     }
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 80px !important;
+        font-size: 85px !important;
         font-weight: 900 !important;
         text-shadow: 4px 6px 20px rgba(0,0,0,0.9);
         margin: 0 !important;
@@ -283,12 +283,12 @@ def aplicar_estilos_login():
         margin-top: 15px !important;
     }
 
-    /* 6. Caja de Login (Alineación vertical corregida) */
+    /* 6. Caja de Login */
     .login-sidebar-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100vh; /* Centrado vertical real */
+        height: 100vh;
     }
 
     .login-sidebar {
@@ -314,7 +314,7 @@ def pantalla_login():
     
     with col_espacio:
         st.markdown("""
-            <div class="header-text">
+            <div class="welcome-container">
                 <h1>Portal de<br>Liderazgo</h1>
                 <p>Iglesia Evangélica de Liberación y Avivamiento</p>
             </div>
@@ -344,7 +344,6 @@ def pantalla_login():
             </div> 
             </div> 
         """, unsafe_allow_html=True)
-
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
