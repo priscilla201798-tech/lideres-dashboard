@@ -134,7 +134,6 @@ def pantalla_login():
 
     with col1:
         st.image("PORTADA.JPG", use_container_width=True)
-        )
 
     with col2:
         st.subheader("Iglesia Evangélica de Liberación y Avivamiento")
