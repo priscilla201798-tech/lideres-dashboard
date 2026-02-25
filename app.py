@@ -343,102 +343,102 @@ def pantalla_login():
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
-def pantalla_dashboard():
-    aplicar_estilos_globales()
-    dni = st.session_state.dni
-
-    # Preparación de datos del Líder
-    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-    df_lider_info = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
-    nombre_lider = df_lider_info.iloc[0]["NombreCompleto"] if not df_lider_info.empty else "Líder IELA"
-    entidad_lider = df_lider_info.iloc[0]["EntidadNombre"] if not df_lider_info.empty else "-"
-
-    # --- SIDEBAR ---
-    st.sidebar.markdown(f"""
-    <div class="sidebar-card">
-        <div style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Usuario Activo</div>
-        <div style="font-size: 18px; font-weight: 800; margin-top: 5px;">{nombre_lider}</div>
-        <div style="font-size: 13px; color: {AZUL_ACCENTO};">{entidad_lider}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
-        st.session_state.dni = None
-        st.rerun()
-
-    st.sidebar.markdown("---")
-    fecha_min, fecha_max = df_resumen_f["Fecha"].min(), df_resumen_f["Fecha"].max()
-    rango = st.sidebar.date_input("📅 Rango de Fechas", value=(fecha_min, fecha_max), min_value=fecha_min, max_value=fecha_max)
-
-    # Filtrado
-    df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
-    if isinstance(rango, tuple) and len(rango) == 2:
-        df_res_l = df_res_l[(df_res_l["Fecha"] >= pd.to_datetime(rango[0])) & (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))]
+    def pantalla_dashboard():
+        aplicar_estilos_globales()
+        dni = st.session_state.dni
     
-    df_ev_l = df_eventos_f[(df_eventos_f["DNI"] == dni) & (df_eventos_f["Mes"].isin(df_res_l["Mes"]))]
-    df_as_l = df_asistencia_f[(df_asistencia_f["DNI"] == dni) & (df_asistencia_f["Mes"].isin(df_res_l["Mes"]))]
-    df_obj_l = df_objetivos[df_objetivos["DNI"] == dni]
-    df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni]
-
-    # --- MAIN CONTENT ---
-    st.title("📊 Dashboard Institucional")
-    st.markdown(f"Bienvenido de nuevo, **{nombre_lider}**.")
+        # Preparación de datos del Líder
+        df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+        df_lider_info = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+        nombre_lider = df_lider_info.iloc[0]["NombreCompleto"] if not df_lider_info.empty else "Líder IELA"
+        entidad_lider = df_lider_info.iloc[0]["EntidadNombre"] if not df_lider_info.empty else "-"
     
-    # Métricas principales con diseño limpio
-    m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
-    m2.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
-    m3.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.2f}")
-    m4.metric("📅 Reuniones", len(df_res_l))
-    m5.metric("🔥 Eventos", len(df_ev_l))
-
-    col_left, col_right = st.columns([1, 1])
-
-    with col_left:
-        st.subheader("🎯 Objetivos Estratégicos")
-        for _, row in df_plan_obj_l.iterrows():
-            obj_id, obj_nom, meta = row["ObjetivoID"], row["NombreObjetivo"], int(row["MetaAnual"])
-            ejec = df_obj_l[df_obj_l["Objetivo"].str.contains(obj_id, na=False)]["Avance"].sum()
-            prog = min(ejec / meta if meta > 0 else 0, 1)
-            st.markdown(f"<div style='margin-bottom: -15px; font-weight: 600; font-size: 14px;'>{obj_nom} <span style='color:{AZUL_PRIMARIO}; float:right;'>{ejec}/{meta}</span></div>", unsafe_allow_html=True)
-            st.progress(prog)
-
-    with col_right:
-        st.subheader("📊 Asistencia Dominical")
-        if not df_as_l.empty:
-            as_data = df_as_l.groupby("Equipo").size().reset_index(name="Cant").sort_values("Cant", ascending=False)
-            fig = px.bar(as_data, x="Equipo", y="Cant", color="Cant", color_continuous_scale="Blues", text_auto=True)
-            fig.update_layout(height=300, margin=dict(l=0,r=0,t=0,b=0), plot_bgcolor="white", paper_bgcolor="rgba(0,0,0,0)", showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
-
-    st.divider()
+        # --- SIDEBAR ---
+        st.sidebar.markdown(f"""
+        <div class="sidebar-card">
+            <div style="font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">Usuario Activo</div>
+            <div style="font-size: 18px; font-weight: 800; margin-top: 5px;">{nombre_lider}</div>
+            <div style="font-size: 13px; color: {AZUL_ACCENTO};">{entidad_lider}</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    st.subheader("📅 Cumplimiento de Eventos (Ayunos y Vigilias)")
-    meses_nom = {1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"}
-    tabla = []
-    for m_idx in range(1, 13):
-        m_name = meses_nom[m_idx]
-        f = {"Mes": m_name}
-        for tipo in ["AYUNO", "VIGILIA"]:
-            prog = df_plan_eventos_f[(df_plan_eventos_f["DNI_Lider"] == dni) & (df_plan_eventos_f["Mes"].str.strip().str.lower() == m_name.lower())][f"{tipo.capitalize()}s_Programados"].sum()
-            ejec = df_ev_l[(df_ev_l["Mes"] == m_idx) & (df_ev_l["Tipo"] == tipo)].shape[0]
-            f[tipo] = f"{ejec}/{prog}"
-        tabla.append(f)
+        if st.sidebar.button("🚪 Cerrar Sesión", use_container_width=True):
+            st.session_state.dni = None
+            st.rerun()
     
-    df_t = pd.DataFrame(tabla)
-    def style_ev(val):
-        try:
-            ejec, prog = map(int, val.split("/"))
-            if prog == 0: return ""
-            return f"background-color: {VERDE_EXITO}; color: white; font-weight: bold;" if ejec >= prog else f"background-color: {ROJO_ERROR}; color: white;"
-        except: return ""
+        st.sidebar.markdown("---")
+        fecha_min, fecha_max = df_resumen_f["Fecha"].min(), df_resumen_f["Fecha"].max()
+        rango = st.sidebar.date_input("📅 Rango de Fechas", value=(fecha_min, fecha_max), min_value=fecha_min, max_value=fecha_max)
     
-    st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
-
-# --- CONTROLADOR ---
-if "dni" not in st.session_state: st.session_state.dni = None
-if st.session_state.dni is None: pantalla_login()
-else: pantalla_dashboard()
+        # Filtrado
+        df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
+        if isinstance(rango, tuple) and len(rango) == 2:
+            df_res_l = df_res_l[(df_res_l["Fecha"] >= pd.to_datetime(rango[0])) & (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))]
+        
+        df_ev_l = df_eventos_f[(df_eventos_f["DNI"] == dni) & (df_eventos_f["Mes"].isin(df_res_l["Mes"]))]
+        df_as_l = df_asistencia_f[(df_asistencia_f["DNI"] == dni) & (df_asistencia_f["Mes"].isin(df_res_l["Mes"]))]
+        df_obj_l = df_objetivos[df_objetivos["DNI"] == dni]
+        df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni]
+    
+        # --- MAIN CONTENT ---
+        st.title("📊 Dashboard Institucional")
+        st.markdown(f"Bienvenido de nuevo, **{nombre_lider}**.")
+        
+        # Métricas principales con diseño limpio
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
+        m2.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
+        m3.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.2f}")
+        m4.metric("📅 Reuniones", len(df_res_l))
+        m5.metric("🔥 Eventos", len(df_ev_l))
+    
+        col_left, col_right = st.columns([1, 1])
+    
+        with col_left:
+            st.subheader("🎯 Objetivos Estratégicos")
+            for _, row in df_plan_obj_l.iterrows():
+                obj_id, obj_nom, meta = row["ObjetivoID"], row["NombreObjetivo"], int(row["MetaAnual"])
+                ejec = df_obj_l[df_obj_l["Objetivo"].str.contains(obj_id, na=False)]["Avance"].sum()
+                prog = min(ejec / meta if meta > 0 else 0, 1)
+                st.markdown(f"<div style='margin-bottom: -15px; font-weight: 600; font-size: 14px;'>{obj_nom} <span style='color:{AZUL_PRIMARIO}; float:right;'>{ejec}/{meta}</span></div>", unsafe_allow_html=True)
+                st.progress(prog)
+    
+        with col_right:
+            st.subheader("📊 Asistencia Dominical")
+            if not df_as_l.empty:
+                as_data = df_as_l.groupby("Equipo").size().reset_index(name="Cant").sort_values("Cant", ascending=False)
+                fig = px.bar(as_data, x="Equipo", y="Cant", color="Cant", color_continuous_scale="Blues", text_auto=True)
+                fig.update_layout(height=300, margin=dict(l=0,r=0,t=0,b=0), plot_bgcolor="white", paper_bgcolor="rgba(0,0,0,0)", showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
+    
+        st.divider()
+        
+        st.subheader("📅 Cumplimiento de Eventos (Ayunos y Vigilias)")
+        meses_nom = {1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"}
+        tabla = []
+        for m_idx in range(1, 13):
+            m_name = meses_nom[m_idx]
+            f = {"Mes": m_name}
+            for tipo in ["AYUNO", "VIGILIA"]:
+                prog = df_plan_eventos_f[(df_plan_eventos_f["DNI_Lider"] == dni) & (df_plan_eventos_f["Mes"].str.strip().str.lower() == m_name.lower())][f"{tipo.capitalize()}s_Programados"].sum()
+                ejec = df_ev_l[(df_ev_l["Mes"] == m_idx) & (df_ev_l["Tipo"] == tipo)].shape[0]
+                f[tipo] = f"{ejec}/{prog}"
+            tabla.append(f)
+        
+        df_t = pd.DataFrame(tabla)
+        def style_ev(val):
+            try:
+                ejec, prog = map(int, val.split("/"))
+                if prog == 0: return ""
+                return f"background-color: {VERDE_EXITO}; color: white; font-weight: bold;" if ejec >= prog else f"background-color: {ROJO_ERROR}; color: white;"
+            except: return ""
+        
+        st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
+    
+    # --- CONTROLADOR ---
+    if "dni" not in st.session_state: st.session_state.dni = None
+    if st.session_state.dni is None: pantalla_login()
+    else: pantalla_dashboard()
 
     # ==============================
     # DATOS DEL LÍDER + SIDEBAR
