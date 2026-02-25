@@ -194,142 +194,93 @@ section.main > div {
 """, unsafe_allow_html=True)
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
-
 # ==============================
-# 🎨 ESTILOS CSS PROFESIONALES (CORRECCIÓN DE INTERACCIÓN)
+# 🎨 ESTILOS CSS (DISEÑO LATERAL DERECHO)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
     <style>
-    /* 1. Reset de Streamlit */
-    [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
-        display: none !important;
-    }
-    
-    .block-container {
-        padding: 0 !important;
-        max-width: 100% !important;
-    }
-    /* Elimina margen superior real de Streamlit */
-    .block-container {
-        padding-top: 0rem !important;
-        margin-top: 0rem !important;
-    }
-    header {visibility: hidden;}
-    /* Fuerza que el contenedor principal no empuje contenido */
-    section.main > div {
-        padding-top: 0rem !important;
-    }
-    /* 2. Fondo de Océano */
+    /* 1. Fondo de Océano Global */
     .stApp {
-        background-image: linear-gradient(to bottom, rgba(0, 31, 63, 0.4), rgba(0, 0, 0, 0.7)), 
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 31, 63, 0.6)), 
                           url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }
 
-    /* 3. Contenedor de Centrado Absoluto */
-    /* IMPORTANTE: pointer-events: none permite que los clics pasen a través de la capa invisible */
-    .main-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-}
-
-    /* 4. Títulos en BLANCO */
-    .header-text {
-        text-align: center;
-        margin-bottom: 25px;
-        pointer-events: none;
+    /* 2. Limpiar UI de Streamlit */
+    [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
+        display: none !important;
     }
 
-    .header-text h1 {
-        color: #ffffff !important; 
-        font-size: 36px !important;
-        font-weight: 800 !important;
-        margin: 0 !important;
-        text-shadow: 2px 4px 10px rgba(0,0,0,0.6);
-    }
-
-    .header-text p.subtitle {
-        color: rgba(255, 255, 255, 0.95) !important;
-        font-size: 16px !important;
-        font-weight: 500;
-        margin-top: 5px !important;
-        text-shadow: 1px 2px 5px rgba(0,0,0,0.5);
-    }
-
-    /* 5. Tarjeta de Login Blanca y Compacta */
-    /* pointer-events: all permite volver a interactuar con lo que esté dentro de la caja */
-    .login-box {
-        background-color: white !important;
-        border-radius: 28px;
-        padding: 35px;
-        width: 360px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        text-align: center;
-        pointer-events: all; 
-    }
-
-    /* Estilo de los Inputs (Barra más pequeña y controlada) */
-    div[data-testid="stTextInput"] {
-        width: 100% !important;
-        margin-bottom: 0px !important;
-    }
-
+    /* 3. Estilo de los Inputs (Barra pequeña y profesional) */
     div[data-baseweb="input"] {
-        background-color: #f8fafc !important;
-        border: 2px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        height: 45px !important;
+        background-color: #ffffff !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 8px !important;
+        height: 40px !important;
     }
 
     div[data-baseweb="input"] input {
-        color: #001f3f !important;
-        font-size: 15px !important;
+        color: #1e293b !important;
+        font-size: 14px !important;
     }
 
+    /* Títulos de los campos */
     label p {
-        color: #001f3f !important;
-        font-weight: 700 !important;
-        text-transform: uppercase;
-        font-size: 11px !important;
-        text-align: left !important;
-        margin-bottom: 6px !important;
-        letter-spacing: 0.5px;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        margin-bottom: 8px !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
 
-    /* Botón Marino */
+    /* 4. Botón de Acceso */
     .stButton > button {
         width: 100%;
-        background-color: #001f3f !important;
+        background-color: #004a99 !important;
         color: white !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
         font-weight: 700 !important;
-        font-size: 16px !important;
         border: none !important;
-        margin-top: 20px;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
 
     .stButton > button:hover {
-        background-color: #084d6e !important;
-        transform: translateY(-2px);
+        background-color: #0066cc !important;
+        transform: scale(1.02);
     }
 
-    /* Ajuste de alertas */
-    .stAlert {
-        border-radius: 12px !important;
-        margin-top: 15px !important;
+    /* 5. Estilo de los textos de bienvenida */
+    .welcome-container {
+        margin-top: 100px;
+        padding: 20px;
+    }
+    
+    .welcome-container h1 {
+        color: white !important;
+        font-size: 42px !important;
+        font-weight: 800 !important;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        margin-bottom: 0px !important;
+    }
+
+    .welcome-container p {
+        color: #e2e8f0 !important;
+        font-size: 18px !important;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+    }
+
+    /* 6. Caja de Login (Derecha) */
+    .login-sidebar {
+        background-color: rgba(0, 31, 63, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-top: 50px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -340,41 +291,43 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Contenedor de posicionamiento
-    st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
+    # Usamos columnas: 70% espacio/imagen, 30% formulario a la derecha
+    col_espacio, col_login = st.columns([1.5, 1])
     
-    # Títulos fuera de la caja para estilo moderno
-    st.markdown("""
-        <div class="header-text">
-            <div style="font-size: 55px; margin-bottom: 10px;">🕊️</div>
-            <h1>Portal de Liderazgo</h1>
-            <p class="subtitle">Gestión Ministerial IELA 2026</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Caja blanca de entrada
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    
-    # Input de Streamlit (está dentro del div con pointer-events: all)
-    dni_input = st.text_input("Ingresa tu DNI", placeholder="Ej: 45678912")
+    with col_espacio:
+        st.markdown("""
+            <div class="welcome-container">
+                <div style="font-size: 60px;">🕊️</div>
+                <h1>Portal de Liderazgo</h1>
+                <p>Gestión Ministerial IELA 2026</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col_login:
+        st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; margin-bottom:20px; font-size:20px;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
+        
+        # El input ahora es nativo de Streamlit en su columna, sin capas encima
+        dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
-    if st.button("Acceder al Portal"):
-        dni_limpio = dni_input.strip().zfill(8)
-        if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
-            st.session_state.dni = dni_limpio
-            st.rerun()
-        else:
-            st.error("DNI no registrado")
+        if st.button("Ingresar al Portal"):
+            dni_limpio = dni_input.strip().zfill(8)
+            # Validación simple
+            if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
+                st.session_state.dni = dni_limpio
+                st.rerun()
+            else:
+                st.error("Documento no encontrado en los registros.")
+        
+        st.markdown("""
+            <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                <p style="font-size: 11px; color: #cbd5e1; font-weight: 600; text-transform: uppercase;">
+                    IELA 2026 • Avivamiento y Poder
+                </p>
+            </div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("""
-        <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px; width: 100%;">
-            <p style="font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-                Avivamiento y Poder
-            </p>
-        </div>
-        </div> <!-- Cierre login-box -->
-    </div> <!-- Cierre main-wrapper -->
-    """, unsafe_allow_html=True)
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
