@@ -176,7 +176,8 @@ section.main > div {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-top: 120px;
     pointer-events: none;
 }
 
@@ -313,10 +314,9 @@ def pantalla_login():
     
     with col_espacio:
         st.markdown("""
-            <div class="welcome-container">
-                <div style="font-size: 70px; margin-bottom: 20px; filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));">🕊️</div>
+            <div class="header-text">
                 <h1>Portal de<br>Liderazgo</h1>
-                <p>Gestión Ministerial IELA 2026</p>
+                <p>Iglesia Evangélica de Liberación y Avivamiento</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -338,7 +338,7 @@ def pantalla_login():
         st.markdown("""
             <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
                 <p style="font-size: 11px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; opacity: 0.8;">
-                    IELA 2026 • Avivamiento y Poder
+                    IELA 2026 • Gestión Ministerial
                 </p>
             </div>
             </div> 
