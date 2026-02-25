@@ -349,7 +349,7 @@ def pantalla_dashboard():
     df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
     
     st.title("Panel de Control")
-    st.write(f"Has ingresado como líder DNI: {dni_usuario}")
+    st.write(f"Has ingresado como líder DNI: {dni}")
     
     # Aquí puedes añadir la lógica de filtrado que causaba el error
     # Ejemplo: df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni_usuario]
