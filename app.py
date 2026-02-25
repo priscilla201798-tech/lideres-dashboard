@@ -133,9 +133,7 @@ def pantalla_login():
     col1, col2 = st.columns([1.2, 1])
 
     with col1:
-        st.image(
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-            use_container_width=True
+        st.image("PORTADA.JPG", use_container_width=True)
         )
 
     with col2:
