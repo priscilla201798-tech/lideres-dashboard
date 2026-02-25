@@ -222,12 +222,12 @@ def aplicar_estilos_login():
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 
 # ==============================
-# 🎨 ESTILOS CSS INSTITUCIONALES (SOLUCIÓN DE ESTRUCTURA)
+# 🎨 ESTILOS CSS PROFESIONALES (CENTRADO Y TEXTOS BLANCOS)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
     <style>
-    /* 1. Limpiar interfaz y bloquear scroll */
+    /* 1. Reset de Streamlit */
     [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
         display: none !important;
     }
@@ -237,60 +237,73 @@ def aplicar_estilos_login():
         max-width: 100% !important;
     }
 
-    /* 2. Fondo de Océano (El que te gustó) */
+    /* 2. Fondo de Océano */
     .stApp {
-        background-image: linear-gradient(to bottom, rgba(0, 31, 63, 0.4), rgba(0, 0, 0, 0.6)), 
+        background-image: linear-gradient(to bottom, rgba(0, 31, 63, 0.4), rgba(0, 0, 0, 0.7)), 
                           url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }
 
-    /* 3. Centrado absoluto en pantalla */
+    /* 3. Contenedor de Centrado Absoluto */
     .main-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 100;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        overflow: hidden;
     }
 
-    /* 4. Tarjeta Blanca Rígida (Evita que se estire a los lados) */
-    .login-box {
-        background-color: #ffffff !important;
-        border-radius: 24px;
-        padding: 40px;
-        width: 100%;
-        max-width: 420px; /* Ancho fijo para que no se desparrame */
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    /* 4. Títulos en BLANCO (Fuera de la caja para mayor impacto visual) */
+    .header-text {
         text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 20px;
     }
 
-    /* Texto en Azul Marino Profundo (Máxima legibilidad) */
-    .login-box h1 {
-        color: #001f3f !important; 
-        font-size: 26px !important;
+    .header-text h1 {
+        color: #ffffff !important; 
+        font-size: 32px !important;
         font-weight: 800 !important;
-        margin-bottom: 5px !important;
+        margin: 0 !important;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
     }
 
-    .login-box p.subtitle {
-        color: #1e3a8a !important;
-        font-size: 14px !important;
-        margin-bottom: 25px !important;
-        font-weight: 600;
+    .header-text p.subtitle {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 16px !important;
+        font-weight: 400;
+        margin-top: 5px !important;
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
     }
 
-    /* Estilo de Inputs dentro de la tarjeta */
+    /* 5. Tarjeta de Login Blanca y Compacta */
+    .login-box {
+        background-color: white !important;
+        border-radius: 24px;
+        padding: 30px 35px;
+        width: 340px; /* Un poco más pequeña */
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        text-align: center;
+    }
+
+    /* Estilo de los Inputs (Barra más pequeña) */
     div[data-baseweb="input"] {
-        background-color: #f1f5f9 !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 12px !important;
+        background-color: #f8fafc !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        height: 40px !important; /* Altura reducida */
+    }
+
+    div[data-baseweb="input"] input {
+        padding: 5px 10px !important;
+        font-size: 14px !important;
     }
 
     label p {
@@ -299,7 +312,7 @@ def aplicar_estilos_login():
         text-transform: uppercase;
         font-size: 11px !important;
         text-align: left !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 4px !important;
     }
 
     /* Botón Marino */
@@ -307,19 +320,23 @@ def aplicar_estilos_login():
         width: 100%;
         background-color: #001f3f !important;
         color: white !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
+        border-radius: 10px !important;
+        padding: 10px !important;
         font-weight: 700 !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
         border: none !important;
-        margin-top: 15px;
-        box-shadow: 0 4px 15px rgba(0, 31, 63, 0.3);
+        margin-top: 10px;
+        box-shadow: 0 4px 12px rgba(0, 31, 63, 0.3) !important;
     }
 
-    /* Error Alert */
+    .stButton > button:hover {
+        background-color: #084d6e !important;
+    }
+
+    /* Ajuste de alertas */
     .stAlert {
-        border-radius: 12px !important;
-        margin-top: 10px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -331,26 +348,22 @@ def pantalla_login():
     aplicar_estilos_login()
     
     st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
+    
+    # Encabezado en Blanco
+    st.markdown("""
+        <div class="header-text">
+            <div style="font-size: 50px; margin-bottom: 10px;">🕊️</div>
+            <h1>Portal de Liderazgo</h1>
+            <p class="subtitle">Gestión Ministerial IELA 2026</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Caja de entrada
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     
-    # Logo o Icono
-    try:
-        if os.path.exists("logotipo.png"):
-            st.image("logotipo.png", width=80)
-        else:
-            st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
-    except:
-        st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
-    
-    st.markdown("""
-        <h1>Portal de Liderazgo</h1>
-        <p class="subtitle">Gestión Ministerial IELA 2026</p>
-    """, unsafe_allow_html=True)
+    dni_input = st.text_input("Ingresa tu DNI", placeholder="00000000")
 
-    # Input (El label p del CSS lo pondrá arriba del campo)
-    dni_input = st.text_input("DNI del Líder", placeholder="Ingresa tu número aquí")
-
-    if st.button("Acceder al Sistema"):
+    if st.button("Acceder"):
         dni_limpio = dni_input.strip().zfill(8)
         if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
             st.session_state.dni = dni_limpio
@@ -359,16 +372,14 @@ def pantalla_login():
             st.error("DNI no registrado")
 
     st.markdown("""
-        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">
+        <div style="margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 15px; width: 100%;">
+            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
                 Avivamiento y Poder
             </p>
         </div>
-        </div>
-    </div>
+        </div> <!-- Cierre login-box -->
+    </div> <!-- Cierre main-wrapper -->
     """, unsafe_allow_html=True)
-
-
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
