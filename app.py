@@ -325,26 +325,24 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Contenedor principal para centrar
-    st.markdown('<div class="main-login-container">', unsafe_allow_html=True)
+    # Abrimos la tarjeta de login directamente
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     
     # Logo Institucional
     try:
-        # Intentamos cargar el logo. Si no existe en la ruta raíz de GitHub, usamos el icono.
         if os.path.exists("logotipo.png"):
-            st.image("logotipo.png", width=110)
+            st.image("logotipo.png", width=120)
         else:
-            st.markdown('<div style="font-size: 50px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size: 60px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     except:
-        st.markdown('<div style="font-size: 50px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 60px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     
     st.markdown("""
             <h1>Bienvenido</h1>
-            <p class="subtitle">Portal de Gestión Ministerial IELA</p>
+            <p class="subtitle">Gestión Ministerial IELA</p>
     """, unsafe_allow_html=True)
 
-    # Input (Dentro de la tarjeta)
+    # Input de DNI
     dni_input = st.text_input("Ingresa tu DNI", placeholder="Documento de identidad")
 
     if st.button("Ingresar al Portal"):
@@ -353,23 +351,28 @@ def pantalla_login():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no registrado como líder")
+            st.error("DNI no registrado")
 
     st.markdown("""
-            <div style="margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 25px;">
-                <p style="font-size: 12px; color: #64748b; font-weight: 600;">IGLESIA EVANGÉLICA DE LIBERACIÓN Y AVIVAMIENTO</p>
-                <p style="font-size: 11px; color: #94a3b8;">Gestión de Datos 2026</p>
+            <div style="margin-top: 35px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                <p style="font-size: 12px; color: #475569; font-weight: 700; margin-bottom: 0;">IELA 2026</p>
+                <p style="font-size: 11px; color: #64748b;">Avivamiento y Poder</p>
             </div>
-        </div>
-    </div>
+        </div> <!-- Cierre login-card -->
     """, unsafe_allow_html=True)
-
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
 def pantalla_dashboard():
+    # Recuperamos el DNI del estado de sesión para evitar errores de referencia
+    dni_usuario = st.session_state.get("dni")
+    
     st.title("Panel de Control")
-    st.write(f"Has ingresado como líder: {st.session_state.dni}")
+    st.write(f"Has ingresado como líder DNI: {dni_usuario}")
+    
+    # Aquí puedes añadir la lógica de filtrado que causaba el error
+    # Ejemplo: df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni_usuario]
+    
     if st.button("Cerrar Sesión"):
         st.session_state.dni = None
         st.rerun()
