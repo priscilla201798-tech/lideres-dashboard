@@ -242,33 +242,7 @@ def calcular_avance_objetivos(df_plan_obj_l, df_res_l, df_ev_l, df_obj_manual_l)
         })
 
     return pd.DataFrame(filas)
-    ####################################################################################################################
-        # --- PROGRAMACIÓN SEMANAL (sí/no) ---
-        cumplio_prog = (
-            es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
-            es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
-        )
-        
-        # --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
-        nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
-        visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
-        esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
-        
-        resumen.append({
-            "Fecha": fecha,
-            "Mes": mes,
-            "DNI": dni,
-            "Convertidos": int(get_num(data, "¿Cuántas personas aceptaron a Cristo?", "4. ¿Cuántas personas aceptaron a Cristo?", default=0)),
-            "Reconciliados": int(get_num(data, "¿Cuántas personas se reconciliaron con Cristo?", default=0)),
-            "Ofrenda": float(get_num(data, "Monto total de la ofrenda (S/.)", default=0)),
-        
-            # 👇 NUEVO para objetivos automáticos
-            "ProgSemanal": 1 if cumplio_prog else 0,
-            "Nuevos": int(nuevos),
-            "Visitas": int(visitas),
-            "EscuelaBiblica": int(esc_bib),
-        })
-
+   
 # ==============================
 # CARGAR DATA
 # ==============================
@@ -670,7 +644,18 @@ def pantalla_dashboard():
             f"**{objetivo} – {nombre} ({ejecutado}/{meta})**"
         )
         st.progress(progreso)
+           
+        filas.append({
+            "ObjetivoID": objetivo_id,
+            "NombreObjetivo": nombre,
+            "FuenteDato": fuente,
+            "Unidad": unidad,
+            "Ejecutado": ejecutado_total,
+            "MetaAnual": meta,
+            "Progreso": progreso
+        })
 
+    return pd.DataFrame(filas)
     # ==============================
     # 3️⃣ EVENTOS
     # ==============================
