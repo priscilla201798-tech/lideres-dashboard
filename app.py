@@ -395,7 +395,7 @@ def pantalla_dashboard():
     fecha_min = df_resumen_f["Fecha"].min()
     fecha_max = df_resumen_f["Fecha"].max()
 
-    rango_fechas = st.sidebar.date_input(
+    rango = st.sidebar.date_input(
         "Seleccionar rango",
         value=(fecha_min, fecha_max),
         min_value=fecha_min,
@@ -573,13 +573,11 @@ def pantalla_dashboard():
     # FILTRO POR FECHA (AQUÍ VA)
     # ==============================
     
-    if isinstance(rango_fechas, tuple) and len(rango_fechas) == 2:
-        desde, hasta = rango_fechas
-    
-        df_res_l = df_res_l[
-    (df_res_l["Fecha"] >= pd.to_datetime(rango_fechas[0])) &
-    (df_res_l["Fecha"] <= pd.to_datetime(rango_fechas[1]))
-]
+    if isinstance(rango, tuple) and len(rango) == 2:
+    df_res_l = df_res_l[
+        (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
+        (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
+    ]
         df_eventos_l = df_eventos_l[
             df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
         ]
