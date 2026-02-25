@@ -572,48 +572,47 @@ def pantalla_dashboard():
         except:
             return ""
     st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
-    st.subheader("📈 Tendencia de Participación en Eventos")
+      st.subheader("📈 Tendencia de Participación en Eventos")
 
-# Creamos dataset mensual
-data_linea = []
+    # Creamos dataset mensual
+    data_linea = []
 
-for m_idx in range(1, 13):
-    mes_nombre = meses_nom[m_idx]
+    for m_idx in range(1, 13):
+        mes_nombre = meses_nom[m_idx]
 
-    ayuno_total = df_ev_l[
-        (df_ev_l["Mes"] == m_idx) &
-        (df_ev_l["Tipo"] == "AYUNO")
-    ]["Participantes"].sum()
+        ayuno_total = df_ev_l[
+            (df_ev_l["Mes"] == m_idx) &
+            (df_ev_l["Tipo"] == "AYUNO")
+        ]["Participantes"].sum()
 
-    vigilia_total = df_ev_l[
-        (df_ev_l["Mes"] == m_idx) &
-        (df_ev_l["Tipo"] == "VIGILIA")
-    ]["Participantes"].sum()
+        vigilia_total = df_ev_l[
+            (df_ev_l["Mes"] == m_idx) &
+            (df_ev_l["Tipo"] == "VIGILIA")
+        ]["Participantes"].sum()
 
-    data_linea.append({
-        "Mes": mes_nombre,
-        "Ayuno": ayuno_total,
-        "Vigilia": vigilia_total
-    })
+        data_linea.append({
+            "Mes": mes_nombre,
+            "Ayuno": ayuno_total,
+            "Vigilia": vigilia_total
+        })
 
-df_linea = pd.DataFrame(data_linea)
+    df_linea = pd.DataFrame(data_linea)
 
-fig_line = px.line(
-    df_linea,
-    x="Mes",
-    y=["Ayuno", "Vigilia"],
-    markers=True
-)
+    fig_line = px.line(
+        df_linea,
+        x="Mes",
+        y=["Ayuno", "Vigilia"],
+        markers=True
+    )
 
-fig_line.update_layout(
-    height=400,
-    xaxis_title="Mes",
-    yaxis_title="Cantidad de asistentes",
-    legend_title="Tipo de Evento"
-)
+    fig_line.update_layout(
+        height=400,
+        xaxis_title="Mes",
+        yaxis_title="Cantidad de asistentes",
+        legend_title="Tipo de Evento"
+    )
 
-st.plotly_chart(fig_line, use_container_width=True)
-  
+    st.plotly_chart(fig_line, use_container_width=True)
     # ==============================
     # FILTRO POR LIDER
     # ==============================
