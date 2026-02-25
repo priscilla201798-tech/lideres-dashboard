@@ -572,7 +572,7 @@ def pantalla_dashboard():
         except:
             return ""
     st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
-      st.subheader("📈 Tendencia de Participación en Eventos")
+    st.subheader("📈 Tendencia de Participación en Eventos")
 
     # Creamos dataset mensual
     data_linea = []
