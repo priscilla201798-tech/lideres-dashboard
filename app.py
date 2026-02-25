@@ -368,7 +368,7 @@ def pantalla_dashboard():
     # SIDEBAR
     # ==============================
 
-    st.sidebar.title("📊 Panel de Control")
+    st.sidebar.title("Panel de Control")
 
     st.sidebar.markdown("### 👤 Identificación")
     st.sidebar.write(f"**Nombre:** {nombre_lider}")
@@ -441,7 +441,7 @@ def pantalla_dashboard():
     # CONTENIDO PRINCIPAL
     # ==============================
 
-    st.title("📊 Dashboard Institucional")
+    st.title("Dashboard Institucional")
        # --- MÉTRICAS ---
     m1, m2, m3, m4, m5 = st.columns(5)
 
