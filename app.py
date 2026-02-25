@@ -222,14 +222,14 @@ def aplicar_estilos_login():
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 
 # ==============================
-# 🎨 ESTILOS CSS INSTITUCIONALES (AZUL MARINO Y PETRÓLEO)
+# 🎨 ESTILOS CSS INSTITUCIONALES (SOLUCIÓN DE ESTRUCTURA)
 # ==============================
 def aplicar_estilos_login():
     st.markdown("""
     <style>
     /* 1. Limpiar interfaz y bloquear scroll */
-    [data-testid="stHeader"], [data-testid="stToolbar"] {
-        display: none;
+    [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
+        display: none !important;
     }
     
     .block-container {
@@ -237,105 +237,89 @@ def aplicar_estilos_login():
         max-width: 100% !important;
     }
 
-    /* 2. Fondo de Océano Profundo con Overlay Petróleo */
+    /* 2. Fondo de Océano (El que te gustó) */
     .stApp {
-        background-image: linear-gradient(to bottom, rgba(10, 31, 68, 0.6), rgba(7, 42, 69, 0.8)), 
+        background-image: linear-gradient(to bottom, rgba(0, 31, 63, 0.4), rgba(0, 0, 0, 0.6)), 
                           url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }
 
-    /* 3. Contenedor de Centrado con márgenes de seguridad */
+    /* 3. Centrado absoluto en pantalla */
     .main-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100vh;
         width: 100vw;
-        padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
     }
 
-    /* 4. Tarjeta Institucional (Caja blanca con márgenes internos) */
+    /* 4. Tarjeta Blanca Rígida (Evita que se estire a los lados) */
     .login-box {
-        background: rgba(255, 255, 255, 0.98);
-        border-radius: 28px;
-        padding: 45px 40px; /* Márgenes internos generosos */
+        background-color: #ffffff !important;
+        border-radius: 24px;
+        padding: 40px;
         width: 100%;
-        max-width: 400px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        max-width: 420px; /* Ancho fijo para que no se desparrame */
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         text-align: center;
-        border: 1px solid rgba(255,255,255,0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Títulos en Azul Marino Profundo */
+    /* Texto en Azul Marino Profundo (Máxima legibilidad) */
     .login-box h1 {
-        color: #001f3f !important; /* Azul Marino */
-        font-size: 28px !important;
-        font-weight: 850 !important;
-        margin-bottom: 8px !important;
-        letter-spacing: -0.5px;
+        color: #001f3f !important; 
+        font-size: 26px !important;
+        font-weight: 800 !important;
+        margin-bottom: 5px !important;
     }
 
-    /* Subtítulos en Azul Petróleo */
     .login-box p.subtitle {
-        color: #084d6e !important; /* Azul Petróleo */
-        font-size: 15px !important;
-        margin-bottom: 30px !important;
+        color: #1e3a8a !important;
+        font-size: 14px !important;
+        margin-bottom: 25px !important;
         font-weight: 600;
-        line-height: 1.4;
     }
 
-    /* Inputs con bordes definidos */
+    /* Estilo de Inputs dentro de la tarjeta */
     div[data-baseweb="input"] {
-        background-color: #f8fafc !important;
+        background-color: #f1f5f9 !important;
         border: 2px solid #cbd5e1 !important;
         border-radius: 12px !important;
-        transition: all 0.3s ease;
-    }
-    
-    div[data-baseweb="input"]:focus-within {
-        border-color: #084d6e !important;
-        background-color: #ffffff !important;
     }
 
     label p {
         color: #001f3f !important;
-        font-weight: 800 !important;
+        font-weight: 700 !important;
         text-transform: uppercase;
         font-size: 11px !important;
-        margin-bottom: 8px !important;
-        text-align: left;
-        letter-spacing: 0.5px;
+        text-align: left !important;
+        margin-bottom: 5px !important;
     }
 
-    /* Botón en Azul Marino Institucional */
+    /* Botón Marino */
     .stButton > button {
         width: 100%;
-        background: #001f3f !important; /* Azul Marino */
-        color: #ffffff !important;
+        background-color: #001f3f !important;
+        color: white !important;
         border-radius: 12px !important;
         padding: 12px !important;
         font-weight: 700 !important;
         font-size: 16px !important;
         border: none !important;
         margin-top: 15px;
-        box-shadow: 0 8px 20px rgba(0, 31, 63, 0.3) !important;
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 31, 63, 0.3);
     }
 
-    .stButton > button:hover {
-        background: #084d6e !important; /* Cambio a Azul Petróleo al pasar el mouse */
-        transform: translateY(-2px);
-        box-shadow: 0 12px 25px rgba(8, 77, 110, 0.4) !important;
-    }
-
-    /* Estilo para mensajes de error */
+    /* Error Alert */
     .stAlert {
-        background-color: rgba(254, 226, 226, 0.9) !important;
-        color: #991b1b !important;
         border-radius: 12px !important;
-        margin-top: 15px !important;
+        margin-top: 10px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -346,31 +330,25 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Estructura de centrado
     st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     
-    # Logo Institucional (Icono de paloma o imagen)
+    # Logo o Icono
     try:
         if os.path.exists("logotipo.png"):
-            st.image("logotipo.png", width=85)
+            st.image("logotipo.png", width=80)
         else:
-            # SVG de Paloma para asegurar que se vea bien si no hay imagen
-            st.markdown("""
-                <div style="color: #084d6e; font-size: 50px; margin-bottom: 15px;">
-                    🕊️
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     except:
-        st.markdown('<div style="font-size: 50px; margin-bottom: 15px;">🕊️</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 45px; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     
     st.markdown("""
         <h1>Portal de Liderazgo</h1>
-        <p class="subtitle">Gestión Ministerial IELA 2026<br><small>Avivamiento y Poder</small></p>
+        <p class="subtitle">Gestión Ministerial IELA 2026</p>
     """, unsafe_allow_html=True)
 
-    # Input de DNI
-    dni_input = st.text_input("Documento de Identidad", placeholder="Ingresa tu DNI aquí")
+    # Input (El label p del CSS lo pondrá arriba del campo)
+    dni_input = st.text_input("DNI del Líder", placeholder="Ingresa tu número aquí")
 
     if st.button("Acceder al Sistema"):
         dni_limpio = dni_input.strip().zfill(8)
@@ -378,16 +356,16 @@ def pantalla_login():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no registrado en el sistema")
+            st.error("DNI no registrado")
 
     st.markdown("""
-        <div style="margin-top: 35px; border-top: 2px solid #f1f5f9; padding-top: 20px;">
-            <p style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0;">
-                IELA - Iglesia de Liberación
+        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">
+                Avivamiento y Poder
             </p>
         </div>
-        </div> <!-- Cierre login-box -->
-    </div> <!-- Cierre main-wrapper -->
+        </div>
+    </div>
     """, unsafe_allow_html=True)
 
 
