@@ -278,45 +278,57 @@ def pantalla_dashboard():
     # EVENTOS
     # ==============================
 
-    st.subheader("📅 Cumplimiento Anual de Eventos")
+   st.subheader("📅 Cumplimiento Anual de Eventos")
 
     meses = {
         1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
         5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",
         9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"
     }
-
+    
+    # Normalizamos texto de meses
+    df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
+    
     tabla = []
-
-    for mes in range(1,13):
-
-    mes_nombre = meses[mes].lower()  # 👈 clave
-
-    fila = {"Mes": meses[mes]}
-
-    for tipo in ["AYUNO", "VIGILIA"]:
-
-        if tipo == "AYUNO":
-            prog = df_plan_eventos_l[
-                df_plan_eventos_l["Mes"] == mes_nombre
-            ]["Ayunos_Programados"].sum()
-        else:
-            prog = df_plan_eventos_l[
-                df_plan_eventos_l["Mes"] == mes_nombre
-            ]["Vigilias_Programadas"].sum()
-
-        ejec = df_eventos_l[
-            (df_eventos_l["Mes"] == mes) &
-            (df_eventos_l["Tipo"] == tipo)
-        ].shape[0]
-
-        fila[tipo] = f"{ejec}/{prog}"
-
-    tabla.append(fila)
-
+    
+    for mes in range(1, 13):
+    
+        mes_nombre = meses[mes].lower()
+    
+        fila = {"Mes": meses[mes]}
+    
+        for tipo in ["AYUNO", "VIGILIA"]:
+    
+            if tipo == "AYUNO":
+                prog = df_plan_eventos_l[
+                    df_plan_eventos_l["Mes"] == mes_nombre
+                ]["Ayunos_Programados"].sum()
+            else:
+                prog = df_plan_eventos_l[
+                    df_plan_eventos_l["Mes"] == mes_nombre
+                ]["Vigilias_Programadas"].sum()
+    
+            ejec = df_eventos_l[
+                (df_eventos_l["Mes"] == mes) &
+                (df_eventos_l["Tipo"] == tipo)
+            ].shape[0]
+    
+            fila[tipo] = f"{ejec}/{prog}"
+    
+        tabla.append(fila)
+    
     df_tabla = pd.DataFrame(tabla)
-
-    st.dataframe(df_tabla)
+    
+    def color(val):
+        ejec, prog = val.split("/")
+        if int(prog) == 0:
+            return ""
+        return "background-color:#1E8449; color:white;" if int(ejec) >= int(prog) \
+            else "background-color:#C0392B; color:white;"
+    
+    styled = df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"])
+    
+    st.write(styled)
 
     # ==============================
     # OBJETIVOS
