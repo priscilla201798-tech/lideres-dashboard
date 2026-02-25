@@ -128,7 +128,7 @@ df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
     
 def pantalla_login():
 
-    st.title("Bienvenido a IELA")
+    st.title("Bienvenido - Analisis de datos")
 
     col1, col2 = st.columns([1.2, 1])
 
@@ -167,18 +167,47 @@ def pantalla_dashboard():
 
     st.sidebar.markdown("---")
     
-    meses_opciones = ["Todos"] + list(range(1,13))
-    mes_seleccionado = st.sidebar.selectbox("Filtrar por mes", meses_opciones)
+    st.sidebar.markdown("### 📅 Filtrar por fecha")
+    
+    fecha_min = df_resumen_f["Fecha"].min()
+    fecha_max = df_resumen_f["Fecha"].max()
+    
+    rango_fechas = st.sidebar.date_input(
+        "Seleccionar rango",
+        value=(fecha_min, fecha_max),
+        min_value=fecha_min,
+        max_value=fecha_max
+    )
 
     # ==============================
     # FILTRO POR LIDER
     # ==============================
-        
+    
     df_resumen_l = df_resumen_f[df_resumen_f["DNI"] == dni]
     df_eventos_l = df_eventos_f[df_eventos_f["DNI"] == dni]
     df_objetivos_l = df_objetivos[df_objetivos["DNI"] == dni]
     df_asistencia_l = df_asistencia_f[df_asistencia_f["DNI"] == dni]
-
+    
+    # ==============================
+    # FILTRO POR FECHA (AQUÍ VA)
+    # ==============================
+    
+    if isinstance(rango_fechas, tuple) and len(rango_fechas) == 2:
+        desde, hasta = rango_fechas
+    
+        df_resumen_l = df_resumen_l[
+            (df_resumen_l["Fecha"] >= pd.to_datetime(desde)) &
+            (df_resumen_l["Fecha"] <= pd.to_datetime(hasta))
+        ]
+    
+        df_eventos_l = df_eventos_l[
+            df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
+        ]
+    
+        df_asistencia_l = df_asistencia_l[
+            df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
+        ]
+    
     # ==============================
     # FILTRO POR MES
     # ==============================
@@ -192,6 +221,7 @@ def pantalla_dashboard():
     df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
 
     df_plan_eventos_l = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+    df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
     df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
 
     st.title("Dashboard Institucional")
@@ -260,23 +290,29 @@ def pantalla_dashboard():
 
     for mes in range(1,13):
 
-        fila = {"Mes": meses[mes]}
+    mes_nombre = meses[mes].lower()  # 👈 clave
 
-        for tipo in ["AYUNO", "VIGILIA"]:
+    fila = {"Mes": meses[mes]}
 
-            if tipo == "AYUNO":
-                prog = df_plan_eventos_l[df_plan_eventos_l["Mes"] == meses[mes]]["Ayunos_Programados"].sum()
-            else:
-                prog = df_plan_eventos_l[df_plan_eventos_l["Mes"] == meses[mes]]["Vigilias_Programadas"].sum()
+    for tipo in ["AYUNO", "VIGILIA"]:
 
-            ejec = df_eventos_l[
-                (df_eventos_l["Mes"] == mes) &
-                (df_eventos_l["Tipo"] == tipo)
-            ].shape[0]
+        if tipo == "AYUNO":
+            prog = df_plan_eventos_l[
+                df_plan_eventos_l["Mes"] == mes_nombre
+            ]["Ayunos_Programados"].sum()
+        else:
+            prog = df_plan_eventos_l[
+                df_plan_eventos_l["Mes"] == mes_nombre
+            ]["Vigilias_Programadas"].sum()
 
-            fila[tipo] = f"{ejec}/{prog}"
+        ejec = df_eventos_l[
+            (df_eventos_l["Mes"] == mes) &
+            (df_eventos_l["Tipo"] == tipo)
+        ].shape[0]
 
-        tabla.append(fila)
+        fila[tipo] = f"{ejec}/{prog}"
+
+    tabla.append(fila)
 
     df_tabla = pd.DataFrame(tabla)
 
