@@ -442,9 +442,7 @@ def pantalla_dashboard():
     # ==============================
 
     st.title("📊 Dashboard Institucional")
-    st.markdown(f"Bienvenido de nuevo, **{nombre_lider}**.")
-
-    # --- MÉTRICAS ---
+       # --- MÉTRICAS ---
     m1, m2, m3, m4, m5 = st.columns(5)
 
     m1.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
@@ -593,132 +591,7 @@ def pantalla_dashboard():
         df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
         df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
 
-    st.title("Dashboard Institucional")
-
-    # ==============================
-    # TARJETAS
-    # ==============================
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-
-    c1.metric("✨ Convertidos", df_resumen_l["Convertidos"].sum())
-    c2.metric("🤝 Reconciliados", df_resumen_l["Reconciliados"].sum())
-    c3.metric("💰 Ofrendas", round(df_resumen_l["Ofrenda"].sum(),2))
-    c4.metric("📅 Reuniones", len(df_resumen_l))
-    c5.metric("🔥 Eventos Ejecutados", len(df_eventos_l))
-
-    st.divider()
-
-    # ==============================
-    # ASISTENCIA
-    # ==============================
-
-    st.subheader("📊 Asistencia Dominical")
-
-    if not df_asistencia_l.empty:
-
-        asistencia_equipo = (
-            df_asistencia_l
-            .groupby("Equipo")
-            .size()
-            .reset_index(name="Domingos_Asistidos")
-            .sort_values("Domingos_Asistidos", ascending=False)
-        )
-
-        fig_asistencia = px.bar(
-            asistencia_equipo,
-            x="Equipo",
-            y="Domingos_Asistidos",
-            text="Domingos_Asistidos",
-            color="Domingos_Asistidos",
-            color_continuous_scale="Blues"
-        )
-
-        fig_asistencia.update_layout(
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-
-        fig_asistencia.update_traces(textposition="outside")
-
-        st.plotly_chart(fig_asistencia, use_container_width=True)
-
-    # ==============================
-    # EVENTOS
-    # ==============================
-
-    st.subheader("📅 Cumplimiento Anual de Eventos")
-
-    meses = {
-        1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
-        5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",
-        9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"
-    }
     
-    # Normalizamos texto de meses
-    
-    tabla = []
-    
-    for mes in range(1, 13):
-    
-        mes_nombre = meses[mes].lower()
-    
-        fila = {"Mes": meses[mes]}
-    
-        for tipo in ["AYUNO", "VIGILIA"]:
-    
-            if tipo == "AYUNO":
-                prog = df_plan_eventos_l[
-                    df_plan_eventos_l["Mes"] == mes_nombre
-                ]["Ayunos_Programados"].sum()
-            else:
-                prog = df_plan_eventos_l[
-                    df_plan_eventos_l["Mes"] == mes_nombre
-                ]["Vigilias_Programadas"].sum()
-    
-            ejec = df_eventos_l[
-                (df_eventos_l["Mes"] == mes) &
-                (df_eventos_l["Tipo"] == tipo)
-            ].shape[0]
-    
-            fila[tipo] = f"{ejec}/{prog}"
-    
-        tabla.append(fila)
-    
-    df_tabla = pd.DataFrame(tabla)
-    
-    def color(val):
-        ejec, prog = val.split("/")
-        if int(prog) == 0:
-            return ""
-        return "background-color:#1E8449; color:white;" if int(ejec) >= int(prog) \
-            else "background-color:#C0392B; color:white;"
-    
-    styled = df_tabla.style.applymap(color, subset=["AYUNO","VIGILIA"])
-    
-    st.write(styled)
-
-    # ==============================
-    # OBJETIVOS
-    # ==============================
-
-    st.subheader("🎯 Objetivos Estratégicos")
-
-    for _, row in df_plan_obj_l.iterrows():
-
-        objetivo = row["ObjetivoID"]
-        nombre = row["NombreObjetivo"]
-        meta = int(row["MetaAnual"])
-
-        ejecutado = df_objetivos_l[
-            df_objetivos_l["Objetivo"].str.contains(objetivo, na=False)
-        ]["Avance"].sum()
-
-        progreso = min(ejecutado / meta if meta > 0 else 0, 1)
-
-        st.write(f"**{objetivo} - {nombre} ({ejecutado}/{meta})**")
-        st.progress(progreso)
-
 
 # ==============================
 # CONTROLADOR DE PANTALLAS
