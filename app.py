@@ -236,7 +236,16 @@ def aplicar_estilos_login():
         padding: 0 !important;
         max-width: 100% !important;
     }
-
+    /* Elimina margen superior real de Streamlit */
+    .block-container {
+        padding-top: 0rem !important;
+        margin-top: 0rem !important;
+    }
+    header {visibility: hidden;}
+    /* Fuerza que el contenedor principal no empuje contenido */
+    section.main > div {
+        padding-top: 0rem !important;
+    }
     /* 2. Fondo de Océano */
     .stApp {
         background-image: linear-gradient(to bottom, rgba(0, 31, 63, 0.4), rgba(0, 0, 0, 0.7)), 
@@ -249,7 +258,7 @@ def aplicar_estilos_login():
     /* 3. Contenedor de Centrado Absoluto */
     /* IMPORTANTE: pointer-events: none permite que los clics pasen a través de la capa invisible */
     .main-wrapper {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
