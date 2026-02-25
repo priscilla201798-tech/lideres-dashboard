@@ -4,6 +4,7 @@ import json
 import plotly.express as px
 
 st.set_page_config(
+    page_title="IELA - Portal de Liderazgo",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -219,49 +220,159 @@ def aplicar_estilos_login():
     """, unsafe_allow_html=True)
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
+
+def aplicar_estilos_login():
+    st.markdown("""
+    <style>
+    /* Ocultar elementos de Streamlit */
+    [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stSidebar"] {
+        display: none;
+    }
+
+    /* Fondo de Paz y Tranquilidad (Cielo despejado y suave) */
+    .stApp {
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(147, 197, 253, 0.2)), 
+                          url("https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?q=80&w=1974&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    /* Contenedor Flex para centrar sin scroll */
+    .main-login-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* Alto exacto de la pantalla */
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Tarjeta de Login Glassmorphism Suave */
+    .login-card {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 40px;
+        padding: 50px 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        color: #1e293b;
+        text-align: center;
+    }
+
+    .login-card h1 {
+        font-size: 34px !important;
+        font-weight: 800 !important;
+        margin-top: 15px !important;
+        color: #1e3a8a !important; /* Azul marino profundo */
+        letter-spacing: -1px;
+    }
+
+    .login-card .subtitle {
+        color: #475569 !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        margin-bottom: 35px !important;
+    }
+
+    /* Estilo de los Inputs (Más limpios) */
+    div[data-baseweb="input"] {
+        background-color: rgba(255, 255, 255, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        border-radius: 16px !important;
+    }
+    
+    input {
+        color: #1e293b !important;
+    }
+
+    label p {
+        color: #1e3a8a !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        text-transform: uppercase;
+    }
+
+    /* Botón Profesional */
+    .stButton > button {
+        width: 100%;
+        background: #2563eb !important;
+        color: white !important;
+        border-radius: 16px !important;
+        padding: 14px !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        border: none !important;
+        margin-top: 20px;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2) !important;
+    }
+
+    .stButton > button:hover {
+        background: #1d4ed8 !important;
+        transform: translateY(-1px);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ==============================
+# 🖥️ PANTALLA LOGIN
+# ==============================
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Contenedor principal
+    # Contenedor principal para centrar
     st.markdown('<div class="main-login-container">', unsafe_allow_html=True)
-    
-    # Inicio de la tarjeta
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     
-    # Imagen del Logotipo desde GitHub
-    st.image("logotipo.png", width=80)
+    # Logo Institucional
+    try:
+        # Intentamos cargar el logo. Si no existe en la ruta raíz de GitHub, usamos el icono.
+        if os.path.exists("logotipo.png"):
+            st.image("logotipo.png", width=110)
+        else:
+            st.markdown('<div style="font-size: 50px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
+    except:
+        st.markdown('<div style="font-size: 50px; color: #3b82f6; margin-bottom: 10px;">🕊️</div>', unsafe_allow_html=True)
     
     st.markdown("""
-            <h1>Bienvenido,<br>líder</h1>
-            <p class="subtitle">Acceso al Sistema Ministerial</p>
+            <h1>Bienvenido</h1>
+            <p class="subtitle">Portal de Gestión Ministerial IELA</p>
     """, unsafe_allow_html=True)
 
-    # Input de Streamlit
-    dni_input = st.text_input("Documento de Identidad (DNI)", placeholder="Ingresa tu DNI")
+    # Input (Dentro de la tarjeta)
+    dni_input = st.text_input("Ingresa tu DNI", placeholder="Documento de identidad")
 
-    # Botón de Inicio
     if st.button("Ingresar al Portal"):
         dni_limpio = dni_input.strip().zfill(8)
         if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
             st.session_state.dni = dni_limpio
             st.rerun()
         else:
-            st.error("DNI no registrado")
+            st.error("DNI no registrado como líder")
 
     st.markdown("""
-            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                <p style="font-size: 12px; color: #94a3b8;">IELA 2026 - Gestión de Avivamiento</p>
+            <div style="margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 25px;">
+                <p style="font-size: 12px; color: #64748b; font-weight: 600;">IGLESIA EVANGÉLICA DE LIBERACIÓN Y AVIVAMIENTO</p>
+                <p style="font-size: 11px; color: #94a3b8;">Gestión de Datos 2026</p>
             </div>
-        </div> <!-- Cierre login-card -->
-    </div> <!-- Cierre main-login-container -->
+        </div>
+    </div>
     """, unsafe_allow_html=True)
 
-# ... (El resto de tu código de dashboard y controlador de pantallas sigue igual) ...
-
-
+# ==============================
+# 🖥️ PANTALLA DASHBOARD
+# ==============================
 def pantalla_dashboard():
-
-    dni = st.session_state.dni
+    st.title("Panel de Control")
+    st.write(f"Has ingresado como líder: {st.session_state.dni}")
+    if st.button("Cerrar Sesión"):
+        st.session_state.dni = None
+        st.rerun()
 
     # ==============================
     # DATOS DEL LÍDER + SIDEBAR
