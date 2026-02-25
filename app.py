@@ -220,7 +220,7 @@ def aplicar_estilos_login():
     .main .block-container {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        margin-top: -30px !important; 
+        margin-top: -60px !important; 
     }
 
     /* 3. Estilo de los Inputs */
@@ -256,12 +256,12 @@ def aplicar_estilos_login():
         transition: all 0.2s ease;
     }
 
-    /* 5. Contenedor de Bienvenida (Alineado hacia arriba) */
+    /* 5. Contenedor de Bienvenida */
     .welcome-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 85vh;
+        height: 75vh;
         padding-left: 50px;
     }
     
@@ -283,12 +283,12 @@ def aplicar_estilos_login():
         margin-top: 15px !important;
     }
 
-    /* 6. Caja de Login - Ajuste de altura para que no baje tanto */
+    /* 6. Caja de Login - AJUSTE PARA SUBIR EL BLOQUE */
     .login-sidebar-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 85vh;
+        height: 75vh; /* Reducido para que no empuje hacia abajo */
     }
 
     .login-sidebar {
@@ -300,7 +300,7 @@ def aplicar_estilos_login():
         width: 100%;
         max-width: 380px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-        margin-top: -20px; /* Ajuste manual para subir el bloque */
+        margin-top: -150px !important; /* Margen negativo agresivo para subirlo */
     }
     </style>
     """, unsafe_allow_html=True)
@@ -345,6 +345,7 @@ def pantalla_login():
             </div> 
             </div> 
         """, unsafe_allow_html=True)
+
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
