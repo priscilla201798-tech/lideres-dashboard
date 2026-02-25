@@ -209,11 +209,20 @@ def aplicar_estilos_login():
         background-attachment: fixed;
     }
 
-    /* 2. Limpiar UI de Streamlit (Elimina barra gris superior y otros elementos) */
-    [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"] {
+    /* 2. ELIMINACIÓN TOTAL DE BARRAS SUPERIORES */
+    header[data-testid="stHeader"], 
+    [data-testid="stDecoration"], 
+    .st-emotion-cache-zq5wmm,
+    .st-emotion-cache-h5rgaw {
         display: none !important;
+        visibility: hidden !important;
         height: 0 !important;
         opacity: 0 !important;
+    }
+    
+    /* Eliminar espacio superior extra */
+    .st-emotion-cache-18ni7ap {
+        padding-top: 0rem !important;
     }
 
     /* 3. Estilo de los Inputs (Barra pequeña y profesional) */
@@ -255,7 +264,7 @@ def aplicar_estilos_login():
         transform: scale(1.02);
     }
 
-    /* 5. Estilo de los textos de bienvenida (Título más grande) */
+    /* 5. Estilo de los textos de bienvenida (TÍTULO GIGANTE) */
     .welcome-container {
         margin-top: 100px;
         padding: 20px;
@@ -263,29 +272,31 @@ def aplicar_estilos_login():
     
     .welcome-container h1 {
         color: white !important;
-        font-size: 64px !important; /* Letras mucho más grandes */
+        font-size: 80px !important; /* Aumentado a 80px */
         font-weight: 900 !important;
-        text-shadow: 2px 4px 12px rgba(0,0,0,0.8);
+        text-shadow: 2px 4px 15px rgba(0,0,0,0.9);
         margin-bottom: 0px !important;
-        line-height: 1.1 !important;
+        line-height: 1.0 !important;
+        letter-spacing: -2px !important;
     }
 
     .welcome-container p {
-        color: #e2e8f0 !important;
-        font-size: 22px !important;
-        font-weight: 400;
-        text-shadow: 1px 2px 6px rgba(0,0,0,0.8);
+        color: #f1f5f9 !important;
+        font-size: 26px !important; /* Subtítulo también más grande */
+        font-weight: 500;
+        text-shadow: 1px 2px 8px rgba(0,0,0,0.8);
+        margin-top: 10px !important;
     }
 
     /* 6. Caja de Login (Derecha) */
     .login-sidebar {
-        background-color: rgba(0, 31, 63, 0.4);
-        backdrop-filter: blur(15px);
-        padding: 40px;
-        border-radius: 24px;
-        border: 1px solid rgba(255,255,255,0.15);
-        margin-top: 50px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        background-color: rgba(0, 31, 63, 0.45);
+        backdrop-filter: blur(20px);
+        padding: 45px;
+        border-radius: 28px;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-top: 60px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -296,13 +307,13 @@ def aplicar_estilos_login():
 def pantalla_login():
     aplicar_estilos_login()
     
-    # Usamos columnas: 70% espacio/imagen, 30% formulario a la derecha
+    # Usamos columnas: 1.5 para el título, 1 para el login
     col_espacio, col_login = st.columns([1.5, 1])
     
     with col_espacio:
         st.markdown("""
             <div class="welcome-container">
-                <div style="font-size: 70px; margin-bottom: 10px;">🕊️</div>
+                <div style="font-size: 80px; margin-bottom: 20px;">🕊️</div>
                 <h1>Portal de<br>Liderazgo</h1>
                 <p>Gestión Ministerial IELA 2026</p>
             </div>
@@ -310,9 +321,9 @@ def pantalla_login():
         
     with col_login:
         st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
-        st.markdown("<h3 style='color:white; margin-bottom:20px; font-size:24px; font-weight:700;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; margin-bottom:25px; font-size:26px; font-weight:800;'>Iniciar Sesión</h3>", unsafe_allow_html=True)
         
-        # El input ahora es nativo de Streamlit en su columna
+        # El input nativo de Streamlit
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
         if st.button("Ingresar al Portal"):
@@ -325,8 +336,8 @@ def pantalla_login():
                 st.error("Documento no encontrado en los registros.")
         
         st.markdown("""
-            <div style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
-                <p style="font-size: 11px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px;">
+                <p style="font-size: 12px; color: #e2e8f0; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
                     IELA 2026 • Avivamiento y Poder
                 </p>
             </div>
