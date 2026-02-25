@@ -161,26 +161,21 @@ def pantalla_dashboard():
     # ==============================
     # DATOS DEL LÍDER + SIDEBAR
     # ==============================
-
-    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-
-    datos_lider = df_plan_eventos_f[
-        df_plan_eventos_f["DNI_Lider"] == dni
     
-    if not df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni].empty:
-        datos_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni].iloc[0]
+    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+    
+    df_lider = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+    
+    if not df_lider.empty:
+        datos_lider = df_lider.iloc[0]
         nombre_lider = datos_lider["NombreCompleto"]
         entidad_lider = datos_lider["EntidadNombre"]
     else:
         nombre_lider = "No registrado"
         entidad_lider = "-"
     
-
-    nombre_lider = datos_lider["NombreCompleto"]
-    entidad_lider = datos_lider["EntidadNombre"]
-
     st.sidebar.title("📊 Panel de Control")
-
+    
     st.sidebar.markdown("""
     <style>
     .sidebar-card {
@@ -193,7 +188,7 @@ def pantalla_dashboard():
     }
     </style>
     """, unsafe_allow_html=True)
-
+    
     st.sidebar.markdown(f"""
     <div class="sidebar-card">
     <b>DNI:</b><br>{dni}<br><br>
@@ -201,14 +196,25 @@ def pantalla_dashboard():
     <b>Entidad:</b><br>{entidad_lider}
     </div>
     """, unsafe_allow_html=True)
-
+    
     if st.sidebar.button("Cerrar sesión"):
         st.session_state.dni = None
         st.rerun()
-
-    st.sidebar.markdown("---")
-
     
+    st.sidebar.markdown("---")
+    
+    st.sidebar.markdown("### 📅 Filtrar por fecha")
+    
+    fecha_min = df_resumen_f["Fecha"].min()
+    fecha_max = df_resumen_f["Fecha"].max()
+    
+    rango_fechas = st.sidebar.date_input(
+        "Seleccionar rango",
+        value=(fecha_min, fecha_max),
+        min_value=fecha_min,
+        max_value=fecha_max
+    )
+        
     # ==============================
     # FILTRO POR LIDER
     # ==============================
@@ -237,10 +243,6 @@ def pantalla_dashboard():
         df_asistencia_l = df_asistencia_l[
             df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
         ]
-    
-
-
-
     
 
     df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
