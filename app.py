@@ -371,20 +371,7 @@ def pantalla_dashboard():
 
     st.sidebar.markdown("### 👤 Identificación")
     
-    # Cuadro azul debajo de identificación
-    st.sidebar.markdown(f"""
-    <div style="
-        background:{AZUL_PRIMARIO};
-        padding:15px;
-        border-radius:10px;
-        color:white;
-        margin-top:10px;
-        margin-bottom:10px;
-    ">
-    <b>DNI:</b> {dni}
-    </div>
-    """, unsafe_allow_html=True)
-
+  
     st.sidebar.markdown("---")
 
     # Filtro por fecha
