@@ -663,21 +663,53 @@ def pantalla_dashboard():
 
     st.title("Dashboard Institucional")
        # --- MÉTRICAS ---
-    m1, m2, m3, m4, m5, m6, m7 = st.columns(7)
+    st.subheader("📌 Resumen General")
+
+    # En móvil se apilan, en desktop quedan en fila
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        kpi_card(
+            "Convertidos",
+            total_convertidos,
+            "✨",
+            AZUL_ACCENTO,
+            "Personas que aceptaron a Cristo"
+        )
     
-    m1.metric("📅 Reuniones", len(df_res_l))
-    m2.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
-    m3.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
-    m4.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.1f}")
-    m5.metric("🔥 Eventos", len(df_ev_l))
-    m6.metric("📘 Derivados a Escuela Bíblica",
-        int(df_res_l["EscuelaBiblica"].sum())
-    )
-    m7.metric("👣 Visitas Realizadas",
-        int(df_res_l["Visitas"].sum())
-    )
- 
-    st.divider()
+    with c2:
+        kpi_card(
+            "Escuela Bíblica",
+            total_escuela,
+            "📘",
+            VERDE_EXITO,
+            "Derivados acumulados"
+        )
+    
+    with c3:
+        kpi_card(
+            "Visitas",
+            total_visitas,
+            "🏠",
+            AZUL,
+            "Visitas registradas"
+        )
+    
+    c4, c5 = st.columns(2)
+    with c4:
+        kpi_card(
+            "Reconciliados",
+            total_reconciliados,
+            "🤝",
+            "#7c3aed"
+        )
+    
+    with c5:
+        kpi_card(
+            "Eventos Espirituales",
+            total_eventos,
+            "🔥",
+            "#ea580c"
+        )
 
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
