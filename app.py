@@ -385,133 +385,105 @@ section.main > div {
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 # ==============================
-# 🎨 CONFIGURACIÓN E IMAGEN VISUAL
+# 🎨 ESTILOS CSS (POSICIONAMIENTO FORZADO HACIA ARRIBA)
 # ==============================
-st.set_page_config(
-    page_title="IELA - Portal de Liderazgo",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Colores de Marca
-COLOR_PRIMARY = "#3b82f6"
-COLOR_DARK = "#020617"
-COLOR_CARD = "rgba(255, 255, 255, 0.03)"
-
-# ==============================
-# 🛠️ ESTILOS CSS AGRESIVOS (FUERZA EL REDISEÑO)
-# ==============================
-def aplicar_estilos_radiales():
-    st.markdown(f"""
+def aplicar_estilos_login():
+    st.markdown("""
     <style>
-    /* Importación de fuente moderna */
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+    /* 1. Fondo de Océano Global */
+    .stApp {
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 31, 63, 0.6)), 
+                          url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
 
-    /* Reset global */
-    html, body, [data-testid="stAppViewContainer"] {{
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        background: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%) !important;
-        color: #f8fafc !important;
-    }}
-
-    /* Eliminar el padding superior de Streamlit */
-    .block-container {{
-        padding-top: 2rem !important;
-    }}
-
-    /* Sidebar con efecto Glassmorphism real */
-    [data-testid="stSidebar"] {{
-        background: rgba(2, 6, 23, 0.5) !important;
-        backdrop-filter: blur(20px) !important;
-        border-right: 1px solid rgba(255,255,255,0.1) !important;
-    }}
-
-    /* Tarjetas de Métricas Custom (No usamos st.metric) */
-    .custom-card {{
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-        padding: 1.5rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }}
+    /* 2. ELIMINACIÓN TOTAL DE BARRAS */
+    header, [data-testid="stHeader"], [data-testid="stDecoration"] {
+        display: none !important;
+    }
     
-    .custom-card:hover {{
-        transform: translateY(-8px);
-        border-color: {COLOR_PRIMARY};
-        box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
-    }}
+    .main .block-container {
+        padding-top: 0 !important;
+        margin-top: -100px !important; 
+    }
 
-    .card-icon {{
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        display: block;
-    }}
+    /* 3. Estilo de los Inputs */
+    div[data-baseweb="input"] {
+        background-color: #ffffff !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 12px !important;
+        height: 45px !important;
+    }
 
-    .card-value {{
-        font-size: 2.2rem;
-        font-weight: 800;
-        background: linear-gradient(to bottom, #fff, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1;
-    }}
+    div[data-baseweb="input"] input {
+        color: #1e293b !important;
+        font-size: 16px !important;
+    }
 
-    .card-label {{
-        font-size: 0.75rem;
+    label p {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        margin-bottom: 8px !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         text-transform: uppercase;
-        letter-spacing: 0.1rem;
-        color: #64748b;
-        margin-top: 0.5rem;
-        font-weight: 600;
-    }}
+    }
 
-    /* Contenedores de Bloques */
-    .glass-panel {{
-        background: rgba(255, 255, 255, 0.02);
-        padding: 2rem;
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 1rem;
-    }}
-
-    /* Títulos con estilo */
-    .main-title {{
-        font-size: 3.5rem !important;
-        font-weight: 800 !important;
-        letter-spacing: -3px !important;
-        margin-bottom: 0 !important;
-        background: linear-gradient(to right, #ffffff, #3b82f6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }}
-
-    /* Tabla elegante */
-    .modern-table {{
+    /* 4. Botón de Acceso */
+    .stButton > button {
         width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }}
-    .modern-table th {{
-        background: rgba(255, 255, 255, 0.05);
-        color: #94a3b8;
-        text-align: left;
-        padding: 1rem;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-    }}
-    .modern-table td {{
-        padding: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    }}
-    
-    /* Progress bar custom */
-    .stProgress > div > div > div > div {{
-        background-color: {COLOR_PRIMARY} !important;
-        height: 8px !important;
-    }}
+        background-color: #004a99 !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+        font-weight: 800 !important;
+        border: none !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
 
+    /* 5. Contenedor de Bienvenida (Forzado hacia arriba) */
+    .welcome-container {
+        margin-top: 15vh; /* Empieza al 15% de la altura de la pantalla */
+        padding-left: 60px;
+    }
+    
+    .welcome-container h1 {
+        color: white !important;
+        font-size: 90px !important;
+        font-weight: 900 !important;
+        text-shadow: 4px 6px 25px rgba(0,0,0,0.9);
+        margin: 0 !important;
+        line-height: 0.85 !important;
+        letter-spacing: -4px !important;
+    }
+
+    .welcome-container p {
+        color: #f8fafc !important;
+        font-size: 26px !important;
+        font-weight: 500;
+        text-shadow: 2px 3px 10px rgba(0,0,0,0.8);
+        margin-top: 25px !important;
+    }
+
+    /* 6. Caja de Login (Forzada hacia arriba para coincidir con el título) */
+    .login-sidebar-wrapper {
+        margin-top: 15vh; /* Misma altura de inicio que el título */
+        display: flex;
+        justify-content: center;
+    }
+
+    .login-sidebar {
+        background-color: rgba(0, 31, 63, 0.4);
+        backdrop-filter: blur(30px);
+        padding: 50px;
+        border-radius: 35px;
+        border: 1px solid rgba(255,255,255,0.2);
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -560,109 +532,317 @@ def pantalla_login():
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
-def pantalla_dashboard(nombre, entidad):
-    # Paso 1: Aplicar los estilos al inicio de la función
-    aplicar_estilos_radiales()
+def pantalla_dashboard():
+
+    dni = st.session_state.get("dni", None)
+    if not dni:
+        st.stop()
+
+    # --- PREPARACIÓN DATOS LÍDER ---
+    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+    df_lider_info = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+
+    if not df_lider_info.empty:
+        nombre_lider = df_lider_info.iloc[0]["NombreCompleto"]
+        entidad_lider = df_lider_info.iloc[0]["EntidadNombre"]
+    else:
+        nombre_lider = "Líder IELA"
+        entidad_lider = "-"
+
+    # ==============================
+    # SIDEBAR
+    # ==============================
+
+    st.sidebar.title("I.E.L.A - Panel de Control")
+
+    st.sidebar.markdown(f"""
+    <div style="
+        background:#1D4E89;
+        padding:20px;
+        border-radius:14px;
+        color:white;
+        margin-top:10px;
+        margin-bottom:15px;
+        font-size:14px;
+    ">
     
-    # Header con HTML puro para evitar el estilo estándar
-    st.markdown(f"""
-        <div style='margin-bottom: 2rem;'>
-            <p style='color: {COLOR_PRIMARY}; font-weight: 600; margin: 0; letter-spacing: 2px;'>DASHBOARD OPERATIVO</p>
-            <h1 class='main-title'>Hola, {nombre}</h1>
-            <p style='color: #64748b;'>Supervisando la entidad: <b>{entidad}</b></p>
-        </div>
+    <div style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">
+    Usuario Activo
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>Nombre:</b><br>
+    {nombre_lider}
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>Entidad:</b><br>
+    {entidad_lider}
+    </div>
+    
+    <div style="margin-top:10px;">
+    <b>DNI:</b><br>
+    {dni}
+    </div>
+    
+    </div>
     """, unsafe_allow_html=True)
 
-    # Grid de Métricas (6 columnas)
-    m1, m2, m3, m4, m5, m6 = st.columns(6)
-    
-    # Datos de ejemplo (sustituir por tus variables reales de los DataFrames)
-    metrics_data = [
-        ("Reuniones", "24", "📅"),
-        ("Convertidos", "156", "✨"),
-        ("Ofrendas", "S/ 4.2k", "💰"),
-        ("Eventos", "8", "🔥"),
-        ("Escuela B.", "92%", "📘"),
-        ("Visitas", "42", "👣")
+    st.sidebar.markdown("---")
+
+    st.sidebar.markdown("### 📅 Filtrar por fecha")
+
+    fecha_min = df_resumen_f["Fecha"].min()
+    fecha_max = df_resumen_f["Fecha"].max()
+
+    rango = st.sidebar.date_input(
+        "Seleccionar rango",
+        value=(fecha_min, fecha_max),
+        min_value=fecha_min,
+        max_value=fecha_max
+    )
+
+    st.sidebar.markdown("---")
+
+    if st.sidebar.button("🚪 Cerrar sesión", use_container_width=True):
+        st.session_state.dni = None
+        st.rerun()
+
+    # AQUÍ CONTINÚA EL RESTO DEL DASHBOARD
+    # ==============================
+    # FILTRADO
+    # ==============================
+
+    df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
+
+    if isinstance(rango, tuple) and len(rango) == 2:
+        df_res_l = df_res_l[
+            (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
+            (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
+        ]
+
+    df_ev_l = df_eventos_f[
+        (df_eventos_f["DNI"] == dni) &
+        (df_eventos_f["Mes"].isin(df_res_l["Mes"]))
     ]
+
+    df_as_l = df_asistencia_f[
+        (df_asistencia_f["DNI"] == dni) &
+        (df_asistencia_f["Mes"].isin(df_res_l["Mes"]))
+    ]
+
+    df_obj_l = df_objetivos[df_objetivos["DNI"] == dni]
+
+    df_plan_obj_l = df_plan_obj_f[
+        df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni
+    ]
+
+    # ==============================
+    # CONTENIDO PRINCIPAL
+    # ==============================
+
+    st.title("Dashboard Institucional")
+       # --- MÉTRICAS ---
+    m1, m2, m3, m4, m5, m6, m7 = st.columns(7)
     
-    cols = [m1, m2, m3, m4, m5, m6]
-    for i, (label, val, icon) in enumerate(metrics_data):
-        with cols[i]:
-            st.markdown(f"""
-                <div class="custom-card">
-                    <span class="card-icon">{icon}</span>
-                    <div class="card-value">{val}</div>
-                    <div class="card-label">{label}</div>
-                </div>
-            """, unsafe_allow_html=True)
+    m1.metric("📅 Reuniones", len(df_res_l))
+    m2.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
+    m3.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
+    m4.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.1f}")
+    m5.metric("🔥 Eventos", len(df_ev_l))
+    m6.metric("📘 Derivados a Escuela Bíblica",
+        int(df_res_l["EscuelaBiblica"].sum())
+    )
+    m7.metric("👣 Visitas Realizadas",
+        int(df_res_l["Visitas"].sum())
+    )
+ 
+    st.divider()
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # ==============================
+    # 1️⃣ ASISTENCIA DOMINICAL
+    # ==============================
 
-    # Bloques de Contenido (Izquierda: Objetivos, Derecha: Gráfico)
-    c1, c2 = st.columns([1.2, 0.8])
+    st.subheader("📊 Asistencia Dominical")
 
-    with c1:
-        st.markdown("<div class='glass-panel'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='margin-top:0;'>🎯 Objetivos Estratégicos</h3>", unsafe_allow_html=True)
-        
-        for label, val in [("Crecimiento Anual", 85), ("Liderazgo", 60), ("Misiones", 40)]:
-            st.markdown(f"<p style='margin-bottom:0.2rem; font-weight:600;'>{label}</p>", unsafe_allow_html=True)
-            st.progress(val/100)
-            st.markdown("<div style='margin-bottom:1rem;'></div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with c2:
-        st.markdown("<div class='glass-panel'>", unsafe_allow_html=True)
-        st.markdown("<h3 style='margin-top:0;'>📊 Distribución</h3>", unsafe_allow_html=True)
-        
-        # Gráfico con transparencia total para integrarse al fondo radial
-        fig = px.pie(values=[45, 25, 30], names=['Adultos', 'Jóvenes', 'Niños'], hole=0.8)
-        fig.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font_color="white",
-            margin=dict(t=0, b=0, l=0, r=0),
-            height=220,
-            showlegend=False
+    if not df_as_l.empty:
+        as_data = (
+            df_as_l.groupby("Equipo")
+            .size()
+            .reset_index(name="Cant")
+            .sort_values("Cant", ascending=False)
         )
+
+        fig = px.bar(
+            as_data,
+            x="Equipo",
+            y="Cant",
+            color="Cant",
+            color_continuous_scale="Blues",
+            text_auto=True
+        )
+
+        fig.update_layout(height=350, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    # Tabla final estilizada como una Web App moderna
-    st.markdown("<div class='glass-panel'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='margin-top:0;'>📅 Próximas Actividades</h3>", unsafe_allow_html=True)
-    st.markdown("""
-        <table class="modern-table">
-            <thead>
-                <tr>
-                    <th>Actividad</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><b>Vigilia de Intercesión</b></td>
-                    <td>24 de Noviembre</td>
-                    <td><span style='color:#10b981; background:rgba(16,185,129,0.1); padding:4px 12px; border-radius:10px;'>Confirmado</span></td>
-                </tr>
-                <tr>
-                    <td><b>Seminario de Liderazgo</b></td>
-                    <td>02 de Diciembre</td>
-                    <td><span style='color:#f59e0b; background:rgba(245,158,11,0.1); padding:4px 12px; border-radius:10px;'>Pendiente</span></td>
-                </tr>
-            </tbody>
-        </table>
-    """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.divider()
 
-# ==============================
-# 🚀 PUNTO DE ENTRADA
-# ==============================
-if __name__ == "__main__":
-    # Aquí puedes simular los datos para ver el cambio
-    pantalla_dashboard("Admin IELA", "Sede Central Lima")
+    # ==============================
+    # 🎯 OBJETIVOS ESTRATÉGICOS
+    # ==============================
+    
+    st.subheader("🎯 Objetivos Estratégicos")
+    
+    df_avance_obj = calcular_avance_objetivos(
+        df_plan_obj_l=df_plan_obj_l,
+        df_res_l=df_res_l,
+        df_ev_l=df_ev_l,
+        df_obj_manual_l=df_obj_l
+    )
+    
+    for _, row in df_avance_obj.iterrows():
+    
+        objetivo = row["ObjetivoID"]
+        nombre = row["NombreObjetivo"]
+        meta = row["MetaAnual"]
+        ejecutado = row["Ejecutado"]
+        progreso = row["Progreso"]
+    
+        st.markdown(
+            f"**{objetivo} – {nombre} ({ejecutado}/{meta})**"
+        )
+        st.progress(progreso)
+           
+    # ==============================
+    # 3️⃣ EVENTOS
+    # ==============================
+
+    st.subheader("📅 Cumplimiento de Eventos (Ayunos y Vigilias)")
+
+    meses_nom = {
+        1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",
+        5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",
+        9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre"
+    }
+
+    tabla = []
+
+    for m_idx in range(1, 13):
+        m_name = meses_nom[m_idx]
+        fila = {"Mes": m_name}
+
+        for tipo in ["AYUNO", "VIGILIA"]:
+
+            if tipo == "AYUNO":
+                prog = df_plan_eventos_f[
+                    (df_plan_eventos_f["DNI_Lider"] == dni) &
+                    (df_plan_eventos_f["Mes"].str.strip().str.lower() == m_name.lower())
+                ]["Ayunos_Programados"].sum()
+            else:
+                prog = df_plan_eventos_f[
+                    (df_plan_eventos_f["DNI_Lider"] == dni) &
+                    (df_plan_eventos_f["Mes"].str.strip().str.lower() == m_name.lower())
+                ]["Vigilias_Programadas"].sum()
+
+            ejec = df_ev_l[
+                (df_ev_l["Mes"] == m_idx) &
+                (df_ev_l["Tipo"] == tipo)
+            ].shape[0]
+
+            fila[tipo] = f"{ejec}/{prog}"
+
+        tabla.append(fila)
+
+    df_t = pd.DataFrame(tabla)
+
+    def style_ev(val):
+        try:
+            ejec, prog = map(int, val.split("/"))
+            if prog == 0:
+                return ""
+            if ejec >= prog:
+                return "background-color:#1E8449; color:white; font-weight:bold;"
+            else:
+                return ""   # 👈 sin rojo
+        except:
+            return ""
+    st.table(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
+    st.subheader("📈 Tendencia de Participación en Eventos")
+
+    # Creamos dataset mensual
+    data_linea = []
+
+    for m_idx in range(1, 13):
+        mes_nombre = meses_nom[m_idx]
+
+        ayuno_total = df_ev_l[
+            (df_ev_l["Mes"] == m_idx) &
+            (df_ev_l["Tipo"] == "AYUNO")
+        ]["Participantes"].sum()
+
+        vigilia_total = df_ev_l[
+            (df_ev_l["Mes"] == m_idx) &
+            (df_ev_l["Tipo"] == "VIGILIA")
+        ]["Participantes"].sum()
+
+        data_linea.append({
+            "Mes": mes_nombre,
+            "Ayuno": ayuno_total,
+            "Vigilia": vigilia_total
+        })
+
+    df_linea = pd.DataFrame(data_linea)
+
+    fig_line = px.line(
+        df_linea,
+        x="Mes",
+        y=["Ayuno", "Vigilia"],
+        markers=True
+    )
+
+    fig_line.update_layout(
+        height=400,
+        xaxis_title="Mes",
+        yaxis_title="Cantidad de asistentes",
+        legend_title="Tipo de Evento"
+    )
+
+    st.plotly_chart(fig_line, use_container_width=True)
+    # ==============================
+    # FILTRO POR LIDER
+    # ==============================
+    
+    df_resumen_l = df_resumen_f[df_resumen_f["DNI"] == dni]
+    df_eventos_l = df_eventos_f[df_eventos_f["DNI"] == dni]
+    df_objetivos_l = df_objetivos[df_objetivos["DNI"] == dni]
+    df_asistencia_l = df_asistencia_f[df_asistencia_f["DNI"] == dni]
+    
+    # ==============================
+    # FILTRO POR FECHA (AQUÍ VA)
+    # ==============================
+    
+    if isinstance(rango, tuple) and len(rango) == 2:
+        df_res_l = df_res_l[
+            (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
+            (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
+        ]
+        df_eventos_l = df_eventos_l[
+        df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
+        ]
+        
+        df_asistencia_l = df_asistencia_l[
+        df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
+        ]
+        
+        df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+        df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
+    
+        df_plan_eventos_l = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
+        df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
+        df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
+
+    
+
 # ==============================
 # CONTROLADOR DE PANTALLAS
 # ==============================
@@ -674,3 +854,4 @@ if st.session_state.dni is None:
     pantalla_login()
 else:
     pantalla_dashboard()
+
