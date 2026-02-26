@@ -100,11 +100,8 @@ def aplanar(df):
             continue
 
         raw_json = row.get("RespuestasJSON", "")
-
         if not isinstance(raw_json, str) or raw_json.strip() == "":
             continue
-
-        raw_json = raw_json.strip()
 
         try:
             data = json.loads(raw_json)
@@ -114,34 +111,116 @@ def aplanar(df):
             except:
                 continue
 
-        # RESUMEN
+        # -------------------------
+        # PROGRAMACIÓN SEMANAL (SI / NO)
+        # -------------------------
+        cumplio_prog = (
+            es_si(get_val(
+                data,
+                "¿Se realizó la reunión esta semana?",
+                "¿Se cumplió con la programación semanal?",
+                default=""
+            ))
+        )
+
+        # -------------------------
+        # VARIABLES AUTOMÁTICAS
+        # -------------------------
+        convertidos = int(get_num(
+            data,
+            "¿Cuántas personas aceptaron a Cristo?",
+            "4. ¿Cuántas personas aceptaron a Cristo?",
+            default=0
+        ))
+
+        reconciliados = int(get_num(
+            data,
+            "¿Cuántas personas se reconciliaron con Cristo?",
+            default=0
+        ))
+
+        nuevos = int(get_num(
+            data,
+            "¿Cuántas personas nuevas asistieron?",
+            default=0
+        ))
+
+        visitas = int(get_num(
+            data,
+            "Cantidad de visitas realizadas",
+            default=0
+        ))
+
+        escuela_biblica = int(get_num(
+            data,
+            "Cantidad de personas derivadas a Escuela Bíblica",
+            default=0
+        ))
+
+        ofrenda = float(get_num(
+            data,
+            "Monto total de la ofrenda (S/.)",
+            default=0
+        ))
+
+        # -------------------------
+        # RESUMEN (BASE DE OBJETIVOS)
+        # -------------------------
         resumen.append({
             "Fecha": fecha,
             "Mes": mes,
             "DNI": dni,
-            "Convertidos": int(data.get("¿Cuántas personas aceptaron a Cristo?", 0) or 0),
-            "Reconciliados": int(data.get("¿Cuántas personas se reconciliaron con Cristo?", 0) or 0),
-            "Ofrenda": float(data.get("Monto total de la ofrenda (S/.)", 0) or 0)
+            "Convertidos": convertidos,
+            "Reconciliados": reconciliados,
+            "Ofrenda": ofrenda,
+
+            # 👇 claves para objetivos automáticos
+            "ProgSemanal": 1 if cumplio_prog else 0,
+            "Nuevos": nuevos,
+            "Visitas": visitas,
+            "EscuelaBiblica": escuela_biblica
         })
 
-        # EVENTOS
-        if data.get("¿Esta semana se realizó algún evento espiritual?") == "Sí":
+        # -------------------------
+        # EVENTOS ESPIRITUALES
+        # -------------------------
+        if es_si(get_val(data, "¿Esta semana se realizó algún evento espiritual?", default="")):
             eventos.append({
                 "Mes": mes,
                 "DNI": dni,
-                "Tipo": data.get("¿Qué tipo de evento espiritual se realizó?", "").upper(),
-                "Participantes": int(data.get("¿Cuántas personas participaron?", 0) or 0)
+                "Tipo": str(get_val(
+                    data,
+                    "¿Qué tipo de evento espiritual se realizó?",
+                    default=""
+                )).upper(),
+                "Participantes": int(get_num(
+                    data,
+                    "¿Cuántas personas participaron?",
+                    default=0
+                ))
             })
 
-        # OBJETIVOS
-        if data.get("¿Deseas registrar avance en alguno de tus objetivos esta semana?") == "Sí":
+        # -------------------------
+        # OBJETIVOS MANUALES
+        # -------------------------
+        if es_si(get_val(data, "¿Deseas registrar avance en alguno de tus objetivos esta semana?", default="")):
             objetivos.append({
                 "DNI": dni,
-                "Objetivo": data.get("¿En qué objetivo deseas registrar avance?", ""),
-                "Avance": int(data.get("¿Cuánto avanzaste en este objetivo?", 0) or 0)
+                "Objetivo": get_val(
+                    data,
+                    "¿En qué objetivo deseas registrar avance?",
+                    default=""
+                ),
+                "Avance": int(get_num(
+                    data,
+                    "¿Cuánto avanzaste en este objetivo?",
+                    default=0
+                ))
             })
 
-        # ASISTENCIA
+        # -------------------------
+        # ASISTENCIA DOMINICAL
+        # -------------------------
         asistentes = (
             data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
             or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
@@ -161,7 +240,6 @@ def aplanar(df):
         pd.DataFrame(objetivos),
         pd.DataFrame(asistencia)
     )
-
 
 def calcular_avance_objetivos(df_plan_obj_l, df_res_l, df_ev_l, df_obj_manual_l):
     """
