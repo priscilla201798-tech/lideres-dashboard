@@ -652,7 +652,20 @@ def pantalla_dashboard():
     m5.metric("🔥 Eventos", len(df_ev_l))
 
     st.divider()
+    
+    st.divider()
 
+    k1, k2 = st.columns(2)
+    
+    k1.metric(
+        "📘 Derivados a Escuela Bíblica",
+        int(df_res_l["EscuelaBiblica"].sum())
+    )
+    
+    k2.metric(
+        "👣 Visitas Realizadas",
+        int(df_res_l["Visitas"].sum())
+    )
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
     # ==============================
