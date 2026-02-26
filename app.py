@@ -553,7 +553,7 @@ def pantalla_dashboard():
     # SIDEBAR
     # ==============================
 
-    st.sidebar.title("Iglesia Evángelica de Liberación y Avivamiento - Panel de Control")
+    st.sidebar.title("I.E.L.A - Panel de Control")
 
     st.sidebar.markdown(f"""
     <div style="
