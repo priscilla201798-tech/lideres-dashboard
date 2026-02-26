@@ -529,7 +529,7 @@ def pantalla_login():
         """, unsafe_allow_html=True)
 
 def kpi_card(titulo, valor, icono, color, subtitulo=None):
-    st.markdown(f"""
+    html = f"""
     <div style="
         background: white;
         border-radius: 18px;
@@ -538,17 +538,39 @@ def kpi_card(titulo, valor, icono, color, subtitulo=None):
         border-left: 6px solid {color};
         min-height: 120px;
     ">
-        <div style="font-size:13px; color:#64748b; font-weight:700; text-transform:uppercase;">
+        <div style="
+            font-size:13px;
+            color:#64748b;
+            font-weight:700;
+            text-transform:uppercase;
+        ">
             {titulo}
         </div>
 
-        <div style="font-size:36px; font-weight:900; margin-top:8px; color:#0f172a;">
+        <div style="
+            font-size:36px;
+            font-weight:900;
+            margin-top:8px;
+            color:#0f172a;
+        ">
             {valor} <span style="font-size:28px;">{icono}</span>
         </div>
+    """
 
-        {f"<div style='margin-top:6px; font-size:13px; color:#475569;'>{subtitulo}</div>" if subtitulo else ""}
-    </div>
-    """, unsafe_allow_html=True)
+    if subtitulo:
+        html += f"""
+        <div style="
+            margin-top:6px;
+            font-size:13px;
+            color:#475569;
+        ">
+            {subtitulo}
+        </div>
+        """
+
+    html += "</div>"
+
+    st.markdown(html, unsafe_allow_html=True)
 
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
