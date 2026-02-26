@@ -111,159 +111,38 @@ def aplanar(df):
             except:
                 continue
 
-        # -------------------------
-        # PROGRAMACIÓN SEMANAL (SI / NO)
-        # -------------------------
-        cumplio_prog = (
-            es_si(get_val(
-                data,
-                "¿Se realizó la reunión esta semana?",
-                "¿Se cumplió con la programación semanal?",
-                default=""
-            ))
-        )
+        # --- PROGRAMACIÓN SEMANAL (sí/no) ---
+cumplio_prog = (
+    es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
+    es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
+)
 
-        # -------------------------
-        # VARIABLES AUTOMÁTICAS
-        # -------------------------
-        convertidos = int(get_num(
-            data,
-            "¿Cuántas personas aceptaron a Cristo?",
-            "4. ¿Cuántas personas aceptaron a Cristo?",
-            default=0
-        ))
+# --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
+nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
+visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
+esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
 
-        reconciliados = int(get_num(
-            data,
-            "¿Cuántas personas se reconciliaron con Cristo?",
-            default=0
-        ))
+resumen.append({
+    "Fecha": fecha,
+    "Mes": mes,
+    "DNI": dni,
 
-        nuevos = int(get_num(
-            data,
-            "¿Cuántas personas nuevas asistieron?",
-            default=0
-        ))
+    # Base espiritual
+    "Convertidos": int(get_num(
+        data,
+        "¿Cuántas personas aceptaron a Cristo?",
+        "4. ¿Cuántas personas aceptaron a Cristo?",
+        default=0
+    )),
+    "Reconciliados": int(get_num(data, "¿Cuántas personas se reconciliaron con Cristo?", default=0)),
+    "Ofrenda": float(get_num(data, "Monto total de la ofrenda (S/.)", default=0)),
 
-        visitas = int(get_num(
-            data,
-            "Cantidad de visitas realizadas",
-            default=0
-        ))
-
-        escuela_biblica = int(get_num(
-            data,
-            "Cantidad de personas derivadas a Escuela Bíblica",
-            default=0
-        ))
-
-        ofrenda = float(get_num(
-            data,
-            "Monto total de la ofrenda (S/.)",
-            default=0
-        ))
-
-        # -------------------------
-        # RESUMEN (BASE DE OBJETIVOS)
-        # -------------------------
-        # --- PROGRAMACIÓN SEMANAL ---
-        cumplio_prog = (
-            es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
-            es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
-        )
-        
-        # --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
-        nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
-        visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
-        esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
-        
-        resumen.append({
-            "Fecha": fecha,
-            "Mes": mes,
-            "DNI": dni,
-        
-            "Convertidos": int(get_num(data,
-                "¿Cuántas personas aceptaron a Cristo?",
-                "4. ¿Cuántas personas aceptaron a Cristo?",
-                default=0
-            )),
-        
-            "Reconciliados": int(get_num(data,
-                "¿Cuántas personas se reconciliaron con Cristo?",
-                default=0
-            )),
-        
-            "Ofrenda": float(get_num(data,
-                "Monto total de la ofrenda (S/.)",
-                default=0
-            )),
-        
-            # 👇 NUEVAS COLUMNAS IMPORTANTES
-            "ProgSemanal": 1 if cumplio_prog else 0,
-            "Nuevos": int(nuevos),
-            "Visitas": int(visitas),
-            "EscuelaBiblica": int(esc_bib),
-        })
-
-        # -------------------------
-        # EVENTOS ESPIRITUALES
-        # -------------------------
-        if es_si(get_val(data, "¿Esta semana se realizó algún evento espiritual?", default="")):
-            eventos.append({
-                "Mes": mes,
-                "DNI": dni,
-                "Tipo": str(get_val(
-                    data,
-                    "¿Qué tipo de evento espiritual se realizó?",
-                    default=""
-                )).upper(),
-                "Participantes": int(get_num(
-                    data,
-                    "¿Cuántas personas participaron?",
-                    default=0
-                ))
-            })
-
-        # -------------------------
-        # OBJETIVOS MANUALES
-        # -------------------------
-        if es_si(get_val(data, "¿Deseas registrar avance en alguno de tus objetivos esta semana?", default="")):
-            objetivos.append({
-                "DNI": dni,
-                "Objetivo": get_val(
-                    data,
-                    "¿En qué objetivo deseas registrar avance?",
-                    default=""
-                ),
-                "Avance": int(get_num(
-                    data,
-                    "¿Cuánto avanzaste en este objetivo?",
-                    default=0
-                ))
-            })
-
-        # -------------------------
-        # ASISTENCIA DOMINICAL
-        # -------------------------
-        asistentes = (
-            data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
-            or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
-            or []
-        )
-
-        for persona in asistentes:
-            asistencia.append({
-                "Mes": mes,
-                "DNI": dni,
-                "Equipo": persona
-            })
-
-    return (
-        pd.DataFrame(resumen),
-        pd.DataFrame(eventos),
-        pd.DataFrame(objetivos),
-        pd.DataFrame(asistencia)
-    )
+    # 👇 CLAVE PARA OBJETIVOS
+    "ProgSemanal": 1 if cumplio_prog else 0,
+    "Nuevos": int(nuevos),
+    "Visitas": int(visitas),
+    "EscuelaBiblica": int(esc_bib),
+})
 
 def calcular_avance_objetivos(df_plan_obj_l, df_res_l, df_ev_l, df_obj_manual_l):
     """
