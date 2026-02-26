@@ -656,7 +656,23 @@ def pantalla_dashboard():
     df_plan_obj_l = df_plan_obj_f[
         df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni
     ]
+    
+    df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
 
+    if isinstance(rango, tuple) and len(rango) == 2:
+    df_res_l = df_res_l[
+        (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
+        (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
+    ]
+    # ==============================
+    # KPIs BASE
+    # ==============================
+    
+    total_convertidos = int(df_res_l["Convertidos"].sum()) if "Convertidos" in df_res_l else 0
+    total_reconciliados = int(df_res_l["Reconciliados"].sum()) if "Reconciliados" in df_res_l else 0
+    total_visitas = int(df_res_l["Visitas"].sum()) if "Visitas" in df_res_l else 0
+    total_escuela = int(df_res_l["EscuelaBiblica"].sum()) if "EscuelaBiblica" in df_res_l else 0
+    total_eventos = len(df_ev_l)
     # ==============================
     # CONTENIDO PRINCIPAL
     # ==============================
