@@ -312,7 +312,8 @@ df_plan_eventos_f = cargar_sheet(GID_EVENTOS)
 df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
-st.write(df_resumen_f[["Fecha", "DNI", "ProgSemanal"]].tail(10))
+
+
 # 1. FUNCIÓN DE ESTILOS ACTUALIZADA (Imagen de paz, centrado y logo de GitHub)
 def aplicar_estilos_login():
     st.markdown("""
