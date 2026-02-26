@@ -648,7 +648,7 @@ def pantalla_dashboard():
     m1.metric("📅 Reuniones", len(df_res_l))
     m2.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
     m3.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
-    m4.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.2f}")
+    m4.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.1f}")
     m5.metric("🔥 Eventos", len(df_ev_l))
     m6.metric("📘 Derivados a Escuela Bíblica",
         int(df_res_l["EscuelaBiblica"].sum())
