@@ -111,38 +111,112 @@ def aplanar(df):
             except:
                 continue
 
-        # --- PROGRAMACIÓN SEMANAL (sí/no) ---
+        # ==============================
+        # PROGRAMACIÓN SEMANAL (SI / NO)
+        # ==============================
         cumplio_prog = (
             es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
             es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
         )
-        
-        # --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
+
+        # ==============================
+        # VARIABLES AUTOMÁTICAS
+        # ==============================
         nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
         visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
         esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
-        
+
+        # ==============================
+        # RESUMEN (UNA SOLA VEZ)
+        # ==============================
         resumen.append({
             "Fecha": fecha,
             "Mes": mes,
             "DNI": dni,
-        
-            # Base espiritual
+
             "Convertidos": int(get_num(
                 data,
                 "¿Cuántas personas aceptaron a Cristo?",
                 "4. ¿Cuántas personas aceptaron a Cristo?",
                 default=0
             )),
-            "Reconciliados": int(get_num(data, "¿Cuántas personas se reconciliaron con Cristo?", default=0)),
-            "Ofrenda": float(get_num(data, "Monto total de la ofrenda (S/.)", default=0)),
-        
-            # 👇 CLAVE PARA OBJETIVOS
+            "Reconciliados": int(get_num(
+                data,
+                "¿Cuántas personas se reconciliaron con Cristo?",
+                default=0
+            )),
+            "Ofrenda": float(get_num(
+                data,
+                "Monto total de la ofrenda (S/.)",
+                default=0
+            )),
+
+            # 👇 CLAVE
             "ProgSemanal": 1 if cumplio_prog else 0,
             "Nuevos": int(nuevos),
             "Visitas": int(visitas),
             "EscuelaBiblica": int(esc_bib),
         })
+
+        # ==============================
+        # EVENTOS
+        # ==============================
+        if es_si(get_val(data, "¿Esta semana se realizó algún evento espiritual?", default="")):
+            eventos.append({
+                "Mes": mes,
+                "DNI": dni,
+                "Tipo": str(get_val(
+                    data,
+                    "¿Qué tipo de evento espiritual se realizó?",
+                    default=""
+                )).upper(),
+                "Participantes": int(get_num(
+                    data,
+                    "¿Cuántas personas participaron?",
+                    default=0
+                ))
+            })
+
+        # ==============================
+        # OBJETIVOS MANUALES
+        # ==============================
+        if es_si(get_val(data, "¿Deseas registrar avance en alguno de tus objetivos esta semana?", default="")):
+            objetivos.append({
+                "DNI": dni,
+                "Objetivo": get_val(
+                    data,
+                    "¿En qué objetivo deseas registrar avance?",
+                    default=""
+                ),
+                "Avance": int(get_num(
+                    data,
+                    "¿Cuánto avanzaste en este objetivo?",
+                    default=0
+                ))
+            })
+
+        # ==============================
+        # ASISTENCIA
+        # ==============================
+        asistentes = (
+            data.get("Marca a los integrantes del equipo ALMAH que asistieron al culto dominical")
+            or data.get("Marca a los integrantes del equipo que asistieron al culto dominical")
+            or []
+        )
+
+        for persona in asistentes:
+            asistencia.append({
+                "Mes": mes,
+                "DNI": dni,
+                "Equipo": persona
+            })
+
+    return (
+        pd.DataFrame(resumen),
+        pd.DataFrame(eventos),
+        pd.DataFrame(objetivos),
+        pd.DataFrame(asistencia)
+    )
 
 def calcular_avance_objetivos(df_plan_obj_l, df_res_l, df_ev_l, df_obj_manual_l):
     """
@@ -233,7 +307,7 @@ df_plan_eventos_f = cargar_sheet(GID_EVENTOS)
 df_plan_obj_f = cargar_sheet(GID_OBJETIVOS)
 
 df_resumen_f, df_eventos_f, df_objetivos, df_asistencia_f = aplanar(df_raw)
-
+st.write(df_resumen_f[["Fecha", "DNI", "ProgSemanal"]].tail(10))
 # 1. FUNCIÓN DE ESTILOS ACTUALIZADA (Imagen de paz, centrado y logo de GitHub)
 def aplicar_estilos_login():
     st.markdown("""
