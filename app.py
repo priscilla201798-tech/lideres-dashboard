@@ -387,103 +387,87 @@ section.main > div {
 # ==============================
 # 🎨 ESTILOS CSS (POSICIONAMIENTO FORZADO HACIA ARRIBA)
 # ==============================
-def aplicar_estilos_login():
-    st.markdown("""
+def aplicar_estilos_globales():
+    st.markdown(f"""
     <style>
-    /* 1. Fondo de Océano Global */
-    .stApp {
-        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 31, 63, 0.6)), 
-                          url("https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto=format&fit=crop");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-    /* 2. ELIMINACIÓN TOTAL DE BARRAS */
-    header, [data-testid="stHeader"], [data-testid="stDecoration"] {
-        display: none !important;
-    }
-    
-    .main .block-container {
-        padding-top: 0 !important;
-        margin-top: -100px !important; 
-    }
+    * {{ font-family: 'Inter', sans-serif; }}
 
-    /* 3. Estilo de los Inputs */
-    div[data-baseweb="input"] {
-        background-color: #ffffff !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 12px !important;
-        height: 45px !important;
-    }
+    /* Fondo y Contenedor Principal */
+    .stApp {{
+        background: radial-gradient(circle at top right, #0f172a, #020617);
+        color: #f8fafc;
+    }}
 
-    div[data-baseweb="input"] input {
-        color: #1e293b !important;
-        font-size: 16px !important;
-    }
+    /* Estilización del Sidebar */
+    [data-testid="stSidebar"] {{
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(15px);
+        border-right: 1px solid rgba(255,255,255,0.1);
+    }}
 
-    label p {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        margin-bottom: 8px !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    /* Tarjetas de Métricas Personalizadas */
+    .metric-card {{
+        background: rgba(255, 255, 255, 0.03);
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }}
+    .metric-card:hover {{
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: {COLOR_ACCENT};
+    }}
+    .metric-value {{
+        font-size: 28px;
+        font-weight: 800;
+        color: white;
+        margin: 5px 0;
+    }}
+    .metric-label {{
+        font-size: 12px;
         text-transform: uppercase;
-    }
+        letter-spacing: 1px;
+        color: #94a3b8;
+    }}
 
-    /* 4. Botón de Acceso */
-    .stButton > button {
-        width: 100%;
-        background-color: #004a99 !important;
-        color: white !important;
-        border-radius: 12px !important;
-        padding: 12px !important;
+    /* Secciones y Headers */
+    h1, h2, h3 {{
         font-weight: 800 !important;
-        border: none !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    }
-
-    /* 5. Contenedor de Bienvenida (Forzado hacia arriba) */
-    .welcome-container {
-        margin-top: 15vh; /* Empieza al 15% de la altura de la pantalla */
-        padding-left: 60px;
-    }
+        letter-spacing: -1px;
+    }}
     
-    .welcome-container h1 {
+    .stProgress > div > div > div > div {{
+        background-color: {COLOR_ACCENT} !important;
+    }}
+
+    /* Botones Estilizados */
+    .stButton > button {{
+        border-radius: 12px !important;
+        background: linear-gradient(135deg, {COLOR_PRIMARY}, {COLOR_ACCENT}) !important;
         color: white !important;
-        font-size: 90px !important;
-        font-weight: 900 !important;
-        text-shadow: 4px 6px 25px rgba(0,0,0,0.9);
-        margin: 0 !important;
-        line-height: 0.85 !important;
-        letter-spacing: -4px !important;
-    }
+        border: none !important;
+        padding: 10px 24px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }}
+    .stButton > button:hover {{
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+        transform: scale(1.02);
+    }}
 
-    .welcome-container p {
-        color: #f8fafc !important;
-        font-size: 26px !important;
-        font-weight: 500;
-        text-shadow: 2px 3px 10px rgba(0,0,0,0.8);
-        margin-top: 25px !important;
-    }
-
-    /* 6. Caja de Login (Forzada hacia arriba para coincidir con el título) */
-    .login-sidebar-wrapper {
-        margin-top: 15vh; /* Misma altura de inicio que el título */
-        display: flex;
-        justify-content: center;
-    }
-
-    .login-sidebar {
-        background-color: rgba(0, 31, 63, 0.4);
-        backdrop-filter: blur(30px);
-        padding: 50px;
-        border-radius: 35px;
-        border: 1px solid rgba(255,255,255,0.2);
+    /* Tabla Estilizada */
+    .styled-table {{
         width: 100%;
-        max-width: 420px;
-        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-    }
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        border-radius: 12px;
+        overflow: hidden;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
