@@ -115,8 +115,13 @@ def aplanar(df):
         # PROGRAMACIÓN SEMANAL (SI / NO)
         # ==============================
         cumplio_prog = (
-            es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
-            es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
+            es_si(get_val(
+                data,
+                "¿Se realizó la reunión esta semana?",
+                "¿Se cumplio con la programación semanal?",   # sin tilde
+                "¿Se cumplió con la programación semanal?",   # con tilde (por si acaso)
+                default=""
+            ))
         )
 
         # ==============================
