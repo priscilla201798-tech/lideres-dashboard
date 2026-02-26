@@ -166,19 +166,43 @@ def aplanar(df):
         # -------------------------
         # RESUMEN (BASE DE OBJETIVOS)
         # -------------------------
+        # --- PROGRAMACIÓN SEMANAL ---
+        cumplio_prog = (
+            es_si(get_val(data, "¿Se realizó la reunión esta semana?", default="")) or
+            es_si(get_val(data, "¿Se cumplió con la programación semanal?", default=""))
+        )
+        
+        # --- NUEVOS / VISITAS / ESCUELA BÍBLICA ---
+        nuevos = get_num(data, "¿Cuántas personas nuevas asistieron?", default=0)
+        visitas = get_num(data, "Cantidad de visitas realizadas", default=0)
+        esc_bib = get_num(data, "Cantidad de personas derivadas a Escuela Bíblica", default=0)
+        
         resumen.append({
             "Fecha": fecha,
             "Mes": mes,
             "DNI": dni,
-            "Convertidos": convertidos,
-            "Reconciliados": reconciliados,
-            "Ofrenda": ofrenda,
-
-            # 👇 claves para objetivos automáticos
+        
+            "Convertidos": int(get_num(data,
+                "¿Cuántas personas aceptaron a Cristo?",
+                "4. ¿Cuántas personas aceptaron a Cristo?",
+                default=0
+            )),
+        
+            "Reconciliados": int(get_num(data,
+                "¿Cuántas personas se reconciliaron con Cristo?",
+                default=0
+            )),
+        
+            "Ofrenda": float(get_num(data,
+                "Monto total de la ofrenda (S/.)",
+                default=0
+            )),
+        
+            # 👇 NUEVAS COLUMNAS IMPORTANTES
             "ProgSemanal": 1 if cumplio_prog else 0,
-            "Nuevos": nuevos,
-            "Visitas": visitas,
-            "EscuelaBiblica": escuela_biblica
+            "Nuevos": int(nuevos),
+            "Visitas": int(visitas),
+            "EscuelaBiblica": int(esc_bib),
         })
 
         # -------------------------
