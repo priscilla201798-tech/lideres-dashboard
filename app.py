@@ -675,7 +675,8 @@ def pantalla_dashboard():
     # ==============================
 
     st.title("Dashboard Institucional")
-       # --- MÉTRICAS ---
+    
+    # --- MÉTRICAS ---
     st.subheader("📌 Resumen General")
 
     # En móvil se apilan, en desktop quedan en fila
