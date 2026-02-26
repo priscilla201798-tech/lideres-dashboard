@@ -645,17 +645,6 @@ def pantalla_dashboard():
         )
         st.progress(progreso)
            
-        filas.append({
-            "ObjetivoID": objetivo_id,
-            "NombreObjetivo": nombre,
-            "FuenteDato": fuente,
-            "Unidad": unidad,
-            "Ejecutado": ejecutado_total,
-            "MetaAnual": meta,
-            "Progreso": progreso
-        })
-
-    return pd.DataFrame(filas)
     # ==============================
     # 3️⃣ EVENTOS
     # ==============================
