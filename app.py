@@ -549,6 +549,7 @@ def kpi_card(titulo, valor, icono, color, subtitulo=None):
         {f"<div style='margin-top:6px; font-size:13px; color:#475569;'>{subtitulo}</div>" if subtitulo else ""}
     </div>
     """, unsafe_allow_html=True)
+
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
@@ -633,7 +634,22 @@ def pantalla_dashboard():
     # FILTRADO
     # ==============================
 
+    # ==============================
+    # FILTRADO BASE POR DNI
+    # ==============================
+
     df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
+    df_ev_l = df_eventos_f[df_eventos_f["DNI"] == dni]
+    df_as_l = df_asistencia_f[df_asistencia_f["DNI"] == dni]
+    df_obj_l = df_objetivos[df_objetivos["DNI"] == dni]
+
+    df_plan_obj_l = df_plan_obj_f[
+        df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni
+    ]
+
+    # ==============================
+    # FILTRADO POR FECHA
+    # ==============================
 
     if isinstance(rango, tuple) and len(rango) == 2:
         df_res_l = df_res_l[
@@ -641,29 +657,10 @@ def pantalla_dashboard():
             (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
         ]
 
-    df_ev_l = df_eventos_f[
-        (df_eventos_f["DNI"] == dni) &
-        (df_eventos_f["Mes"].isin(df_res_l["Mes"]))
-    ]
+        meses_validos = df_res_l["Mes"].unique()
 
-    df_as_l = df_asistencia_f[
-        (df_asistencia_f["DNI"] == dni) &
-        (df_asistencia_f["Mes"].isin(df_res_l["Mes"]))
-    ]
-
-    df_obj_l = df_objetivos[df_objetivos["DNI"] == dni]
-
-    df_plan_obj_l = df_plan_obj_f[
-        df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8) == dni
-    ]
-    
-    df_res_l = df_resumen_f[df_resumen_f["DNI"] == dni]
-
-    if isinstance(rango, tuple) and len(rango) == 2:
-    df_res_l = df_res_l[
-        (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
-        (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
-    ]
+        df_ev_l = df_ev_l[df_ev_l["Mes"].isin(meses_validos)]
+        df_as_l = df_as_l[df_as_l["Mes"].isin(meses_validos)]
     # ==============================
     # KPIs BASE
     # ==============================
@@ -876,40 +873,7 @@ def pantalla_dashboard():
     )
 
     st.plotly_chart(fig_line, use_container_width=True)
-    # ==============================
-    # FILTRO POR LIDER
-    # ==============================
-    
-    df_resumen_l = df_resumen_f[df_resumen_f["DNI"] == dni]
-    df_eventos_l = df_eventos_f[df_eventos_f["DNI"] == dni]
-    df_objetivos_l = df_objetivos[df_objetivos["DNI"] == dni]
-    df_asistencia_l = df_asistencia_f[df_asistencia_f["DNI"] == dni]
-    
-    # ==============================
-    # FILTRO POR FECHA (AQUÍ VA)
-    # ==============================
-    
-    if isinstance(rango, tuple) and len(rango) == 2:
-        df_res_l = df_res_l[
-            (df_res_l["Fecha"] >= pd.to_datetime(rango[0])) &
-            (df_res_l["Fecha"] <= pd.to_datetime(rango[1]))
-        ]
-        df_eventos_l = df_eventos_l[
-        df_eventos_l["Mes"].isin(df_resumen_l["Mes"])
-        ]
         
-        df_asistencia_l = df_asistencia_l[
-        df_asistencia_l["Mes"].isin(df_resumen_l["Mes"])
-        ]
-        
-        df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
-        df_plan_obj_f["DNI_Lider"] = df_plan_obj_f["DNI_Lider"].astype(str).str.zfill(8)
-    
-        df_plan_eventos_l = df_plan_eventos_f[df_plan_eventos_f["DNI_Lider"] == dni]
-        df_plan_eventos_l["Mes"] = df_plan_eventos_l["Mes"].str.strip().str.lower()
-        df_plan_obj_l = df_plan_obj_f[df_plan_obj_f["DNI_Lider"] == dni]
-
-    
 
 # ==============================
 # CONTROLADOR DE PANTALLAS
