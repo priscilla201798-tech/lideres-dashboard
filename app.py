@@ -643,29 +643,22 @@ def pantalla_dashboard():
 
     st.title("Dashboard Institucional")
        # --- MÉTRICAS ---
-    m1, m2, m3, m4, m5 = st.columns(5)
+    m1, m2, m3, m4, m5, m6, m7 = st.columns(7)
 
     m1.metric("✨ Convertidos", df_res_l["Convertidos"].sum())
     m2.metric("🤝 Reconciliados", df_res_l["Reconciliados"].sum())
     m3.metric("💰 Ofrendas (S/.)", f"{df_res_l['Ofrenda'].sum():.2f}")
     m4.metric("📅 Reuniones", len(df_res_l))
     m5.metric("🔥 Eventos", len(df_ev_l))
-
-    st.divider()
-    
-    st.divider()
-
-    k1, k2 = st.columns(2)
-    
-    k1.metric(
-        "📘 Derivados a Escuela Bíblica",
+    m6.metric("📘 Derivados a Escuela Bíblica",
         int(df_res_l["EscuelaBiblica"].sum())
     )
-    
-    k2.metric(
-        "👣 Visitas Realizadas",
+    m7.metric("👣 Visitas Realizadas",
         int(df_res_l["Visitas"].sum())
     )
+ 
+    st.divider()
+
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
     # ==============================
