@@ -381,7 +381,6 @@ section.main > div {
 </style>
 """, unsafe_allow_html=True)
 
-st.write(df_resumen_f.tail())
 
 # 2. FUNCIÓN pantalla_login() ACTUALIZADA
 # ==============================
