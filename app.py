@@ -418,16 +418,15 @@ def aplicar_estilos_login():
     }
     
     /* 3. Estilo de los Inputs */
-    div[data-baseweb="input"] {
-        background-color: #ffffff !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 12px !important;
-        height: 45px !important;
-    }
-
     div[data-baseweb="input"] input {
-        color: #1e293b !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
         font-size: 16px !important;
+        font-weight: 600 !important;
+    }
+    
+    div[data-baseweb="input"] input::placeholder {
+        color: rgba(255,255,255,0.6) !important;
     }
 
     label p {
