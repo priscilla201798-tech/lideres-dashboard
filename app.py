@@ -1076,4 +1076,3 @@ elif st.session_state.dni is None:
 
 else:
     pantalla_dashboard()
-    pantalla_dashboard()
