@@ -500,10 +500,17 @@ def pantalla_login():
             dni_limpio = dni_input.strip().zfill(8)
             if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
                 st.session_state.dni = dni_limpio
+                st.session_state.modo = "lider"
                 st.rerun()
             else:
                 st.error("Documento no encontrado.")
-        
+      
+        st.markdown("---")
+
+        if st.button("📊 Dashboard Supervisión"):
+            st.session_state.modo = "login_supervision"
+            st.rerun()
+    
         st.markdown("""
             <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 30px;">
                 <p style="font-size: 12px; color: #f1f5f9; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; text-align: center; opacity: 0.7;">
