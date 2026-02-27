@@ -529,45 +529,46 @@ def pantalla_login():
             </div> 
         """, unsafe_allow_html=True)
 def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
+
     st.markdown(
         f"""
         <div style="
             background: linear-gradient(135deg, {color}, #0B3C5D);
-            padding:22px;
-            border-radius:18px;
+            padding:18px;
+            border-radius:16px;
             color:white;
-            box-shadow:0 10px 25px rgba(0,0,0,0.25);
+            box-shadow:0 8px 20px rgba(0,0,0,0.25);
         ">
-            <div style="font-size:28px;">{icono}</div>
-            
+            <div style="font-size:22px;">{icono}</div>
+
             <div style="
-                font-size:14px;
-                margin-top:8px;
+                font-size:13px;
+                margin-top:6px;
                 opacity:0.85;
                 text-transform:uppercase;
                 letter-spacing:1px;
             ">
                 {titulo}
             </div>
-            
+
             <div style="
-                font-size:32px;
-                font-weight:900;
+                font-size:28px;
+                font-weight:800;
                 margin-top:6px;
             ">
                 {valor}
             </div>
-            
+
             <div style="
-                font-size:12px;
-                margin-top:6px;
+                font-size:11px;
+                margin-top:4px;
                 opacity:0.75;
             ">
                 {descripcion}
             </div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True   # 👈 ESTA LÍNEA ES CLAVE
     )
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
