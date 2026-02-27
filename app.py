@@ -527,49 +527,52 @@ def pantalla_login():
             </div> 
             </div> 
         """, unsafe_allow_html=True)
+import streamlit.components.v1 as components
+
 def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
 
     html = f"""
-    <div style='
+    <div style="
         background: linear-gradient(135deg, {color}, #0B3C5D);
         padding:16px;
         border-radius:14px;
         color:white;
+        font-family:Arial, sans-serif;
         box-shadow:0 6px 18px rgba(0,0,0,0.25);
-    '>
+    ">
 
-        <div style='font-size:20px;'>{icono}</div>
+        <div style="font-size:20px;">{icono}</div>
 
-        <div style='
+        <div style="
             font-size:13px;
             margin-top:6px;
             opacity:0.85;
             text-transform:uppercase;
             letter-spacing:1px;
-        '>
+        ">
             {titulo}
         </div>
 
-        <div style='
+        <div style="
             font-size:26px;
             font-weight:800;
             margin-top:4px;
-        '>
+        ">
             {valor}
         </div>
 
-        <div style='
+        <div style="
             font-size:11px;
             margin-top:4px;
             opacity:0.7;
-        '>
+        ">
             {descripcion}
         </div>
 
     </div>
     """
 
-    st.markdown(html, unsafe_allow_html=True)
+    components.html(html, height=130)
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
