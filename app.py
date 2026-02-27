@@ -500,7 +500,7 @@ def pantalla_login():
             dni_limpio = dni_input.strip().zfill(8)
             if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
                 st.session_state.dni = dni_limpio
-                st.session_state.modo = "lider"
+                st.session_state.supervision = False
                 st.rerun()
             else:
                 st.error("Documento no encontrado.")
@@ -508,7 +508,7 @@ def pantalla_login():
         st.markdown("---")
 
         if st.button("📊 Dashboard Supervisión"):
-            st.session_state.modo = "login_supervision"
+            st.session_state.supervision = True
             st.rerun()
     
         st.markdown("""
@@ -587,6 +587,7 @@ def pantalla_login_supervision():
         if st.button("⬅ Volver"):
             st.session_state.modo = None
             st.rerun()
+            
 def pantalla_supervision():
 
     st.title("📊 Dashboard Supervisión")
@@ -1027,23 +1028,21 @@ def pantalla_dashboard():
 # CONTROLADOR DE PANTALLAS
 # ==============================
 
-if "modo" not in st.session_state:
-    st.session_state.modo = None
+ # ==============================
+# CONTROLADOR DE PANTALLAS
+# ==============================
 
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
-if st.session_state.modo is None:
-    pantalla_login()
+if "supervision" not in st.session_state:
+    st.session_state.supervision = False
 
-elif st.session_state.modo == "login_supervision":
+if st.session_state.supervision:
     pantalla_login_supervision()
 
-elif st.session_state.modo == "supervision":
-    pantalla_supervision()
+elif st.session_state.dni is None:
+    pantalla_login()
 
-elif st.session_state.modo == "simulacion":
-    pantalla_simulacion()
-
-elif st.session_state.modo == "lider":
+else:
     pantalla_dashboard()
