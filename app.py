@@ -404,11 +404,19 @@ def aplicar_estilos_login():
         display: none !important;
     }
     
-    .main .block-container {
+        .block-container {
         padding-top: 0 !important;
-        margin-top: -100px !important; 
+        margin-top: 0 !important;
     }
 
+        [data-testid="stHeader"] {
+        height: 0px !important;
+    }
+    
+    [data-testid="stAppViewContainer"] > .main {
+        padding-top: 0rem !important;
+    }
+    
     /* 3. Estilo de los Inputs */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
