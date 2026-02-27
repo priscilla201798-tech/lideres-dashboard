@@ -675,8 +675,12 @@ def pantalla_simulacion():
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
-def pantalla_dashboard():
-    dni = st.session_state.get("dni", None)
+def pantalla_dashboard(dni_forzado=None):
+    if dni_forzado:
+    dni = dni_forzado
+    else:
+        dni = st.session_state.get("dni", None)
+    
     if not dni:
         st.stop()
 
