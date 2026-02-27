@@ -692,6 +692,7 @@ def pantalla_dashboard():
     total_visitas = int(df_res_l["Visitas"].sum()) if "Visitas" in df_res_l else 0
     total_escuela = int(df_res_l["EscuelaBiblica"].sum()) if "EscuelaBiblica" in df_res_l else 0
     total_eventos = len(df_ev_l)
+    total_reuniones = int(df_res_l["ProgSemanal"].sum()) if "ProgSemanal" in df_res_l else 0
     # ==============================
     # CONTENIDO PRINCIPAL
     # ==============================
@@ -702,19 +703,57 @@ def pantalla_dashboard():
     # ==============================
     
     st.subheader("📌 Resumen General")
+
+    # ==============================
+    # 🔵 PRIMERA FILA
+    # ==============================
     
     c1, c2, c3 = st.columns(3)
     
     with c1:
         kpi_card(
-            "Convertidos",
-            total_convertidos,
-            "✨",
-            AZUL_ACCENTO,
-            "Personas que aceptaron a Cristo"
+            "Reuniones Realizadas",
+            total_reuniones,
+            "📅",
+            "#0f766e",
+            "Reuniones semanales cumplidas"
         )
     
     with c2:
+        kpi_card(
+            "Nuevos",
+            total_nuevos,
+            "🆕",
+            "#2563eb",
+            "Personas nuevas registradas"
+        )
+    
+    with c3:
+        kpi_card(
+            "Reconciliados",
+            total_reconciliados,
+            "🤝",
+            "#7c3aed",
+            "Personas restauradas"
+        )
+    
+    
+    # ==============================
+    # 🟢 SEGUNDA FILA
+    # ==============================
+    
+    c4, c5, c6 = st.columns(3)
+    
+    with c4:
+        kpi_card(
+            "Eventos Espirituales",
+            total_eventos,
+            "🔥",
+            "#ea580c",
+            "Eventos realizados"
+        )
+    
+    with c5:
         kpi_card(
             "Escuela Bíblica",
             total_escuela,
@@ -723,32 +762,14 @@ def pantalla_dashboard():
             "Derivados acumulados"
         )
     
-    with c3:
+    with c6:
         kpi_card(
             "Visitas",
             total_visitas,
             "🏠",
-            AZUL,
+            AZUL_ACCENTO,
             "Visitas registradas"
         )
-    
-    c4, c5 = st.columns(2)
-    
-    with c4:
-        kpi_card(
-            "Reconciliados",
-            total_reconciliados,
-            "🤝",
-            "#7c3aed"
-        )
-    
-    with c5:
-        kpi_card(
-            "Eventos Espirituales",
-            total_eventos,
-            "🔥",
-            "#ea580c"
-        )      
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
     # ==============================
