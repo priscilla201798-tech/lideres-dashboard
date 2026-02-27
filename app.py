@@ -953,8 +953,21 @@ def pantalla_dashboard():
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
+if "dni" not in st.session_state:
+    st.session_state.dni = None
+
 if st.session_state.dni is None:
     pantalla_login()
 else:
+    # 🔥 IMPORTANTE: reactivar header cuando entra al dashboard
+    st.markdown(
+        """
+        <style>
+        header, [data-testid="stHeader"], [data-testid="stDecoration"] {
+            display: block !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     pantalla_dashboard()
-
