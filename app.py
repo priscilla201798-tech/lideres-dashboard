@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import json
 import plotly.express as px
-import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="IELA - Portal de Liderazgo",
