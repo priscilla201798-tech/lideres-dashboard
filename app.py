@@ -566,6 +566,27 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     """
 
     components.html(html, height=140)
+
+def pantalla_login_supervision():
+
+    st.title("🔐 Acceso Supervisión")
+
+    clave = st.text_input("Contraseña de Supervisión", type="password")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Ingresar"):
+            if clave == "INTIMOSIELA2026":
+                st.session_state.modo = "supervision"
+                st.rerun()
+            else:
+                st.error("Contraseña incorrecta")
+
+    with col2:
+        if st.button("⬅ Volver"):
+            st.session_state.modo = None
+            st.rerun()
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
