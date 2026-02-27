@@ -534,27 +534,27 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     html = f"""
     <div style="
         background: linear-gradient(135deg, {color}, #0B3C5D);
-        padding:16px;
-        border-radius:14px;
+        padding:14px 18px;
+        border-radius:12px;
         color:white;
         font-family:Arial, sans-serif;
-        box-shadow:0 6px 18px rgba(0,0,0,0.25);
+        box-shadow:0 4px 12px rgba(0,0,0,0.25);
+        line-height:1.2;
     ">
 
-        <div style="font-size:20px;">{icono}</div>
+        <div style="font-size:18px; margin-bottom:4px;">{icono}</div>
 
         <div style="
-            font-size:13px;
-            margin-top:6px;
+            font-size:11px;
             opacity:0.85;
             text-transform:uppercase;
-            letter-spacing:1px;
+            letter-spacing:0.5px;
         ">
             {titulo}
         </div>
 
         <div style="
-            font-size:26px;
+            font-size:22px;
             font-weight:800;
             margin-top:4px;
         ">
@@ -562,8 +562,8 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
         </div>
 
         <div style="
-            font-size:11px;
-            margin-top:4px;
+            font-size:10px;
+            margin-top:2px;
             opacity:0.7;
         ">
             {descripcion}
@@ -572,7 +572,7 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     </div>
     """
 
-    components.html(html, height=130)
+    components.html(html, height=95)
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
