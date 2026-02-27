@@ -833,9 +833,9 @@ def pantalla_dashboard():
     )
 
     if not df_avance_obj.empty:
-    promedio_cumplimiento = round(df_avance_obj["Progreso"].mean() * 100)
+        promedio_cumplimiento = round(df_avance_obj["Progreso"].mean() * 100)
     else:
-    promedio_cumplimiento = 0
+        promedio_cumplimiento = 0
 
     for _, row in df_avance_obj.iterrows():
     
