@@ -623,13 +623,54 @@ def pantalla_supervision():
     total_convertidos = int(df_resumen_f["Convertidos"].sum())
     total_reuniones = int(df_resumen_f["ProgSemanal"].sum())
 
-    c1, c2 = st.columns(2)
+    total_nuevos = int(df_resumen_f["Nuevos"].sum())
+    total_reconciliados = int(df_resumen_f["Reconciliados"].sum())
+    total_visitas = int(df_resumen_f["Visitas"].sum())
+    total_escuela = int(df_resumen_f["EscuelaBiblica"].sum())
+    
+    total_lideres = df_resumen_f["DNI"].nunique()
+    lideres_activos = df_resumen_f[df_resumen_f["ProgSemanal"] > 0]["DNI"].nunique()
+    porcentaje_activos = (lideres_activos / total_lideres * 100) if total_lideres > 0 else 0
+    
+    tasa_conversion = (total_convertidos / total_nuevos * 100) if total_nuevos > 0 else 0
 
+    # =========================
+    # PRIMERA FILA MACRO
+    # =========================
+    
+    c1, c2, c3, c4 = st.columns(4)
+    
     with c1:
-        kpi_card("Convertidos Globales", total_convertidos, "✨")
-
+        kpi_card("Reuniones", total_reuniones, "📅")
+    
     with c2:
-        kpi_card("Reuniones Globales", total_reuniones, "📅")
+        kpi_card("Nuevos", total_nuevos, "🆕")
+    
+    with c3:
+        kpi_card("Convertidos", total_convertidos, "✨")
+    
+    with c4:
+        kpi_card("Reconciliados", total_reconciliados, "🤝")
+    
+    st.divider()
+    
+    # =========================
+    # SEGUNDA FILA MACRO
+    # =========================
+    
+    c5, c6, c7, c8 = st.columns(4)
+    
+    with c5:
+        kpi_card("Visitas", total_visitas, "🏠")
+    
+    with c6:
+        kpi_card("Escuela Bíblica", total_escuela, "📘")
+    
+    with c7:
+        kpi_card("% Líderes Activos", f"{porcentaje_activos:.1f}%", "👥")
+    
+    with c8:
+        kpi_card("Tasa Conversión", f"{tasa_conversion:.1f}%", "📈")
 
     st.divider()
 
