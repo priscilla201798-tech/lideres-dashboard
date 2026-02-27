@@ -587,6 +587,55 @@ def pantalla_login_supervision():
         if st.button("⬅ Volver"):
             st.session_state.modo = None
             st.rerun()
+def pantalla_supervision():
+
+    st.title("📊 Dashboard Supervisión")
+
+    # 🔥 KPIs Globales
+    total_convertidos = int(df_resumen_f["Convertidos"].sum())
+    total_reuniones = int(df_resumen_f["ProgSemanal"].sum())
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        kpi_card("Convertidos Globales", total_convertidos, "✨")
+
+    with c2:
+        kpi_card("Reuniones Globales", total_reuniones, "📅")
+
+    st.divider()
+
+    # 🔎 Selector de líder
+    lista_lideres = df_plan_eventos_f["NombreCompleto"].unique()
+
+    lider_sel = st.selectbox("Simular vista de líder:", lista_lideres)
+
+    if st.button("Ver Dashboard del Líder"):
+        dni_lider = df_plan_eventos_f[
+            df_plan_eventos_f["NombreCompleto"] == lider_sel
+        ]["DNI_Lider"].astype(str).str.zfill(8).iloc[0]
+
+        st.session_state.simulando_lider = dni_lider
+        st.session_state.modo = "simulacion"
+        st.rerun()
+
+    st.divider()
+
+    if st.button("🚪 Cerrar sesión"):
+        st.session_state.modo = None
+        st.session_state.dni = None
+        st.rerun()
+def pantalla_simulacion():
+
+    dni_sim = st.session_state.simulando_lider
+
+    if st.button("⬅ Volver a Supervisión"):
+        st.session_state.modo = "supervision"
+        st.rerun()
+
+    # 👇 usamos tu dashboard original
+    st.session_state.dni = dni_sim
+    pantalla_dashboard()
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
@@ -978,24 +1027,23 @@ def pantalla_dashboard():
 # CONTROLADOR DE PANTALLAS
 # ==============================
 
-if "dni" not in st.session_state:
-    st.session_state.dni = None
+if "modo" not in st.session_state:
+    st.session_state.modo = None
 
 if "dni" not in st.session_state:
     st.session_state.dni = None
 
-if st.session_state.dni is None:
+if st.session_state.modo is None:
     pantalla_login()
-else:
-    # 🔥 IMPORTANTE: reactivar header cuando entra al dashboard
-    st.markdown(
-        """
-        <style>
-        header, [data-testid="stHeader"], [data-testid="stDecoration"] {
-            display: block !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+
+elif st.session_state.modo == "login_supervision":
+    pantalla_login_supervision()
+
+elif st.session_state.modo == "supervision":
+    pantalla_supervision()
+
+elif st.session_state.modo == "simulacion":
+    pantalla_simulacion()
+
+elif st.session_state.modo == "lider":
     pantalla_dashboard()
