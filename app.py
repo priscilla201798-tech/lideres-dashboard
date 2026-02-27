@@ -677,7 +677,7 @@ def pantalla_simulacion():
 # ==============================
 def pantalla_dashboard(dni_forzado=None):
     if dni_forzado:
-    dni = dni_forzado
+        dni = dni_forzado
     else:
         dni = st.session_state.get("dni", None)
     
