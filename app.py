@@ -572,7 +572,7 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     </div>
     """
 
-    components.html(html, height=130)
+    components.html(html, height=140)
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
