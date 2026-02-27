@@ -470,7 +470,27 @@ def aplicar_estilos_login():
     }
 
     /* 6. Caja de Login (Forzada hacia arriba para coincidir con el título) */
+  
+    /* ========================= */
+    /* FIX COLOR INPUT LOGIN */
+    /* ========================= */
     
+    /* Forzar texto oscuro dentro del input */
+    div[data-baseweb="input"] input {
+        color: #1e293b !important;   /* Gris oscuro elegante */
+        background-color: #ffffff !important;
+        caret-color: #1e293b !important;
+    }
+    
+    /* Placeholder visible */
+    div[data-baseweb="input"] input::placeholder {
+        color: #94a3b8 !important;
+    }
+    
+    /* Evitar que herede color blanco del modo oscuro */
+    html, body, .stApp {
+        color: #1e293b !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
