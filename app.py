@@ -655,15 +655,15 @@ def pantalla_supervision():
         st.rerun()
 def pantalla_simulacion():
 
-    dni_sim = st.session_state.simulando_lider
+    dni_sim = st.session_state.dni_simulado
 
     if st.button("⬅ Volver a Supervisión"):
         st.session_state.modo = "supervision"
         st.rerun()
 
-    # 👇 usamos tu dashboard original
-    st.session_state.dni = dni_sim
-    pantalla_dashboard()
+    # 👇 En vez de tocar dni real
+    pantalla_dashboard(dni_forzado=dni_sim)
+    
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
