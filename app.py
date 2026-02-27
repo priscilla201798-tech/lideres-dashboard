@@ -643,7 +643,7 @@ def pantalla_supervision():
             df_plan_eventos_f["NombreCompleto"] == lider_sel
         ]["DNI_Lider"].astype(str).str.zfill(8).iloc[0]
 
-        st.session_state.simulando_lider = dni_lider
+        st.session_state.dni_simulado = dni_lider
         st.session_state.modo = "simulacion"
         st.rerun()
 
@@ -654,14 +654,22 @@ def pantalla_supervision():
         st.session_state.dni = None
         st.rerun()
 def pantalla_simulacion():
-    banner_supervision("Simulación")
-    dni_sim = st.session_state.dni_simulado
 
-    if st.button("⬅ Volver a Supervisión"):
+    banner_supervision("Simulación")
+
+    dni_sim = st.session_state.get("dni_simulado", None)
+
+    if not dni_sim:
         st.session_state.modo = "supervision"
         st.rerun()
 
-    # 👇 En vez de tocar dni real
+    col_volver, col_space = st.columns([1,4])
+
+    with col_volver:
+        if st.button("⬅ VOLVER", use_container_width=True, type="secondary"):
+            st.session_state.modo = "supervision"
+            st.rerun()
+
     pantalla_dashboard(dni_forzado=dni_sim)
     
 # ==============================
@@ -1082,7 +1090,8 @@ def banner_supervision(tipo="Supervisión"):
     </div>
     """, unsafe_allow_html=True)
 
-
+if "dni_simulado" not in st.session_state:
+    st.session_state.dni_simulado = None
 
 # ==============================
 # CONTROLADOR DE PANTALLAS
