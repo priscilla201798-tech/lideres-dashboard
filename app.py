@@ -3,6 +3,10 @@ import pandas as pd
 import json
 import plotly.express as px
 
+GID_REGISTROS = "632350714"
+GID_EVENTOS = "1679434742"
+GID_OBJETIVOS = "236814605"
+
 st.set_page_config(
     page_title="IELA - Portal de Liderazgo",
     layout="wide",
