@@ -1051,7 +1051,11 @@ def pantalla_dashboard():
 
     st.plotly_chart(fig_line, use_container_width=True)
         
+if "dni" not in st.session_state:
+    st.session_state.dni = None
 
+if "modo" not in st.session_state:
+    st.session_state.modo = None 
 # ==============================
 # CONTROLADOR DE PANTALLAS
 # ==============================
