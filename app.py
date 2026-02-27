@@ -535,7 +535,7 @@ def pantalla_login():
         st.markdown("---")
 
         if st.button("📊 Dashboard Supervisión"):
-            st.session_state.supervision = True
+            st.session_state.modo = "login_supervision"
             st.rerun()
     
         st.markdown("""
@@ -1054,22 +1054,21 @@ def pantalla_dashboard():
 # ==============================
 # CONTROLADOR DE PANTALLAS
 # ==============================
+if "modo" not in st.session_state:
+    st.session_state.modo = None
 
- # ==============================
-# CONTROLADOR DE PANTALLAS
-# ==============================
-
-if "dni" not in st.session_state:
-    st.session_state.dni = None
-
-if "supervision" not in st.session_state:
-    st.session_state.supervision = False
-
-if st.session_state.supervision:
+if st.session_state.modo == "login_supervision":
     pantalla_login_supervision()
+
+elif st.session_state.modo == "supervision":
+    pantalla_supervision()
+
+elif st.session_state.modo == "simulacion":
+    pantalla_simulacion()
 
 elif st.session_state.dni is None:
     pantalla_login()
 
 else:
+    pantalla_dashboard()
     pantalla_dashboard()
