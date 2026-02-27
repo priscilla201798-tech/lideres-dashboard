@@ -733,7 +733,8 @@ def pantalla_dashboard():
         "Seleccionar rango",
         value=(fecha_min, fecha_max),
         min_value=fecha_min,
-        max_value=fecha_max
+        max_value=fecha_max,
+        key=f"rango_{dni}"
     )
 
     st.sidebar.markdown("---")
