@@ -692,7 +692,10 @@ def pantalla_dashboard():
     total_visitas = int(df_res_l["Visitas"].sum()) if "Visitas" in df_res_l else 0
     total_escuela = int(df_res_l["EscuelaBiblica"].sum()) if "EscuelaBiblica" in df_res_l else 0
     total_eventos = len(df_ev_l)
+    
     total_reuniones = int(df_res_l["ProgSemanal"].sum()) if "ProgSemanal" in df_res_l else 0
+    total_nuevos = int(df_res_l["Nuevos"].sum()) if "Nuevos" in df_res_l else 0
+
     # ==============================
     # CONTENIDO PRINCIPAL
     # ==============================
