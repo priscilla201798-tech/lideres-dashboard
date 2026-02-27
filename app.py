@@ -616,7 +616,7 @@ def pantalla_login_supervision():
             st.rerun()
             
 def pantalla_supervision():
-
+    banner_supervision("Supervisión")
     st.title("📊 Dashboard Supervisión")
 
     # 🔥 KPIs Globales
@@ -654,7 +654,7 @@ def pantalla_supervision():
         st.session_state.dni = None
         st.rerun()
 def pantalla_simulacion():
-
+    banner_supervision("Simulación")
     dni_sim = st.session_state.dni_simulado
 
     if st.button("⬅ Volver a Supervisión"):
@@ -1056,6 +1056,34 @@ if "dni" not in st.session_state:
 
 if "modo" not in st.session_state:
     st.session_state.modo = None 
+
+def banner_supervision(tipo="Supervisión"):
+
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(90deg, #0B3C5D, #1D4E89);
+        padding: 12px 20px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    ">
+        <div>
+            👑 MODO {tipo.upper()} ACTIVO
+        </div>
+        <div style="font-size:12px; opacity:0.8;">
+            IELA • Vista Institucional
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+
 # ==============================
 # CONTROLADOR DE PANTALLAS
 # ==============================
