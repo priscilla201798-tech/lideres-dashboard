@@ -529,50 +529,41 @@ def pantalla_login():
             </div> 
         """, unsafe_allow_html=True)
 
-def kpi_card(titulo, valor, icono, color, subtitulo=None):
-    html = f"""
-    <div style="
-        background: white;
-        border-radius: 18px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border-left: 6px solid {color};
-        min-height: 120px;
-        font-family: sans-serif;
-    ">
-        <div style="
-            font-size:13px;
-            color:#64748b;
-            font-weight:700;
-            text-transform:uppercase;
-        ">
-            {titulo}
-        </div>
+st.subheader("📌 Resumen General")
 
-        <div style="
-            font-size:36px;
-            font-weight:900;
-            margin-top:8px;
-            color:#0f172a;
-        ">
-            {valor} <span style="font-size:28px;">{icono}</span>
-        </div>
-    """
+c1, c2, c3 = st.columns(3)
 
-    if subtitulo:
-        html += f"""
-        <div style="
-            margin-top:6px;
-            font-size:13px;
-            color:#475569;
-        ">
-            {subtitulo}
-        </div>
-        """
+with c1:
+    st.metric(
+        label="✨ Convertidos",
+        value=total_convertidos
+    )
 
-    html += "</div>"
+with c2:
+    st.metric(
+        label="📘 Escuela Bíblica",
+        value=total_escuela
+    )
 
-    components.html(html, height=140)
+with c3:
+    st.metric(
+        label="🏠 Visitas",
+        value=total_visitas
+    )
+
+c4, c5 = st.columns(2)
+
+with c4:
+    st.metric(
+        label="🤝 Reconciliados",
+        value=total_reconciliados
+    )
+
+with c5:
+    st.metric(
+        label="🔥 Eventos Espirituales",
+        value=total_eventos
+    )
 
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
