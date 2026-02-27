@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import plotly.express as px
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="IELA - Portal de Liderazgo",
@@ -537,6 +538,7 @@ def kpi_card(titulo, valor, icono, color, subtitulo=None):
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         border-left: 6px solid {color};
         min-height: 120px;
+        font-family: sans-serif;
     ">
         <div style="
             font-size:13px;
@@ -570,7 +572,7 @@ def kpi_card(titulo, valor, icono, color, subtitulo=None):
 
     html += "</div>"
 
-    st.markdown(html, unsafe_allow_html=True)
+    components.html(html, height=140)
 
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
