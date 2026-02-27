@@ -674,10 +674,34 @@ def pantalla_supervision():
 
     st.divider()
 
-    # 🔎 Selector de líder
+    # =========================
+    # PANEL DE CONTROL GERENCIAL
+    # =========================
+    
+    st.sidebar.markdown("## ⚙ Panel Gerencial")
+    
     lista_lideres = df_plan_eventos_f["NombreCompleto"].unique()
-
-    lider_sel = st.selectbox("Simular vista de líder:", lista_lideres)
+    
+    lider_sel = st.sidebar.selectbox(
+        "Simular vista de líder",
+        lista_lideres
+    )
+    
+    if st.sidebar.button("👁 Ver Dashboard del Líder", use_container_width=True):
+        dni_lider = df_plan_eventos_f[
+            df_plan_eventos_f["NombreCompleto"] == lider_sel
+        ]["DNI_Lider"].astype(str).str.zfill(8).iloc[0]
+    
+        st.session_state.dni_simulado = dni_lider
+        st.session_state.modo = "simulacion"
+        st.rerun()
+    
+    st.sidebar.markdown("---")
+    
+    if st.sidebar.button("🚪 Cerrar sesión", use_container_width=True):
+        st.session_state.modo = None
+        st.session_state.dni = None
+        st.rerun()
 
     if st.button("Ver Dashboard del Líder"):
         dni_lider = df_plan_eventos_f[
