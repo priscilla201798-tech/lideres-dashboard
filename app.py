@@ -529,42 +529,6 @@ def pantalla_login():
             </div> 
         """, unsafe_allow_html=True)
 
-st.subheader("📌 Resumen General")
-
-c1, c2, c3 = st.columns(3)
-
-with c1:
-    st.metric(
-        label="✨ Convertidos",
-        value=total_convertidos
-    )
-
-with c2:
-    st.metric(
-        label="📘 Escuela Bíblica",
-        value=total_escuela
-    )
-
-with c3:
-    st.metric(
-        label="🏠 Visitas",
-        value=total_visitas
-    )
-
-c4, c5 = st.columns(2)
-
-with c4:
-    st.metric(
-        label="🤝 Reconciliados",
-        value=total_reconciliados
-    )
-
-with c5:
-    st.metric(
-        label="🔥 Eventos Espirituales",
-        value=total_eventos
-    )
-
 # ==============================
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
@@ -690,12 +654,14 @@ def pantalla_dashboard():
     # ==============================
 
     st.title("Dashboard Institucional")
+    # ==============================
+    # 📌 RESUMEN GENERAL (KPIs)
+    # ==============================
     
-    # --- MÉTRICAS ---
     st.subheader("📌 Resumen General")
-
-    # En móvil se apilan, en desktop quedan en fila
+    
     c1, c2, c3 = st.columns(3)
+    
     with c1:
         kpi_card(
             "Convertidos",
@@ -724,6 +690,7 @@ def pantalla_dashboard():
         )
     
     c4, c5 = st.columns(2)
+    
     with c4:
         kpi_card(
             "Reconciliados",
@@ -738,8 +705,7 @@ def pantalla_dashboard():
             total_eventos,
             "🔥",
             "#ea580c"
-        )
-
+        )      
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
     # ==============================
