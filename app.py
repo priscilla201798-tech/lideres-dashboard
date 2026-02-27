@@ -711,15 +711,15 @@ def pantalla_dashboard():
     # 🔵 PRIMERA FILA
     # ==============================
     
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
     
     with c1:
         kpi_card(
-            "Reuniones Realizadas",
+            "Reuniones",
             total_reuniones,
             "📅",
             "#0f766e",
-            "Reuniones semanales cumplidas"
+            "Reuniones realizadas"
         )
     
     with c2:
@@ -728,10 +728,19 @@ def pantalla_dashboard():
             total_nuevos,
             "🆕",
             "#2563eb",
-            "Personas que asistieron por primera vez"
+            "Personas nuevas"
         )
     
     with c3:
+        kpi_card(
+            "Convertidos",
+            total_convertidos,
+            "✨",
+            "#f59e0b",
+            "Aceptaron a Cristo"
+        )
+    
+    with c4:
         kpi_card(
             "Reconciliados",
             total_reconciliados,
@@ -745,18 +754,18 @@ def pantalla_dashboard():
     # 🟢 SEGUNDA FILA
     # ==============================
     
-    c4, c5, c6 = st.columns(3)
+    c5, c6, c7, c8 = st.columns(4)
     
-    with c4:
+    with c5:
         kpi_card(
-            "Eventos Espirituales",
+            "Eventos",
             total_eventos,
             "🔥",
             "#ea580c",
-            "Total de ayunos y/o vigilias realizadas"
+            "Eventos realizados"
         )
     
-    with c5:
+    with c6:
         kpi_card(
             "Escuela Bíblica",
             total_escuela,
@@ -765,13 +774,22 @@ def pantalla_dashboard():
             "Derivados acumulados"
         )
     
-    with c6:
+    with c7:
         kpi_card(
             "Visitas",
             total_visitas,
             "🏠",
             AZUL_ACCENTO,
             "Visitas registradas"
+        )
+    
+    with c8:
+        kpi_card(
+            "Cumplimiento Objetivos",
+            f"{promedio_cumplimiento}%",
+            "🎯",
+            "#059669",
+            "Promedio general de avance"
         )
     # ==============================
     # 1️⃣ ASISTENCIA DOMINICAL
@@ -813,7 +831,12 @@ def pantalla_dashboard():
         df_ev_l=df_ev_l,
         df_obj_manual_l=df_obj_l
     )
-    
+
+    if not df_avance_obj.empty:
+    promedio_cumplimiento = round(df_avance_obj["Progreso"].mean() * 100)
+    else:
+    promedio_cumplimiento = 0
+
     for _, row in df_avance_obj.iterrows():
     
         objetivo = row["ObjetivoID"]
