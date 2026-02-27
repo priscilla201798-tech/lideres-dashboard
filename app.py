@@ -533,7 +533,6 @@ def pantalla_login():
 # 🖥️ PANTALLA DASHBOARD
 # ==============================
 def pantalla_dashboard():
-
     dni = st.session_state.get("dni", None)
     if not dni:
         st.stop()
