@@ -476,22 +476,7 @@ def aplicar_estilos_login():
     }
 
     /* 6. Caja de Login (Forzada hacia arriba para coincidir con el título) */
-    .login-sidebar-wrapper {
-        margin-top: 15vh; /* Misma altura de inicio que el título */
-        display: flex;
-        justify-content: center;
-    }
-
-    .login-sidebar {
-        background-color: rgba(0, 31, 63, 0.4);
-        backdrop-filter: blur(30px);
-        padding: 50px;
-        border-radius: 35px;
-        border: 1px solid rgba(255,255,255,0.2);
-        width: 100%;
-        max-width: 420px;
-        box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-    }
+    
     </style>
     """, unsafe_allow_html=True)
 
@@ -512,8 +497,7 @@ def pantalla_login():
         """, unsafe_allow_html=True)
         
     with col_login:
-        st.markdown('<div class="login-sidebar-wrapper">', unsafe_allow_html=True)
-        st.markdown('<div class="login-sidebar">', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top:15vh; max-width:420px;">', unsafe_allow_html=True)
         st.markdown("<h2 style='color:white; margin-bottom:30px; font-size:30px; font-weight:900; letter-spacing:-1px;'>Iniciar Sesión</h2>", unsafe_allow_html=True)
         
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
