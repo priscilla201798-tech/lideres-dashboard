@@ -728,7 +728,7 @@ def pantalla_dashboard():
             total_nuevos,
             "🆕",
             "#2563eb",
-            "Personas nuevas registradas"
+            "Personas que asistieron por primera vez"
         )
     
     with c3:
@@ -753,7 +753,7 @@ def pantalla_dashboard():
             total_eventos,
             "🔥",
             "#ea580c",
-            "Eventos realizados"
+            "Total de ayunos y/o vigilias realizadas"
         )
     
     with c5:
