@@ -811,25 +811,27 @@ def pantalla_supervision():
         color="Cumplimiento %",
         color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
         altura = max(400, len(ranking) * 35)
-    )
-    
-    fig_rank = px.bar(
-        ranking.sort_values("Cumplimiento %", ascending=True),
-        x="Cumplimiento %",
-        y="NombreCompleto",
-        orientation="h",
-        color="Cumplimiento %",
-        color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
-        height=altura
-    )        
-    
-    fig_rank.update_layout(
-        xaxis_title="Cumplimiento (%)",
-        yaxis_title="",
-        coloraxis_showscale=False
-    )
-    
-    st.plotly_chart(fig_rank, use_container_width=True)
+
+        # 2️⃣ Luego creas el gráfico
+        fig_rank = px.bar(
+            ranking.sort_values("Cumplimiento %", ascending=True),
+            x="Cumplimiento %",
+            y="NombreCompleto",
+            orientation="h",
+            color="Cumplimiento %",
+            color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
+            height=altura
+        )
+        
+        # 3️⃣ Ajustes visuales
+        fig_rank.update_layout(
+            xaxis_title="Cumplimiento (%)",
+            yaxis_title="",
+            coloraxis_showscale=False
+        )
+        
+        st.plotly_chart(fig_rank, use_container_width=True)
+
 
     #📊 GRÁFICO 2 — DISTRIBUCIÓN (QUIÉNES ESTÁN EN RIESGO)
     st.subheader("📊 Distribución de Nivel de Cumplimiento")
