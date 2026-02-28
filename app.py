@@ -810,8 +810,17 @@ def pantalla_supervision():
         orientation="h",
         color="Cumplimiento %",
         color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
-        height=500
-    )
+        altura = max(400, len(ranking) * 35)
+        
+        fig_rank = px.bar(
+            ranking.sort_values("Cumplimiento %", ascending=True),
+            x="Cumplimiento %",
+            y="NombreCompleto",
+            orientation="h",
+            color="Cumplimiento %",
+            color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
+            height=altura
+        )
     
     fig_rank.update_layout(
         xaxis_title="Cumplimiento (%)",
