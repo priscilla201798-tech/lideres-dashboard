@@ -687,6 +687,8 @@ def pantalla_supervision():
     
     tasa_conversion = (total_convertidos / total_nuevos * 100) if total_nuevos > 0 else 0
     total_eventos = len(df_eventos_f)
+
+    
     #🔥 BLOQUE 1 — IMPACTO ESTRATÉGICO
     c1, c2, c3, c4 = st.columns(4)
     
@@ -768,6 +770,78 @@ def pantalla_supervision():
             VERDE_EXITO,
             "Derivaciones acumuladas"
         )
+    st.divider()
+    st.subheader("🏆 Ranking de Cumplimiento por Líder")
+    
+    # Total líderes planificados
+    df_plan_eventos_f["DNI_Lider"] = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8)
+    
+    total_lideres = df_plan_eventos_f["DNI_Lider"].nunique()
+    
+    # Conteo de registros por líder
+    registros_por_lider = (
+        df_resumen_f.groupby("DNI")
+        .size()
+        .reset_index(name="Reuniones")
+    )
+    
+    # Unimos con nombres
+    ranking = df_plan_eventos_f[["DNI_Lider", "NombreCompleto"]].drop_duplicates()
+    ranking = ranking.merge(
+        registros_por_lider,
+        left_on="DNI_Lider",
+        right_on="DNI",
+        how="left"
+    )
+    
+    ranking["Reuniones"] = ranking["Reuniones"].fillna(0)
+    
+    # Cumplimiento relativo (ejemplo: meta 4 reuniones por mes)
+    meta_reuniones = 4
+    ranking["Cumplimiento %"] = (ranking["Reuniones"] / meta_reuniones * 100).clip(upper=100)
+
+    #🥇 GRÁFICO 1 — BARRA HORIZONTAL (CLARO Y DIRECTIVO)
+    import plotly.express as px
+    
+    fig_rank = px.bar(
+        ranking.sort_values("Cumplimiento %", ascending=True),
+        x="Cumplimiento %",
+        y="NombreCompleto",
+        orientation="h",
+        color="Cumplimiento %",
+        color_continuous_scale=["#dc2626", "#f59e0b", "#16a34a"],
+        height=500
+    )
+    
+    fig_rank.update_layout(
+        xaxis_title="Cumplimiento (%)",
+        yaxis_title="",
+        coloraxis_showscale=False
+    )
+    
+    st.plotly_chart(fig_rank, use_container_width=True)
+
+    #📊 GRÁFICO 2 — DISTRIBUCIÓN (QUIÉNES ESTÁN EN RIESGO)
+    st.subheader("📊 Distribución de Nivel de Cumplimiento")
+    
+    ranking["Nivel"] = ranking["Cumplimiento %"].apply(
+        lambda x: "🟢 Alto" if x >= 75 else ("🟡 Medio" if x >= 40 else "🔴 Bajo")
+    )
+    
+    fig_dist = px.histogram(
+        ranking,
+        x="Nivel",
+        color="Nivel",
+        color_discrete_map={
+            "🟢 Alto": "#16a34a",
+            "🟡 Medio": "#f59e0b",
+            "🔴 Bajo": "#dc2626"
+        }
+    )
+    
+    fig_dist.update_layout(height=350)
+    
+    st.plotly_chart(fig_dist, use_container_width=True)
 
     #SEMÁFORO GERENCIAL INTELIGENTE
     st.divider()
