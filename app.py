@@ -536,7 +536,34 @@ div.stButton > button:nth-of-type(2):hover {
 # ==============================
 def pantalla_login():
     aplicar_estilos_login()
+
+    st.markdown("""
+    <style>
     
+    /* BOTÓN PORTAL - VERDE */
+    button[id*="btn_portal"] {
+        background-color: #166534 !important;
+        color: white !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        border: none !important;
+    }
+    
+    /* BOTÓN SUPERVISIÓN - ÁMBAR */
+    button[id*="btn_supervision"] {
+        background-color: #f59e0b !important;
+        color: white !important;
+        font-weight: 800 !important;
+        border-radius: 12px !important;
+        border: none !important;
+    }
+    
+    button[id*="btn_supervision"]:hover {
+        background-color: #d97706 !important;
+    }
+    
+    </style>
+    """, unsafe_allow_html=True)
     col_espacio, col_login = st.columns([1.7, 1])
     
     with col_espacio:
@@ -553,7 +580,7 @@ def pantalla_login():
         
         dni_input = st.text_input("DNI DEL LÍDER", placeholder="Ingresa tu documento")
 
-        if st.button("Ingresar al Portal"):
+        if st.button("Ingresar al Portal", use_container_width=True, key="btn_portal"):
             dni_limpio = dni_input.strip().zfill(8)
             if dni_limpio in df_raw["DNI_Lider"].astype(str).str.zfill(8).unique():
                 st.session_state.dni = dni_limpio
@@ -564,7 +591,7 @@ def pantalla_login():
       
         st.markdown("---")
 
-        if st.button("📊 Dashboard Supervisión"):
+        if st.button("📊 Dashboard Supervisión", use_container_width=True, key="btn_supervision"):
             st.session_state.modo = "login_supervision"
             st.rerun()
     
