@@ -502,46 +502,17 @@ def aplicar_estilos_login():
     </style>
     """, unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-
-/* BOTÓN INGRESAR - VERDE */
-div.stButton > button:nth-of-type(1) {
-    background-color: #166534 !important;
-    color: white !important;
-    font-weight: 700 !important;
-    border-radius: 12px !important;
-    border: none !important;
-}
-
-/* BOTÓN SUPERVISIÓN - ÁMBAR EJECUTIVO */
-div.stButton > button:nth-of-type(2) {
-    background-color: #f59e0b !important;
-    color: white !important;
-    font-weight: 800 !important;
-    border-radius: 12px !important;
-    border: none !important;
-}
-
-div.stButton > button:nth-of-type(2):hover {
-    background-color: #d97706 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
 
 # ==============================
 # 🖥️ PANTALLA LOGIN
 # ==============================
 def pantalla_login():
     aplicar_estilos_login()
-
     st.markdown("""
     <style>
     
-    /* BOTÓN PORTAL - VERDE */
-    button[id*="btn_portal"] {
+    /* BOTÓN PORTAL */
+    div[data-testid="stButton"] button[kind="secondary"][aria-label="Ingresar al Portal"] {
         background-color: #166534 !important;
         color: white !important;
         font-weight: 700 !important;
@@ -549,8 +520,8 @@ def pantalla_login():
         border: none !important;
     }
     
-    /* BOTÓN SUPERVISIÓN - ÁMBAR */
-    button[id*="btn_supervision"] {
+    /* BOTÓN SUPERVISIÓN */
+    div[data-testid="stButton"] button[kind="secondary"][aria-label="📊 Dashboard Supervisión"] {
         background-color: #f59e0b !important;
         color: white !important;
         font-weight: 800 !important;
@@ -558,12 +529,15 @@ def pantalla_login():
         border: none !important;
     }
     
-    button[id*="btn_supervision"]:hover {
+    div[data-testid="stButton"] button[kind="secondary"][aria-label="📊 Dashboard Supervisión"]:hover {
         background-color: #d97706 !important;
     }
     
     </style>
     """, unsafe_allow_html=True)
+   
+
+    
     col_espacio, col_login = st.columns([1.7, 1])
     
     with col_espacio:
