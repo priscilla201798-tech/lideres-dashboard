@@ -674,9 +674,16 @@ def pantalla_supervision():
     total_visitas = int(df_resumen_f["Visitas"].sum())
     total_escuela = int(df_resumen_f["EscuelaBiblica"].sum())
     
-    total_lideres = df_resumen_f["DNI"].nunique()
-    lideres_activos = df_resumen_f[df_resumen_f["ProgSemanal"] > 0]["DNI"].nunique()
-    porcentaje_activos = (lideres_activos / total_lideres * 100) if total_lideres > 0 else 0
+    # TOTAL DE LÍDERES PLANIFICADOS
+    total_lideres = df_plan_eventos_f["DNI_Lider"].astype(str).str.zfill(8).nunique()
+    
+    # LÍDERES QUE REGISTRARON AL MENOS UNA SEMANA
+    lideres_con_registro = df_resumen_f["DNI"].nunique()
+    
+    # PORCENTAJE REAL DE ACTIVIDAD
+    porcentaje_activos = (
+        lideres_con_registro / total_lideres * 100
+    ) if total_lideres > 0 else 0
     
     tasa_conversion = (total_convertidos / total_nuevos * 100) if total_nuevos > 0 else 0
     total_eventos = len(df_eventos_f)
@@ -811,21 +818,7 @@ def pantalla_supervision():
         st.session_state.dni = None
         st.rerun()
 
-    if st.button("Ver Dashboard del Líder"):
-        dni_lider = df_plan_eventos_f[
-            df_plan_eventos_f["NombreCompleto"] == lider_sel
-        ]["DNI_Lider"].astype(str).str.zfill(8).iloc[0]
-
-        st.session_state.dni_simulado = dni_lider
-        st.session_state.modo = "simulacion"
-        st.rerun()
-
-    st.divider()
-
-    if st.button("🚪 Cerrar sesión"):
-        st.session_state.modo = None
-        st.session_state.dni = None
-        st.rerun()
+    
 def pantalla_simulacion():
 
     banner_supervision("Simulación")
