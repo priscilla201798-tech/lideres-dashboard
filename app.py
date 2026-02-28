@@ -663,64 +663,110 @@ def pantalla_login_supervision():
             st.rerun()
             
 def pantalla_supervision():
-    banner_supervision("Supervisión")
-    st.title("📊 Dashboard Supervisión")
-
-    # 🔥 KPIs Globales
-    total_convertidos = int(df_resumen_f["Convertidos"].sum())
-    total_reuniones = int(df_resumen_f["ProgSemanal"].sum())
-
-    total_nuevos = int(df_resumen_f["Nuevos"].sum())
-    total_reconciliados = int(df_resumen_f["Reconciliados"].sum())
-    total_visitas = int(df_resumen_f["Visitas"].sum())
-    total_escuela = int(df_resumen_f["EscuelaBiblica"].sum())
+    st.subheader("🔥 Impacto Estratégico")
     
-    total_lideres = df_resumen_f["DNI"].nunique()
-    lideres_activos = df_resumen_f[df_resumen_f["ProgSemanal"] > 0]["DNI"].nunique()
-    porcentaje_activos = (lideres_activos / total_lideres * 100) if total_lideres > 0 else 0
-    
-    tasa_conversion = (total_convertidos / total_nuevos * 100) if total_nuevos > 0 else 0
-
-    # =========================
-    # PRIMERA FILA MACRO
-    # =========================
-    
+    #🔥 BLOQUE 1 — IMPACTO ESTRATÉGICO
     c1, c2, c3, c4 = st.columns(4)
     
     with c1:
-        kpi_card("Reuniones", total_reuniones, "📅")
+        kpi_card(
+            "Convertidos",
+            total_convertidos,
+            "✨",
+            "#f59e0b",
+            "Personas que aceptaron a Cristo en el periodo seleccionado"
+        )
     
     with c2:
-        kpi_card("Nuevos", total_nuevos, "🆕")
+        kpi_card(
+            "Reconciliados",
+            total_reconciliados,
+            "🤝",
+            "#7c3aed",
+            "Personas restauradas espiritualmente"
+        )
     
     with c3:
-        kpi_card("Convertidos", total_convertidos, "✨")
+        kpi_card(
+            "Tasa Conversión",
+            f"{tasa_conversion:.1f}%",
+            "📈",
+            "#059669",
+            "Porcentaje de nuevos que llegaron a convertirse"
+        )
     
     with c4:
-        kpi_card("Reconciliados", total_reconciliados, "🤝")
-    
+        kpi_card(
+            "% Líderes Activos",
+            f"{porcentaje_activos:.1f}%",
+            "👥",
+            "#1e40af",
+            "Proporción de líderes que realizaron al menos una reunión"
+        )
+
+
+    #BLOQUE 2 — ACTIVIDAD OPERATIVA
     st.divider()
-    
-    # =========================
-    # SEGUNDA FILA MACRO
-    # =========================
+    st.subheader("📊 Actividad Operativa")
     
     c5, c6, c7, c8 = st.columns(4)
     
     with c5:
-        kpi_card("Visitas", total_visitas, "🏠")
+        kpi_card(
+            "Reuniones",
+            total_reuniones,
+            "📅",
+            "#0f766e",
+            "Total de reuniones ejecutadas"
+        )
     
     with c6:
-        kpi_card("Escuela Bíblica", total_escuela, "📘")
+        kpi_card(
+            "Nuevos",
+            total_nuevos,
+            "🆕",
+            "#2563eb",
+            "Personas nuevas registradas"
+        )
     
     with c7:
-        kpi_card("% Líderes Activos", f"{porcentaje_activos:.1f}%", "👥")
+        kpi_card(
+            "Eventos",
+            total_eventos,
+            "🔥",
+            "#ea580c",
+            "Ayunos y vigilias realizados"
+        )
     
     with c8:
-        kpi_card("Tasa Conversión", f"{tasa_conversion:.1f}%", "📈")
+        kpi_card(
+            "Escuela Bíblica",
+            total_escuela,
+            "📘",
+            VERDE_EXITO,
+            "Derivaciones acumuladas"
+        )
 
+    #SEMÁFORO GERENCIAL INTELIGENTE
     st.divider()
-
+    st.subheader("🚦 Diagnóstico Institucional")
+    
+    alertas = []
+    
+    if tasa_conversion < 15:
+        alertas.append("🔴 Tasa de conversión baja (menos del 15%)")
+    
+    if porcentaje_activos < 70:
+        alertas.append("🟡 Menos del 70% de líderes están activos")
+    
+    if total_convertidos == 0:
+        alertas.append("🔴 No se registran convertidos en el periodo")
+    
+    if alertas:
+        for alerta in alertas:
+            st.warning(alerta)
+    else:
+        st.success("🟢 Indicadores estratégicos en rango saludable")
     # =========================
     # PANEL DE CONTROL GERENCIAL
     # =========================
