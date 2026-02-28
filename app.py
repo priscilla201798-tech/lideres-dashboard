@@ -554,37 +554,38 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     html = f"""
     <div style="
         background: linear-gradient(135deg, {color}, #0B3C5D);
-        padding:16px 18px;
-        border-radius:14px;
+        padding:18px;
+        border-radius:16px;
         color:white;
         font-family:Arial, sans-serif;
-        box-shadow:0 6px 16px rgba(0,0,0,0.25);
+        box-shadow:0 8px 20px rgba(0,0,0,0.25);
     ">
 
-        <div style="font-size:18px;">{icono}</div>
+        <div style="font-size:20px;">{icono}</div>
 
         <div style="
             font-size:12px;
-            opacity:0.9;
+            opacity:0.85;
             text-transform:uppercase;
-            letter-spacing:0.5px;
             margin-top:4px;
         ">
             {titulo}
         </div>
 
         <div style="
-            font-size:24px;
-            font-weight:800;
-            margin-top:4px;
+            font-size:28px;
+            font-weight:900;
+            margin-top:6px;
         ">
             {valor}
         </div>
 
         <div style="
-            font-size:11px;
-            margin-top:4px;
-            opacity:0.75;
+            font-size:12px;
+            margin-top:8px;
+            opacity:0.85;
+            border-top:1px solid rgba(255,255,255,0.2);
+            padding-top:6px;
         ">
             {descripcion}
         </div>
@@ -592,7 +593,7 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
     </div>
     """
 
-    components.html(html, height=140)
+    components.html(html, height=160)
 
 def pantalla_login_supervision():
 
