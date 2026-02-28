@@ -598,13 +598,28 @@ def kpi_card(titulo, valor, icono="📊", color="#1D4E89", descripcion=""):
 def pantalla_login_supervision():
 
     st.title("🔐 Acceso Supervisión")
+    st.markdown("""
+    <style>
+    div.stButton > button[kind="primary"] {
+        background-color: #16a34a !important;
+        border: none !important;
+        color: white !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+    }
+
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #15803d !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     clave = st.text_input("Contraseña de Supervisión", type="password")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Ingresar"):
+        if st.button("Ingresar", type="primary"):
             if clave == "INTIMOSIELA2026":
                 st.session_state.modo = "supervision"
                 st.rerun()
