@@ -664,7 +664,22 @@ def pantalla_login_supervision():
             
 def pantalla_supervision():
     st.subheader("🔥 Impacto Estratégico")
+    # 🔥 KPIs Globales
     
+    total_convertidos = int(df_resumen_f["Convertidos"].sum())
+    total_reuniones = int(df_resumen_f["ProgSemanal"].sum())
+    
+    total_nuevos = int(df_resumen_f["Nuevos"].sum())
+    total_reconciliados = int(df_resumen_f["Reconciliados"].sum())
+    total_visitas = int(df_resumen_f["Visitas"].sum())
+    total_escuela = int(df_resumen_f["EscuelaBiblica"].sum())
+    
+    total_lideres = df_resumen_f["DNI"].nunique()
+    lideres_activos = df_resumen_f[df_resumen_f["ProgSemanal"] > 0]["DNI"].nunique()
+    porcentaje_activos = (lideres_activos / total_lideres * 100) if total_lideres > 0 else 0
+    
+    tasa_conversion = (total_convertidos / total_nuevos * 100) if total_nuevos > 0 else 0
+    total_eventos = len(df_eventos_f)
     #🔥 BLOQUE 1 — IMPACTO ESTRATÉGICO
     c1, c2, c3, c4 = st.columns(4)
     
