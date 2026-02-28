@@ -501,6 +501,36 @@ def aplicar_estilos_login():
     }
     </style>
     """, unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+
+/* BOTÓN INGRESAR - VERDE */
+div.stButton > button:nth-of-type(1) {
+    background-color: #166534 !important;
+    color: white !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    border: none !important;
+}
+
+/* BOTÓN SUPERVISIÓN - ÁMBAR EJECUTIVO */
+div.stButton > button:nth-of-type(2) {
+    background-color: #f59e0b !important;
+    color: white !important;
+    font-weight: 800 !important;
+    border-radius: 12px !important;
+    border: none !important;
+}
+
+div.stButton > button:nth-of-type(2):hover {
+    background-color: #d97706 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
 # ==============================
 # 🖥️ PANTALLA LOGIN
 # ==============================
