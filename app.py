@@ -1268,7 +1268,7 @@ def pantalla_dashboard(dni_forzado=None):
                 return ""   # 👈 sin rojo
         except:
             return ""
-    st.dataframe(df_t.style.applymap(style_ev, subset=["AYUNO", "VIGILIA"]))
+    st.dataframe(df_t)
     st.subheader("📈 Tendencia de Participación en Eventos")
 
     # Creamos dataset mensual
