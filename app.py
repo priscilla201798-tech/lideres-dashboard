@@ -1251,8 +1251,9 @@ def pantalla_dashboard(dni_forzado=None):
                 (df_ev_l["Tipo"] == tipo)
             ].shape[0]
 
-            if prog == 0:
-                fila[tipo] = f"{ejec}/{prog}"
+            if prog == 0 and ejec == 0:
+                fila[tipo] = ""  # vacío
+            
             else:
                 ejec = int(ejec)
                 prog = int(prog)
