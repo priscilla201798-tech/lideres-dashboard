@@ -1251,17 +1251,17 @@ def pantalla_dashboard(dni_forzado=None):
                 (df_ev_l["Tipo"] == tipo)
             ].shape[0]
 
+            ejec = int(ejec)
+            prog = int(prog)
+            
             if prog == 0 and ejec == 0:
-                fila[tipo] = "0/0"  # vacío
+                fila[tipo] = ""  # vacío
+            
+            elif ejec >= prog:
+                fila[tipo] = f"🟢 {ejec}/{prog}"
             
             else:
-                ejec = int(ejec)
-                prog = int(prog)
-            
-                if ejec >= prog:
-                    fila[tipo] = f"🟢 {ejec}/{prog}"
-                else:
-                    fila[tipo] = f"🔴 {ejec}/{prog}"
+                fila[tipo] = f"🔴 {ejec}/{prog}"
         
         tabla.append(fila)
 
