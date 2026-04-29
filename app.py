@@ -1253,11 +1253,15 @@ def pantalla_dashboard(dni_forzado=None):
 
             if prog == 0:
                 fila[tipo] = f"{ejec}/{prog}"
-            elif ejec >= prog:
-                fila[tipo] = f"🟢 {ejec}/{prog}"
             else:
-                fila[tipo] = f"🔴 {ejec}/{prog}"
-
+                ejec = int(ejec)
+                prog = int(prog)
+            
+                if ejec >= prog:
+                    fila[tipo] = f"🟢 {ejec}/{prog}"
+                else:
+                    fila[tipo] = f"🔴 {ejec}/{prog}"
+        
         tabla.append(fila)
 
     df_t = pd.DataFrame(tabla)
