@@ -1252,7 +1252,7 @@ def pantalla_dashboard(dni_forzado=None):
             ].shape[0]
 
             if prog == 0 and ejec == 0:
-                fila[tipo] = ""  # vacío
+                fila[tipo] = "0/0"  # vacío
             
             else:
                 ejec = int(ejec)
